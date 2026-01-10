@@ -1,6 +1,6 @@
 {
-	"watch": ["src"],
-	"ignore": ["build"],
-	"ext": "ts",
-	"exec": "npm run build && npm run start"
+  "watch": ["src"],
+  "ignore": ["build"],
+  "ext": "ts",
+  "exec": "npm run build && npm run start"
 }

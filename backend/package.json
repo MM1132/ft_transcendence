@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p tsconfig.json",
     "start": "node ./build/index.js",
     "dev": "nodemon",
-    "lint": "biome check --write ./src"
+    "lint": "biome check --write"
   },
   "keywords": [],
   "author": "",

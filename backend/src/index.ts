@@ -2,6 +2,7 @@ import Fastify, {
   type FastifyInstance,
   type RouteShorthandOptions,
 } from 'fastify';
+import { Person } from './otherFile.ts';
 
 const server: FastifyInstance = Fastify({});
 
@@ -35,3 +36,6 @@ const start = async (): Promise<void> => {
 };
 
 start();
+
+const newPerson: Person = new Person('Robert');
+console.log(`newPerson's name is: ${newPerson.name}`);

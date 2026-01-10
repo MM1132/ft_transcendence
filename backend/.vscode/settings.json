@@ -5,5 +5,6 @@
   },
   "typescript.validate.enable": false,
   "javascript.validate.enable": false,
+  // "typescript.preferences.importModuleSpecifierEnding": "js",
   "editor.rulers": [80]
 }
