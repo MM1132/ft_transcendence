@@ -1,15 +1,41 @@
-import fastify from 'fastify'
+import Fastify, {
+  type FastifyInstance,
+  type RouteShorthandOptions,
+} from 'fastify';
+import { Person } from './otherFile.ts';
 
-const server = fastify()
+const server: FastifyInstance = Fastify({});
 
-server.get('/ping', async (request, reply) => {
-  return 'pong\n'
-})
+const opts: RouteShorthandOptions = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          pong: {
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
+};
 
-server.listen({ port: 8080 }, (err, address) => {
-  if (err) {
-    console.error(err)
-    process.exit(1)
+server.get('/ping', opts, async (_request, _reply) => {
+  return { pong: 'it worked!' };
+});
+
+const start = async (): Promise<void> => {
+  try {
+    await server.listen({ port: 3000 });
+    console.log(`http://localhost:3000/ping`);
+  } catch (err) {
+    server.log.error(err);
+    process.exit(1);
   }
-  console.log(`Server listening at ${address}`)
-})
+};
+
+start();
+
+const newPerson: Person = new Person('Robert');
+console.log(`newPerson's name is: ${newPerson.name}`);
