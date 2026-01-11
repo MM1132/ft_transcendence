@@ -3,6 +3,9 @@ import Fastify, {
   type RouteShorthandOptions,
 } from 'fastify';
 import { Person } from './otherFile.ts';
+import 'dotenv/config';
+
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 const server: FastifyInstance = Fastify({});
 
@@ -27,8 +30,8 @@ server.get('/ping', opts, async (_request, _reply) => {
 
 const start = async (): Promise<void> => {
   try {
-    await server.listen({ port: 3000 });
-    console.log(`http://localhost:3000/ping`);
+    await server.listen({ port: PORT });
+    console.log(`Server running at: http://localhost:${PORT}/ping`);
   } catch (err) {
     server.log.error(err);
     process.exit(1);
