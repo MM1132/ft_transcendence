@@ -1,33 +1,35 @@
-import Fastify, {
-  type FastifyInstance,
-  type RouteShorthandOptions,
-} from 'fastify';
-import { Person } from './otherFile.ts';
+import dotenv from 'dotenv';
+import Fastify, { type FastifyInstance } from 'fastify';
+import { Client } from 'pg';
 
+// Environment variables shit
+dotenv.config({ path: '../.env' });
+
+// PostgreSQL shit
+const client = new Client({
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  host: 'localhost',
+  ...(process.env.POSTGRES_PORT && {
+    port: parseInt(process.env.POSTGRES_PORT, 10),
+  }),
+  database: process.env.POSTGRES_DB,
+});
+client.connect();
+
+process.exit(0);
+
+// Fastify shit
 const server: FastifyInstance = Fastify({});
 
-const opts: RouteShorthandOptions = {
-  schema: {
-    response: {
-      200: {
-        type: 'object',
-        properties: {
-          pong: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
-};
-
-server.get('/ping', opts, async (_request, _reply) => {
-  return { pong: 'it worked!' };
+server.get('/ping', async (_request, _reply) => {
+  return { pongg: `it worked!!` };
 });
 
 const start = async (): Promise<void> => {
   try {
-    await server.listen({ port: 3000 });
+    const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+    await server.listen({ port });
     console.log(`http://localhost:3000/ping`);
   } catch (err) {
     server.log.error(err);
@@ -36,6 +38,3 @@ const start = async (): Promise<void> => {
 };
 
 start();
-
-const newPerson: Person = new Person('Robert');
-console.log(`newPerson's name is: ${newPerson.name}`);

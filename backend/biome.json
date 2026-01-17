@@ -34,9 +34,6 @@
       "style": {
         "useNamingConvention": "error"
       },
-      "nursery": {
-        "useExplicitType": "error"
-      },
       "correctness": {
         "useImportExtensions": {
           "level": "error",
