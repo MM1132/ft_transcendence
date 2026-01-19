@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import dotenv from 'dotenv';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Client } from 'pg';
@@ -16,6 +17,13 @@ const client = new Client({
   database: process.env.POSTGRES_DB,
 });
 client.connect();
+
+const initSql = readFileSync('./src/queries/init.sql', {
+  encoding: 'utf8',
+  flag: 'r',
+});
+// console.log(initSql);
+client.query(initSql);
 
 process.exit(0);
 
