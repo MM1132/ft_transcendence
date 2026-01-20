@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
 import dotenv from 'dotenv';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Client } from 'pg';
+import { initDatabase } from './initDatabase.ts';
 
 // Environment variables shit
 dotenv.config({ path: '../.env' });
@@ -16,16 +16,6 @@ const client = new Client({
   }),
   database: process.env.POSTGRES_DB,
 });
-client.connect();
-
-const initSql = readFileSync('./src/queries/init.sql', {
-  encoding: 'utf8',
-  flag: 'r',
-});
-// console.log(initSql);
-client.query(initSql);
-
-process.exit(0);
 
 // Fastify shit
 const server: FastifyInstance = Fastify({});
@@ -35,6 +25,11 @@ server.get('/ping', async (_request, _reply) => {
 });
 
 const start = async (): Promise<void> => {
+  await client.connect();
+  console.log('Database: Connected!');
+
+  await initDatabase(client);
+
   try {
     const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
     await server.listen({ port });

@@ -4,5 +4,5 @@ CREATE TABLE IF NOT EXISTS users (
 	-- Hashed password, 128 characters long
 	password VARCHAR(128) NOT NULL,
 	-- PostgreSQL UTC created_at. Gets set automatically and is not editable
-	created_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE "utc")
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
