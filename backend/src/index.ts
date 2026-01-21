@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Client } from 'pg';
 import { initDatabase } from './initDatabase.ts';
+import { userRoutes } from './routes/user.routes.ts';
 
 // Environment variables shit
 dotenv.config({ path: '../.env' });
@@ -18,11 +19,19 @@ const client = new Client({
 });
 
 // Fastify shit
-const server: FastifyInstance = Fastify({});
-
-server.get('/ping', async (_request, _reply) => {
-  return { pongg: `it worked!!` };
+const fastify: FastifyInstance = Fastify({
+  ajv: {
+    customOptions: {
+      coerceTypes: false,
+      removeAdditional: false,
+    },
+  },
 });
+
+fastify.decorate('db', client);
+
+// Register all the routes
+fastify.register(userRoutes, { prefix: '/api/v1/users' });
 
 const start = async (): Promise<void> => {
   await client.connect();
@@ -32,10 +41,11 @@ const start = async (): Promise<void> => {
 
   try {
     const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-    await server.listen({ port });
-    console.log(`http://localhost:3000/ping`);
+    await fastify.listen({ port });
+
+    // fastify.log.info(`Backend running: ${fastify.server.address()?.toString}`);
   } catch (err) {
-    server.log.error(err);
+    fastify.log.error(err);
     process.exit(1);
   }
 };
