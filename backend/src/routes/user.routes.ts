@@ -1,9 +1,23 @@
 import type { FastifyInstance } from 'fastify';
-import { userController } from '../controllers/user.controller.ts';
+import { userController } from '../controllers/userController/user.controller.ts';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get('/', userController.getAllUsers);
-  fastify.get('/:id', userController.getUserById);
+  fastify.get(
+    '/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: {
+            id: { type: 'string', pattern: '^[1-9][0-9]*$' },
+          },
+        },
+      },
+    },
+    userController.getUserById
+  );
   fastify.post(
     '/',
     {
