@@ -3,6 +3,7 @@ import { userController } from '../controllers/userController/user.controller.ts
 
 export const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get('/', userController.getAllUsers);
+
   fastify.get(
     '/:id',
     {
@@ -18,6 +19,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
     },
     userController.getUserById
   );
+
   fastify.post(
     '/',
     {

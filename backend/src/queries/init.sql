@@ -6,3 +6,9 @@ CREATE TABLE IF NOT EXISTS users (
 	-- PostgreSQL UTC created_at. Gets set automatically and is not editable
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS sessions (
+	token VARCHAR(32) PRIMARY KEY,
+	user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	valid_until TIMESTAMPTZ NOT NULL
+);

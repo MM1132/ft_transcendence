@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { userRespository } from '../../repositories/user.repository.ts';
+import { encryptPassword } from '../controllerUtils.ts';
 
 interface UserIdParams {
   id: string;
@@ -55,9 +56,11 @@ export const userController = {
   ) => {
     const { db } = req.server;
 
+    const encryptedPasswordHex = encryptPassword(req.body.password);
+
     await userRespository.insertNewUserToDatabase(db, {
       username: req.body.username,
-      password: req.body.password,
+      password: encryptedPasswordHex,
     });
 
     const createdUserRow = (

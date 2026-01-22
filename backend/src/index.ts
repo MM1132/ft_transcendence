@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Client } from 'pg';
 import { initDatabase } from './initDatabase.ts';
+import { sessionRoutes } from './routes/session.routes.ts';
 import { userRoutes } from './routes/user.routes.ts';
 
 // Environment variables shit
@@ -31,7 +32,8 @@ const fastify: FastifyInstance = Fastify({
 fastify.decorate('db', client);
 
 // Register all the routes
-fastify.register(userRoutes, { prefix: '/api/v1/users' });
+fastify.register(sessionRoutes, { prefix: '/api/v1/session' });
+fastify.register(userRoutes, { prefix: '/api/v1/user' });
 
 const start = async (): Promise<void> => {
   await client.connect();

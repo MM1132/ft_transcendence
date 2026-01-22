@@ -37,4 +37,16 @@ export const userRespository = {
       [id]
     );
   },
+  getUserByPasswordAndUsername: async (
+    db: Client,
+    username: string,
+    passwordHash: string
+  ) => {
+    return db.query(
+      `
+      SELECT * FROM users
+      WHERE username = $2 AND password = $1;`,
+      [username, passwordHash]
+    );
+  },
 };
