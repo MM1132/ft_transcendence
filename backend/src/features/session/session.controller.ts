@@ -1,6 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { encryptPassword } from '../../utils/controllerUtils.ts';
-import { userRespository } from '../user/user.repository.ts';
+import { sessionService } from './session.service.ts';
 
 interface LoginRequestBody {
   username: string;
@@ -12,23 +11,23 @@ export const sessionController = {
     req: FastifyRequest<{ Body: LoginRequestBody }>,
     res: FastifyReply
   ) => {
-    const { db } = req.server;
+    try {
+      const { db } = req.server;
 
-    const passwordHash = encryptPassword(req.body.password);
+      const username = req.body.username;
+      const password = req.body.password;
 
-    const userRow = await userRespository.getUserByPasswordAndUsername(
-      db,
-      req.body.username,
-      passwordHash
-    );
+      const loginSuccess = await sessionService.login(db, username, password);
 
-    console.log(userRow);
-
-    if (userRow) {
-      console.log('You successfully logged in!');
-      res.status(200).send();
-    } else {
-      res.status(400).send();
-    }
+      if (loginSuccess) {
+        res
+          .status(200)
+          .send(
+            'Correct credentials, but sessions have not been implemented yet'
+          );
+      } else {
+        res.status(401).send('Have you forgotten your password or something?');
+      }
+    } catch (error) {}
   },
 };

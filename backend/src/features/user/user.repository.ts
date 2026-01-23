@@ -48,16 +48,17 @@ export const userRespository = {
     return rows[0] || null;
   },
 
-  getUserByPasswordAndUsername: async (
+  getUserByUsernameAndPassword: async (
     db: Client,
     username: string,
     passwordHash: string
-  ) => {
-    return db.query(
+  ): Promise<RepositoryUser | null> => {
+    const { rows } = await db.query(
       `
       SELECT * FROM users
-      WHERE username = $2 AND password = $1;`,
+      WHERE username = $1 AND password = $2;`,
       [username, passwordHash]
     );
+    return rows[0] || null;
   },
 };

@@ -5,7 +5,7 @@ export const routeNotImplementedYet = async (
   _req: FastifyRequest,
   res: FastifyReply
 ) => {
-  res.send('Route not implemented yet');
+  res.send({ error: 'Route not implemented yet' });
 };
 
 // Returns the hex of the encrypted password
