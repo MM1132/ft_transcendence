@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { userRespository } from '../../repositories/user.repository.ts';
-import { encryptPassword } from '../controllerUtils.ts';
+import { encryptPassword } from '../../utils/controllerUtils.ts';
+import { userRespository } from '../user/user.repository.ts';
 
 interface LoginRequestBody {
   username: string;
@@ -30,7 +30,5 @@ export const sessionController = {
     } else {
       res.status(400).send();
     }
-
-    // And here we compare the hashed password to the one that is stored in the database
   },
 };

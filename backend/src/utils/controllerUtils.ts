@@ -2,7 +2,7 @@ import { scryptSync } from 'node:crypto';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
 export const routeNotImplementedYet = async (
-  req: FastifyRequest,
+  _req: FastifyRequest,
   res: FastifyReply
 ) => {
   res.send('Route not implemented yet');

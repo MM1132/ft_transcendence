@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { routeNotImplementedYet } from '../controllers/controllerUtils.ts';
-import { sessionController } from '../controllers/sessionController/session.controller.ts';
+import { routeNotImplementedYet } from '../../utils/controllerUtils.ts';
+import { sessionController } from './session.controller.ts';
 
 // Routes for logging the user in/out
 export const sessionRoutes = (fastify: FastifyInstance) => {

@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Client } from 'pg';
+import { sessionRoutes } from './features/session/session.routes.ts';
+import { userRoutes } from './features/user/user.routes.ts';
 import { initDatabase } from './initDatabase.ts';
-import { sessionRoutes } from './routes/session.routes.ts';
-import { userRoutes } from './routes/user.routes.ts';
 
 // Environment variables shit
 dotenv.config({ path: '../.env' });

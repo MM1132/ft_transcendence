@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { userController } from '../controllers/userController/user.controller.ts';
+import { userController } from './user.controller.ts';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get('/', userController.getAllUsers);
