@@ -1,14 +1,19 @@
 import dotenv from 'dotenv';
 import Fastify, { type FastifyInstance } from 'fastify';
-import { Client } from 'pg';
+import { DateTime } from 'luxon';
+import { Client, types } from 'pg';
 import { sessionRoutes } from './features/session/session.routes.ts';
 import { userRoutes } from './features/user/user.routes.ts';
 import { initDatabase } from './initDatabase.ts';
 
 // Environment variables shit
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: ['../.env'] });
 
 // PostgreSQL shit
+types.setTypeParser(types.builtins.TIMESTAMPTZ, (value) => {
+  return DateTime.fromSQL(value);
+});
+
 const client = new Client({
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,

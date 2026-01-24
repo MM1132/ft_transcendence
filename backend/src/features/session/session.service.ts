@@ -20,9 +20,17 @@ export const sessionService = {
       return false;
     }
 
-    // 1. Create a session for the user
+    // If the user is logged in, we will never even get to this place in code
+    // The preprocessor should already take care of this for us and protect the routes
 
-    // 2. Return the session
+    // We get to this place in the code only if the password was correct
+
+    // 1. Check if the user already has an active session
+    //    If so, throw an error, telling them that they are already logged in
+
+    // 2. Create a new session for the user
+
+    // 3. Return the session
     return true;
   },
 };

@@ -15,7 +15,7 @@ interface UserResult {
 const userRowToResult = (userRow: RepositoryUser): UserResult => ({
   id: parseInt(userRow.id, 10),
   username: userRow.username,
-  createdAt: userRow.created_at,
+  createdAt: userRow.created_at.toFormat('DDDD'),
 });
 
 export const userService = {

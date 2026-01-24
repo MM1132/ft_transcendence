@@ -1,12 +1,14 @@
 import type { FastifyInstance } from 'fastify';
-import { userController } from './user.controller.ts';
+import { sessionAuth } from '../auth/sessionAuth.ts';
+import { type UserIdParams, userController } from './user.controller.ts';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get('/', userController.getAllUsers);
 
-  fastify.get(
+  fastify.get<{ Params: UserIdParams }>(
     '/:id',
     {
+      preHandler: sessionAuth,
       schema: {
         params: {
           type: 'object',

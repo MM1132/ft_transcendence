@@ -13,8 +13,10 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@types/luxon": "^3.7.1",
     "dotenv": "^17.2.3",
     "fastify": "^5.6.2",
+    "luxon": "^3.7.2",
     "pg": "^8.17.1"
   },
   "devDependencies": {

@@ -1,15 +1,18 @@
-import type { Client } from 'pg';
+import type { DateTime } from 'luxon';
+import type { Client, QueryResultRow } from 'pg';
 
-export interface RepositoryUser {
+export interface RepositoryUser extends QueryResultRow {
   id: string;
   username: string;
   password: string;
-  created_at: string;
+  created_at: DateTime;
 }
 
 export const userRespository = {
   getAllUsers: async (db: Client): Promise<RepositoryUser[]> => {
-    const allUsers = await db.query(`SELECT * FROM users`);
+    const allUsers = await db.query<RepositoryUser>(
+      `SELECT id, username, password, created_at FROM users`
+    );
     return allUsers.rows;
   },
 
@@ -17,7 +20,10 @@ export const userRespository = {
     db: Client,
     id: number
   ): Promise<RepositoryUser | null> => {
-    const { rows } = await db.query(`SELECT * FROM users WHERE id = $1;`, [id]);
+    const { rows } = await db.query<RepositoryUser>(
+      `SELECT id, username, password, created_at FROM users WHERE id = $1;`,
+      [id]
+    );
     return rows[0] || null;
   },
 
@@ -26,23 +32,21 @@ export const userRespository = {
     username: string,
     encryptedPassword: string
   ) => {
-    const queryResult = db.query(
+    return db.query(
       `
       INSERT INTO users
       (username, password)
       VALUES ($1, $2);`,
       [username, encryptedPassword]
     );
-
-    return queryResult;
   },
 
   getUserByUsername: async (
     db: Client,
     username: string
   ): Promise<RepositoryUser | null> => {
-    const { rows } = await db.query(
-      `SELECT * FROM users WHERE username = $1;`,
+    const { rows } = await db.query<RepositoryUser>(
+      `SELECT id, username, password, created_at FROM users WHERE username = $1;`,
       [username]
     );
     return rows[0] || null;
@@ -53,9 +57,9 @@ export const userRespository = {
     username: string,
     passwordHash: string
   ): Promise<RepositoryUser | null> => {
-    const { rows } = await db.query(
+    const { rows } = await db.query<RepositoryUser>(
       `
-      SELECT * FROM users
+      SELECT id, username, password, created_at FROM users
       WHERE username = $1 AND password = $2;`,
       [username, passwordHash]
     );

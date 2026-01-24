@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import { DuplicateDataError } from '../../utils/repositoryTypes.ts';
 import { userService } from './user.service.ts';
 
-interface UserIdParams {
+export interface UserIdParams {
   id: string;
 }
 
