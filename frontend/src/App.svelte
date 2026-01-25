@@ -1,5 +1,13 @@
 <header>
-
+  <div id="header">
+    <div class="header-logo">
+      <img src="src/logo-rm.png" alt="Logo"/>
+    </div>
+     <div class="header-nav">
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#settings">Settings</a>
+    </div>
+  </div>
 </header>
 
 <main>
@@ -10,7 +18,7 @@
 
 
 <footer>
-  <div id="header"> </div>
+<div id="footer"> </div>
 </footer>
 
 <script>

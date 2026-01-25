@@ -41,7 +41,7 @@ body
 
 #mood-btn:hover
 {
-    background-color: #0f3f34;
+    background-color: #B13BCC;
 }
 
 #square
@@ -57,7 +57,73 @@ body
     transform: translate(-50%, -50%);
 }
 
+
 #header
 {
-    
+    width: 100%;
+    height: 80px;
+    background-color: #0f1314;
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.header-logo
+{
+    /* flex: 0 0 auto; */
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 45px;
+}
+
+.header-logo img
+{
+    height: 40px;
+}
+
+.header-nav
+{
+    display: flex;
+    gap: 60px;
+    flex: 1;
+    justify-content: flex-end;
+    margin-right: 45px;
+}
+
+.header-nav a
+{
+    color: #0AEB00;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.header-nav a:hover
+{
+    color: #B13BCC;
+}
+
+
+
+#footer
+{
+    width: 100%;
+    height: 40px;
+    background-color:#0F1314;
+    backdrop-filter: blur(10px);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
