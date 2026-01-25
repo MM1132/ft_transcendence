@@ -18,7 +18,7 @@ export const userRespository = {
 
   getUserById: async (
     db: Client,
-    id: number
+    id: string
   ): Promise<RepositoryUser | null> => {
     const { rows } = await db.query<RepositoryUser>(
       `SELECT id, username, password, created_at FROM users WHERE id = $1;`,

@@ -11,7 +11,7 @@ dotenv.config({ path: ['../.env'] });
 
 // PostgreSQL shit
 types.setTypeParser(types.builtins.TIMESTAMPTZ, (value) => {
-  return DateTime.fromSQL(value);
+  return DateTime.fromSQL(value, { zone: 'utc' });
 });
 
 const client = new Client({

@@ -3,7 +3,15 @@ import { sessionAuth } from '../auth/sessionAuth.ts';
 import { type UserIdParams, userController } from './user.controller.ts';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
-  fastify.get('/', userController.getAllUsers);
+  fastify.get(
+    '/',
+    {
+      preHandler: sessionAuth,
+    },
+    userController.getAllUsers
+  );
+
+  fastify.get('/me', { preHandler: sessionAuth }, userController.getMyUser);
 
   fastify.get<{ Params: UserIdParams }>(
     '/:id',
@@ -22,6 +30,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
     userController.getUserById
   );
 
+  // Register a new user
   fastify.post(
     '/',
     {

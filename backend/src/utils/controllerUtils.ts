@@ -9,7 +9,7 @@ export const routeNotImplementedYet = async (
 };
 
 // Returns the hex of the encrypted password
-export const encryptPassword = (password: string) => {
+export const encryptWithSalt = (password: string) => {
   return scryptSync(
     password,
     'the best salt in the entire world and guess what it is secret',

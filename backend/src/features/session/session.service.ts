@@ -1,14 +1,21 @@
+import { randomUUID } from 'node:crypto';
+import { DateTime } from 'luxon';
 import type { Client } from 'pg';
-import { encryptPassword } from '../../utils/controllerUtils.ts';
+import { encryptWithSalt } from '../../utils/controllerUtils.ts';
 import { userRespository } from '../user/user.repository.ts';
+import { sessionRepository } from './session.repository.ts';
+
+export interface LoginResult {
+  sessionToken: string;
+}
 
 export const sessionService = {
   login: async (
     db: Client,
     username: string,
     password: string
-  ): Promise<boolean> => {
-    const encryptedPassword = encryptPassword(password);
+  ): Promise<LoginResult | null> => {
+    const encryptedPassword = encryptWithSalt(password);
 
     const user = await userRespository.getUserByUsernameAndPassword(
       db,
@@ -17,20 +24,28 @@ export const sessionService = {
     );
 
     if (!user) {
-      return false;
+      return null;
     }
 
-    // If the user is logged in, we will never even get to this place in code
-    // The preprocessor should already take care of this for us and protect the routes
+    // Find all active sessions and delete them
+    await sessionRepository.deleteSessionsByUserId(db, user.id);
 
-    // We get to this place in the code only if the password was correct
+    // Create a new session
+    const newSessionToken = randomUUID();
+    const encryptedNewSessionToken = encryptWithSalt(newSessionToken);
+    await sessionRepository.createNewSession(
+      db,
+      encryptedNewSessionToken,
+      user.id,
+      DateTime.utc().plus({ minutes: 10 }).toSQL()
+    );
 
-    // 1. Check if the user already has an active session
-    //    If so, throw an error, telling them that they are already logged in
+    return {
+      sessionToken: newSessionToken,
+    };
+  },
 
-    // 2. Create a new session for the user
-
-    // 3. Return the session
-    return true;
+  logout: async (db: Client, userId: string) => {
+    await sessionRepository.deleteSessionsByUserId(db, userId);
   },
 };

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { routeNotImplementedYet } from '../../utils/controllerUtils.ts';
+import { sessionAuth } from '../auth/sessionAuth.ts';
 import { sessionController } from './session.controller.ts';
 
 // Routes for logging the user in/out
@@ -24,5 +24,11 @@ export const sessionRoutes = (fastify: FastifyInstance) => {
   );
 
   // Logout
-  fastify.delete('/', routeNotImplementedYet);
+  fastify.delete(
+    '/',
+    {
+      preHandler: sessionAuth,
+    },
+    sessionController.logout
+  );
 };

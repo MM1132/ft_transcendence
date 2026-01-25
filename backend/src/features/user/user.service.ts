@@ -1,5 +1,5 @@
 import type { Client } from 'pg';
-import { encryptPassword } from '../../utils/controllerUtils.ts';
+import { encryptWithSalt } from '../../utils/controllerUtils.ts';
 import {
   DuplicateDataError,
   type QueryError,
@@ -15,7 +15,7 @@ interface UserResult {
 const userRowToResult = (userRow: RepositoryUser): UserResult => ({
   id: parseInt(userRow.id, 10),
   username: userRow.username,
-  createdAt: userRow.created_at.toFormat('DDDD'),
+  createdAt: userRow.created_at.toJSON() as string,
 });
 
 export const userService = {
@@ -24,7 +24,7 @@ export const userService = {
     return rows.map(userRowToResult);
   },
 
-  getUserById: async (db: Client, id: number): Promise<UserResult | null> => {
+  getUserById: async (db: Client, id: string): Promise<UserResult | null> => {
     const userRow = await userRespository.getUserById(db, id);
     if (!userRow) return null;
     return userRowToResult(userRow);
@@ -35,7 +35,7 @@ export const userService = {
     username: string,
     password: string
   ): Promise<UserResult> => {
-    const encryptedPassword = encryptPassword(password);
+    const encryptedPassword = encryptWithSalt(password);
 
     try {
       await userRespository.insertNewUserToDatabase(

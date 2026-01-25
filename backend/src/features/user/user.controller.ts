@@ -6,7 +6,7 @@ export interface UserIdParams {
   id: string;
 }
 
-interface CreateUserBody {
+export interface CreateUserBody {
   username: string;
   password: string;
 }
@@ -32,6 +32,25 @@ export const userController = {
     }
   },
 
+  getMyUser: async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      const { db } = req.server;
+
+      const user = await userService.getUserById(db, req.session.userId);
+
+      if (!user) {
+        res
+          .status(404)
+          .send({ error: `No user with id ${req.session.userId}` });
+      } else {
+        res.status(200).send(user);
+      }
+    } catch (error) {
+      req.log.error(error);
+      res.status(500).send({ error: 'Internal server error' });
+    }
+  },
+
   getUserById: async (
     req: FastifyRequest<{ Params: UserIdParams }>,
     res: FastifyReply
@@ -39,7 +58,7 @@ export const userController = {
     try {
       const { db } = req.server;
 
-      const id = parseInt(req.params.id, 10);
+      const id = req.params.id;
 
       const user = await userService.getUserById(db, id);
 

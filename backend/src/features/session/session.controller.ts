@@ -17,17 +17,27 @@ export const sessionController = {
       const username = req.body.username;
       const password = req.body.password;
 
-      const loginSuccess = await sessionService.login(db, username, password);
+      const loginResult = await sessionService.login(db, username, password);
 
-      if (loginSuccess) {
-        res
-          .status(200)
-          .send(
-            'Correct credentials, but sessions have not been implemented yet'
-          );
-      } else {
-        res.status(401).send('Have you forgotten your password or something?');
+      if (!loginResult) {
+        res.status(401).send({ error: 'Unauthorized' });
       }
-    } catch (error) {}
+
+      res.status(200).send(loginResult);
+    } catch (_error) {
+      res.status(500).send({ error: 'Internal server error' });
+    }
+  },
+
+  logout: async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      const { db } = req.server;
+
+      await sessionService.logout(db, req.session.userId);
+
+      res.status(200).send({ success: 'You logged out!' });
+    } catch (_error) {
+      res.status(500).send({ error: 'Internal server error' });
+    }
   },
 };
