@@ -13,14 +13,14 @@ body
     background-size: 30px 30px;
 }
 
-#status
+/* #status
 {
     position: absolute;
     color:rgb(255, 255, 255);
     top: 100px;
-}
+} */
 
-#mood-btn
+#login-btn
 {
     width: 404px;
     height: 79px;
@@ -31,7 +31,7 @@ body
     cursor: pointer;
     transition: background-color 0.3s;
     position: absolute;
-    top: 50%;
+    top: 65%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -39,15 +39,15 @@ body
     align-items: center;
 }
 
-#mood-btn:hover
+#login-btn:hover
 {
     background-color: #B13BCC;
 }
 
 #square
 {
-    width: 479px;
-    height: 522px;
+    width: 500px;
+    height: 550px;
     border: 2px solid;
     border-image: linear-gradient(180deg, #0AEB00, #182d14) 1;
     /* opacity: 0.8; */
@@ -100,7 +100,7 @@ body
 
 .header-nav a
 {
-    color: #0AEB00;
+    color: #fff;
     text-decoration: none;
     transition: color 0.3s;
 }
@@ -110,7 +110,41 @@ body
     color: #B13BCC;
 }
 
+#username
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 300px;
+  height: 50px;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #0AEB00;
+  background-color: #1a1a1a;
+  position: absolute;
+   top: 40%;
+    left: 50%;
+transform: translate(-50%, -50%);
+  color: white;
+}
 
+#password
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 300px;
+  height: 50px;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #0AEB00;
+  background-color: #1a1a1a;
+  position: absolute;
+   top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  color: white;
+}
 
 #footer
 {
@@ -126,4 +160,5 @@ body
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #fff;
 }

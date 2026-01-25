@@ -11,14 +11,21 @@
 </header>
 
 <main>
-  <h1 id="status">{moodStatus}</h1>
+  <!-- <h1 id="status">{moodStatus}</h1> -->
   <div id="square"></div>
-  <button id="mood-btn" on:click={handleMoodClick}>Change Mood</button> 
+  <!-- <button id="login-btn" on:click={handleMoodClick}>Change Mood</button> -->
+  <div id="login-form">
+    <input type="text" id="username" placeholder="Username" />
+    <input type="text" id="password" placeholder="Password" />
+    <button id="login-btn">Login</button>
+  </div>
 </main>
 
 
 <footer>
-<div id="footer"> </div>
+<div id="footer">
+  <p>&copy; 2026 ft_trancendence. All rights reserved.</p>
+</div>
 </footer>
 
 <script>
