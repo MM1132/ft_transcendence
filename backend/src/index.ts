@@ -1,41 +1,60 @@
-import Fastify, {
-  type FastifyInstance,
-  type RouteShorthandOptions,
-} from 'fastify';
-import { Person } from './otherFile.ts';
+import dotenv from 'dotenv';
+import Fastify, { type FastifyInstance } from 'fastify';
+import { DateTime } from 'luxon';
+import { Client, types } from 'pg';
+import { sessionRoutes } from './features/session/session.routes.ts';
+import { userRoutes } from './features/user/user.routes.ts';
+import { initDatabase } from './initDatabase.ts';
 
-const server: FastifyInstance = Fastify({});
+// Environment variables shit
+dotenv.config({ path: ['../.env'] });
 
-const opts: RouteShorthandOptions = {
-  schema: {
-    response: {
-      200: {
-        type: 'object',
-        properties: {
-          pong: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
-};
-
-server.get('/ping', opts, async (_request, _reply) => {
-  return { pong: 'it worked!' };
+// PostgreSQL shit
+types.setTypeParser(types.builtins.TIMESTAMPTZ, (value) => {
+  return DateTime.fromSQL(value, { zone: 'utc' });
 });
 
+const client = new Client({
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  host: 'localhost',
+  ...(process.env.POSTGRES_PORT && {
+    port: parseInt(process.env.POSTGRES_PORT, 10),
+  }),
+  database: process.env.POSTGRES_DB,
+});
+
+// Fastify shit
+const fastify: FastifyInstance = Fastify({
+  ajv: {
+    customOptions: {
+      coerceTypes: false,
+      removeAdditional: false,
+    },
+  },
+});
+
+fastify.decorate('db', client);
+
+// Register all the routes
+fastify.register(sessionRoutes, { prefix: '/api/v1/session' });
+fastify.register(userRoutes, { prefix: '/api/v1/user' });
+
 const start = async (): Promise<void> => {
+  await client.connect();
+  console.log('Database: Connected!');
+
+  await initDatabase(client);
+
   try {
-    await server.listen({ port: 3000 });
-    console.log(`http://localhost:3000/ping`);
+    const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+    await fastify.listen({ port });
+
+    // fastify.log.info(`Backend running: ${fastify.server.address()?.toString}`);
   } catch (err) {
-    server.log.error(err);
+    fastify.log.error(err);
     process.exit(1);
   }
 };
 
 start();
-
-const newPerson: Person = new Person('Robert');
-console.log(`newPerson's name is: ${newPerson.name}`);
