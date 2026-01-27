@@ -16,39 +16,6 @@ body
     font-family: Montserrat;
 }
 
-#border
-{
-    width: 500px;
-    height: 550px;
-    border: 5px solid;
-    border-image: linear-gradient(180deg, #0AEB00, #182d14) 1;
-    opacity: 0.8;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#login-btn
-{
-    width: 300px;
-    height: 65px;
-    font-size: 16px;
-    background-color: #0AEB00;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.6s;
-    /* display: flex;
-    justify-content: center;
-    align-items: center; */
-}
-
-#login-btn:hover
-{
-    background-color: #B13BCC;
-}
-
 
 #header
 {
@@ -70,7 +37,6 @@ body
 
 .header-logo
 {
-    /* flex: 0 0 auto; */
     display: flex;
     justify-content: flex-start;
     margin-left: 45px;
@@ -102,27 +68,6 @@ body
     color: #B13BCC;
 }
 
-#username
-{
-    width: 300px;
-    height: 50px;
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #0AEB00;
-    background-color: #1a1a1a;
-    color: white;
-}
-
-#password
-{
-    width: 300px;
-    height: 50px;
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #0AEB00;
-    background-color: #1a1a1a;
-    color: white;
-}
 
 #footer
 {
@@ -139,77 +84,4 @@ body
     justify-content: center;
     align-items: center;
     color: rgba(255, 255, 255, 0.3);
-}
-
-/* #login-form p
-{
-    position: absolute;
-    top: 33%;
-    left: 39%;
-    transform: translate(-50%, -50%);
-    color: #B13BCC;
-    margin: 20px;
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: 0.80px;
-    margin-bottom: 150px;
-} */
-
-#login-form
-{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    gap: 80px;  /* space between items */
-}
-
-/* #login-form p
-{
-    align-self: flex-start;
-    margin-left: 10px;
-    margin-bottom: 5px;
-    color: #B13BCC;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 0.80px;
-} */
-
-.input-group
-{
-    display: flex;
-    flex-direction: column;
-    gap: 5px;  /* small gap between label and input */
-}
-
-.input-group p
-{
-    align-self: flex-start;
-    margin: 8;
-    color: #B13BCC;
-    font-size: 14px;
-    font-weight: 800;
-}
-
-#login-form
-{
-    gap: 65px;
-}
-
-#logo
-{
-    position: absolute;
-    top: 19.8%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #0AEB00;
-    font-size: 28px;
-    font-weight: 800;
-    z-index: 10;
-    /* letter-spacing: 2px; */
-    letter-spacing: 0.6em; 
 }
