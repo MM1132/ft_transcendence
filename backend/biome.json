@@ -31,13 +31,12 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "style": {
-        "useNamingConvention": "error"
-      },
-      "nursery": {
-        "useExplicitType": "error"
-      },
       "correctness": {
+        "noUnusedImports": {
+          "fix": "safe",
+          "level": "error"
+        },
+        "noUndeclaredVariables": "error",
         "useImportExtensions": {
           "level": "error",
           "options": {
