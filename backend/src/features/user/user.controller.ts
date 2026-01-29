@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { pipeline } from 'node:stream/promises';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { DuplicateDataError } from '../../utils/repositoryTypes.ts';
 import { userService } from './user.service.ts';
@@ -69,6 +72,27 @@ export const userController = {
       }
     } catch (err) {
       req.log.error(err);
+      res.status(500).send({ error: 'Internal server error' });
+    }
+  },
+
+  updateMyUser: async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      if (!req.isMultipart())
+        return res.status(400).send({ error: 'Request is not multipart' });
+
+      const data = await req.file();
+
+      if (!data) return res.status(400).send({ error: 'No file provided' });
+
+      await pipeline(
+        data.file,
+        fs.createWriteStream(
+          path.join(import.meta.dirname, '../static', data.filename)
+        )
+      );
+    } catch (error) {
+      req.log.error(error);
       res.status(500).send({ error: 'Internal server error' });
     }
   },

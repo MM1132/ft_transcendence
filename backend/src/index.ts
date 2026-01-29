@@ -1,3 +1,6 @@
+import path from 'node:path';
+import multipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
 import dotenv from 'dotenv';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { DateTime } from 'luxon';
@@ -36,13 +39,27 @@ const fastify: FastifyInstance = Fastify({
 
 fastify.decorate('db', client);
 
+fastify.register(multipart);
+
+fastify.register(fastifyStatic, {
+  root: path.join(import.meta.dirname, '../static'),
+  prefix: '/static',
+});
+
 // Register all the routes
 fastify.register(sessionRoutes, { prefix: '/api/v1/session' });
 fastify.register(userRoutes, { prefix: '/api/v1/user' });
 
 const start = async (): Promise<void> => {
-  await client.connect();
-  console.log('Database: Connected!');
+  try {
+    await client.connect();
+    console.log('Database: Connected!');
+  } catch (_error) {
+    console.log(
+      'Database not running, run the database and start the server again'
+    );
+    return;
+  }
 
   await initDatabase(client);
 

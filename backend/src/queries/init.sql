@@ -12,3 +12,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 	user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 	valid_until TIMESTAMPTZ NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS user_settings (
+	
+);
