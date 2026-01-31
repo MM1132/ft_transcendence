@@ -1,7 +1,6 @@
-import fs from 'node:fs';
 import path from 'node:path';
-import { pipeline } from 'node:stream/promises';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import sharp from 'sharp';
 import { DuplicateDataError } from '../../utils/repositoryTypes.ts';
 import { userService } from './user.service.ts';
 
@@ -78,21 +77,30 @@ export const userController = {
 
   updateMyUser: async (req: FastifyRequest, res: FastifyReply) => {
     try {
+      const { staticDir } = req.server;
+
       if (!req.isMultipart())
         return res.status(400).send({ error: 'Request is not multipart' });
 
-      const data = await req.file();
+      // Max 2mb for the file
+      const options = { limits: { fileSize: 2000000 } };
+      const data = await req.file(options);
 
       if (!data) return res.status(400).send({ error: 'No file provided' });
 
-      await pipeline(
-        data.file,
-        fs.createWriteStream(
-          path.join(import.meta.dirname, '../static', data.filename)
-        )
-      );
+      await sharp(await data.toBuffer())
+        .resize(512, 512)
+        .png()
+        .toFile(path.join(staticDir, '/uploads', `${req.session.userId}.png`));
     } catch (error) {
+      // if (error.code && error.code === 'FST_REQ_FILE_TOO_LARGE') {
+      //   return res
+      //     .status(413)
+      //     .send({ error: 'File too large. Maximum size of 2 MB' });
+      // }
+
       req.log.error(error);
+      console.log(error);
       res.status(500).send({ error: 'Internal server error' });
     }
   },

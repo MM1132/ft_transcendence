@@ -12,6 +12,16 @@ import { initDatabase } from './initDatabase.ts';
 // Environment variables shit
 dotenv.config({ path: ['../.env'] });
 
+// Fastify shit
+const fastify: FastifyInstance = Fastify({
+  ajv: {
+    customOptions: {
+      coerceTypes: false,
+      removeAdditional: false,
+    },
+  },
+});
+
 // PostgreSQL shit
 types.setTypeParser(types.builtins.TIMESTAMPTZ, (value) => {
   return DateTime.fromSQL(value, { zone: 'utc' });
@@ -27,15 +37,12 @@ const client = new Client({
   database: process.env.POSTGRES_DB,
 });
 
-// Fastify shit
-const fastify: FastifyInstance = Fastify({
-  ajv: {
-    customOptions: {
-      coerceTypes: false,
-      removeAdditional: false,
-    },
-  },
-});
+// Calculation of the base path (shit)
+const staticDir = process.env.BACKEND_STATIC_PATH
+  ? process.env.BACKEND_STATIC_PATH
+  : path.join(process.cwd(), '/static');
+
+fastify.decorate('staticDir', staticDir);
 
 fastify.decorate('db', client);
 
