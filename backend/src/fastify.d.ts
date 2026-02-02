@@ -2,8 +2,9 @@ import type { Client } from 'pg';
 
 declare module 'fastify' {
   interface FastifyInstance {
+    baseUrl: string;
+    baseDir: string;
     db: Client;
-    staticDir: string;
     config: {
       PORT: string;
     };

@@ -10,7 +10,11 @@ import { userRoutes } from './features/user/user.routes.ts';
 import { initDatabase } from './initDatabase.ts';
 
 // Environment variables shit
-dotenv.config({ path: ['../.env'] });
+dotenv.config({ path: ['.env'] });
+
+const PORT = process.env.BACKEND_PORT
+  ? parseInt(process.env.BACKEND_PORT, 10)
+  : 3000;
 
 // Fastify shit
 const fastify: FastifyInstance = Fastify({
@@ -38,12 +42,16 @@ const client = new Client({
 });
 
 // Calculation of the base path (shit)
-const staticDir = process.env.BACKEND_STATIC_PATH
-  ? process.env.BACKEND_STATIC_PATH
-  : path.join(process.cwd(), '/static');
+const baseDir = process.env.BACKEND_ROOT_PATH
+  ? process.env.BACKEND_ROOT_PATH
+  : process.cwd();
 
-fastify.decorate('staticDir', staticDir);
+const baseUrl = process.env.BACKEND_URL
+  ? `http://${process.env.BACKEND_URL}:${PORT}`
+  : `no_url_provided`;
 
+fastify.decorate('baseUrl', baseUrl);
+fastify.decorate('baseDir', baseDir);
 fastify.decorate('db', client);
 
 fastify.register(multipart);
@@ -71,8 +79,7 @@ const start = async (): Promise<void> => {
   await initDatabase(client);
 
   try {
-    const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-    await fastify.listen({ port });
+    await fastify.listen({ port: PORT });
 
     // fastify.log.info(`Backend running: ${fastify.server.address()?.toString}`);
   } catch (err) {

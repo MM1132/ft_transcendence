@@ -1,6 +1,4 @@
-import path from 'node:path';
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import sharp from 'sharp';
 import { DuplicateDataError } from '../../utils/repositoryTypes.ts';
 import { userService } from './user.service.ts';
 
@@ -23,9 +21,9 @@ Controller must:
 export const userController = {
   getAllUsers: async (req: FastifyRequest, res: FastifyReply) => {
     try {
-      const { db } = req.server;
+      const { db, baseUrl } = req.server;
 
-      const allUsers = await userService.getAllUsers(db);
+      const allUsers = await userService.getAllUsers(db, baseUrl);
 
       res.status(200).send(allUsers);
     } catch (err) {
@@ -36,9 +34,13 @@ export const userController = {
 
   getMyUser: async (req: FastifyRequest, res: FastifyReply) => {
     try {
-      const { db } = req.server;
+      const { db, baseUrl } = req.server;
 
-      const user = await userService.getUserById(db, req.session.userId);
+      const user = await userService.getUserById(
+        db,
+        req.session.userId,
+        baseUrl
+      );
 
       if (!user) {
         res
@@ -49,6 +51,7 @@ export const userController = {
       }
     } catch (error) {
       req.log.error(error);
+      console.log(error);
       res.status(500).send({ error: 'Internal server error' });
     }
   },
@@ -58,11 +61,11 @@ export const userController = {
     res: FastifyReply
   ) => {
     try {
-      const { db } = req.server;
+      const { db, baseUrl } = req.server;
 
       const id = req.params.id;
 
-      const user = await userService.getUserById(db, id);
+      const user = await userService.getUserById(db, id, baseUrl);
 
       if (!user) {
         res.status(404).send({ error: `No user with id ${id}` });
@@ -75,31 +78,43 @@ export const userController = {
     }
   },
 
-  updateMyUser: async (req: FastifyRequest, res: FastifyReply) => {
+  changeUserAvatar: async (req: FastifyRequest, res: FastifyReply) => {
     try {
-      const { staticDir } = req.server;
+      const { db, baseDir, baseUrl } = req.server;
 
       if (!req.isMultipart())
         return res.status(400).send({ error: 'Request is not multipart' });
 
-      // Max 2mb for the file
-      const options = { limits: { fileSize: 2000000 } };
-      const data = await req.file(options);
+      const data = await req.file({ limits: { fileSize: 2000000 } });
 
       if (!data) return res.status(400).send({ error: 'No file provided' });
 
-      await sharp(await data.toBuffer())
-        .resize(512, 512)
-        .png()
-        .toFile(path.join(staticDir, '/uploads', `${req.session.userId}.png`));
-    } catch (error) {
-      // if (error.code && error.code === 'FST_REQ_FILE_TOO_LARGE') {
-      //   return res
-      //     .status(413)
-      //     .send({ error: 'File too large. Maximum size of 2 MB' });
-      // }
+      const fileDataBuffer = await data.toBuffer();
 
+      const fileName = await userService.uploadAvatar(
+        db,
+        req.session.userId,
+        fileDataBuffer,
+        baseDir
+      );
+
+      res.status(200).send({ avatarUrl: `${baseUrl}${fileName}` });
+    } catch (error) {
+      // TODO: Handle file too large error
       req.log.error(error);
+      console.log(error);
+      res.status(500).send({ error: 'Internal server error' });
+    }
+  },
+
+  deleteAvatar: async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      const { db } = req.server;
+
+      await userService.deleteAvatar(db, req.session.userId);
+
+      res.status(200).send({ status: 'Successfully deleted user avatar!' });
+    } catch (error) {
       console.log(error);
       res.status(500).send({ error: 'Internal server error' });
     }
@@ -110,12 +125,17 @@ export const userController = {
     res: FastifyReply
   ) => {
     try {
-      const { db } = req.server;
+      const { db, baseUrl } = req.server;
 
       const username = req.body.username;
       const password = req.body.password;
 
-      const createdUser = await userService.createUser(db, username, password);
+      const createdUser = await userService.createUser(
+        db,
+        username,
+        password,
+        baseUrl
+      );
 
       res.status(200).send(createdUser);
     } catch (err) {
