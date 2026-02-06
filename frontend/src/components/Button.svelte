@@ -1,10 +1,16 @@
-<script>
-    export let type = 'button';
-    export let disabled = false;
+<script lang="ts">
+    interface Props
+    {
+        type?: 'button' | 'submit' | 'reset';
+        disabled?: boolean;
+        children: any;
+    }
+    
+    const { type = 'button', disabled = false, children }: Props = $props();
 </script>
 
 <button {type} {disabled}>
-    <slot />
+    {@render children()}
 </button>
 
 <style>

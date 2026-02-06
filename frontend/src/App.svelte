@@ -7,10 +7,28 @@ This file will be the application shell. It should handle:
 -->
 
 
-<!-- App svelte -->
-
 <script>
-  import LoginPage from './pages/LoginPage.svelte'
+  import { writable } from 'svelte/store'
+  import LoginPage from './routes/LoginPage.svelte'
+  import HomePage from './routes/HomePage.svelte'
+  import DashboardPage from './routes/DashboardPage.svelte'
+  import SettingPage from './routes/SettingPage.svelte'
+
+
+  const currentPath = writable(window.location.hash.slice(1) || '/')
+
+  window.addEventListener('hashchange', () => {
+    currentPath.set(window.location.hash.slice(1) || '/')
+  })
 </script>
 
-<LoginPage />
+
+{#if $currentPath === '/'}
+  <HomePage />
+{:else if $currentPath === '/login'}
+  <LoginPage />
+{:else if $currentPath === '/settings'}
+    <SettingPage />
+{:else if $currentPath === '/dashboard'}
+  <DashboardPage />
+{/if}

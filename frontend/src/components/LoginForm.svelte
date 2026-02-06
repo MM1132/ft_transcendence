@@ -1,21 +1,56 @@
 <script>
     import Button from './Button.svelte';
+    import { authService } from '../services/authService';
     
     let username = $state('');
     let password = $state('');
+    let usernameError = $state('');
+    let formError = $state('');
     
-    let { onLogin } = $props();
+    const { onSubmit } = $props();
+
+    // Validate username in real-time as user types
+    function validateUsernameInput()
+    {
+        usernameError = authService.validateUsername(username) || '';
+    }
 
     function handleSubmit(event)
     {
         event.preventDefault();
-        onLogin?.({ username, password });
+        
+        // Clear previous errors
+        formError = '';
+        usernameError = '';
+        
+        // Validate username
+        const usernameValidation = authService.validateUsername(username);
+        if (usernameValidation)
+        {
+            usernameError = usernameValidation;
+            return;
+        }
+        
+        // Validate password
+        if (password.length === 0)
+        {
+            formError = 'Password is required';
+            return;
+        }
+        
+        if (password.length < 4)
+        {
+            formError = 'Password must be at least 4 characters';
+            return;
+        }
+        
+        onSubmit?.({ username, password });
     }
 </script>
 
 
 <div id="login-form">
-    <form on:submit|preventDefault={handleSubmit}>
+    <form onsubmit={handleSubmit}>
         <div class="input-group">
             <p>USERNAME</p>
             <input
@@ -24,8 +59,13 @@
                 id="username"
                 placeholder="Username"
                 bind:value={username}
+                oninput={validateUsernameInput}
+                class:error={usernameError}
                 required
             />
+            {#if usernameError}
+                <p class="error-message">{usernameError}</p>
+            {/if}
         </div>
         <div class="input-group">
             <p>PASSWORD</p>
@@ -37,24 +77,62 @@
                 required
             />
         </div>
+        {#if formError}
+            <p class="error-message form-error">{formError}</p>
+        {/if}
         <Button type="submit">Login</Button>
     </form>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <style>
     #login-form
     {
-        width: 350px;
+        width: auto;
         margin: 0 auto;
-        padding: 5rem;
-        border: 4px solid #0AEB00;
+        padding: 6rem;
+        border: 1px solid rgba(10, 235, 0, 0.1);
         border-radius: 0px;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        background: rgba(15, 19, 20, 0.6);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s;
     }
 
+    #login-form:hover
+    {
+        border-color: #0AEB00;
+        background: rgba(10, 235, 0, 0.02);
+        transform: translate(-50%, -50%) translateY(-5px);
+    }
+    
+    input
+    {
+        width: 300px;
+        height: 50px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #0AEB00;
+        background-color: #1a1a1a;
+        color: white;
+    }
+    
     .input-group
     {
         margin-bottom: 3rem;
@@ -62,41 +140,30 @@
 
     .input-group p
     {
-        align-self: flex-start;
-        margin: 8;
+        text-align: left;
         color: #B13BCC;
         font-size: 14px;
-        font-weight: 800; 
+        font-weight: 800;
+        margin: 0 0 8px 13px;
     }
 
-    input
+    .error-message
     {
-        width: 100%;
-        padding: 0.5rem;
-        background-color: #f5f5f5;
-        border: 1px solid #ccc;
+        color: #ff4444;
+        font-size: 12px;
+        margin: 8px 0 0 13px;
+        text-align: left;
     }
 
-    #username
+    .form-error
     {
-        width: 300px;
-        height: 50px;
-        padding: 10px;
-        font-size: 16px;
-        border: 2px solid #0AEB00;
-        background-color: #1a1a1a;
-        color: white;
+        text-align: center;
+        margin: 0 0 20px 0;
     }
 
-    #password
+    input.error
     {
-        width: 300px;
-        height: 50px;
-        padding: 10px;
-        font-size: 16px;
-        border: 2px solid #0AEB00;
-        background-color: #1a1a1a;
-        color: white;
+        border-color: #ff4444;
     }
 
 </style>
