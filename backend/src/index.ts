@@ -1,3 +1,6 @@
+import path from 'node:path';
+import multipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
 import dotenv from 'dotenv';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { DateTime } from 'luxon';
@@ -7,7 +10,21 @@ import { userRoutes } from './features/user/user.routes.ts';
 import { initDatabase } from './initDatabase.ts';
 
 // Environment variables shit
-dotenv.config({ path: ['../.env'] });
+dotenv.config({ path: ['.env'] });
+
+const PORT = process.env.BACKEND_PORT
+  ? parseInt(process.env.BACKEND_PORT, 10)
+  : 3000;
+
+// Fastify shit
+const fastify: FastifyInstance = Fastify({
+  ajv: {
+    customOptions: {
+      coerceTypes: false,
+      removeAdditional: false,
+    },
+  },
+});
 
 // PostgreSQL shit
 types.setTypeParser(types.builtins.TIMESTAMPTZ, (value) => {
@@ -24,31 +41,45 @@ const client = new Client({
   database: process.env.POSTGRES_DB,
 });
 
-// Fastify shit
-const fastify: FastifyInstance = Fastify({
-  ajv: {
-    customOptions: {
-      coerceTypes: false,
-      removeAdditional: false,
-    },
-  },
-});
+// Calculation of the base path (shit)
+const baseDir = process.env.BACKEND_ROOT_PATH
+  ? process.env.BACKEND_ROOT_PATH
+  : process.cwd();
 
+const baseUrl = process.env.BACKEND_URL
+  ? `http://${process.env.BACKEND_URL}:${PORT}`
+  : `no_url_provided`;
+
+fastify.decorate('baseUrl', baseUrl);
+fastify.decorate('baseDir', baseDir);
 fastify.decorate('db', client);
+
+fastify.register(multipart);
+
+fastify.register(fastifyStatic, {
+  root: path.join(import.meta.dirname, '../static'),
+  prefix: '/static',
+});
 
 // Register all the routes
 fastify.register(sessionRoutes, { prefix: '/api/v1/session' });
 fastify.register(userRoutes, { prefix: '/api/v1/user' });
 
 const start = async (): Promise<void> => {
-  await client.connect();
-  console.log('Database: Connected!');
+  try {
+    await client.connect();
+    console.log('Database: Connected!');
+  } catch (_error) {
+    console.log(
+      'Database not running, run the database and start the server again'
+    );
+    return;
+  }
 
   await initDatabase(client);
 
   try {
-    const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-    await fastify.listen({ port });
+    await fastify.listen({ port: PORT });
 
     // fastify.log.info(`Backend running: ${fastify.server.address()?.toString}`);
   } catch (err) {
