@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { DuplicateDataError } from '../../utils/repositoryTypes.ts';
+import { NoAvatarToDeleteError } from '../../utils/serviceTypes.ts';
 import { userService } from './user.service.ts';
 
 export interface UserIdParams {
@@ -83,24 +84,34 @@ export const userController = {
       const { db, baseDir, baseUrl } = req.server;
 
       if (!req.isMultipart())
-        return res.status(400).send({ error: 'Request is not multipart' });
+        return res.status(400).send({ error: 'Request must be multipart' });
 
       const data = await req.file({ limits: { fileSize: 2000000 } });
+      if (!data?.mimetype.includes('image'))
+        return res
+          .status(400)
+          .send({ error: 'You can only upload an image as avatar' });
 
       if (!data) return res.status(400).send({ error: 'No file provided' });
 
       const fileDataBuffer = await data.toBuffer();
 
-      const fileName = await userService.uploadAvatar(
+      const fullFilePath = await userService.uploadAvatar(
         db,
         req.session.userId,
         fileDataBuffer,
-        baseDir
+        baseDir,
+        baseUrl
       );
 
-      res.status(200).send({ avatarUrl: `${baseUrl}${fileName}` });
+      res.status(200).send({ avatarUrl: `${fullFilePath}` });
     } catch (error) {
-      // TODO: Handle file too large error
+      if (
+        error instanceof req.server.multipartErrors.RequestFileTooLargeError
+      ) {
+        return res.status(413).send({ error: 'Avatar image 2 mb maximum' });
+      }
+
       req.log.error(error);
       console.log(error);
       res.status(500).send({ error: 'Internal server error' });
@@ -109,12 +120,15 @@ export const userController = {
 
   deleteAvatar: async (req: FastifyRequest, res: FastifyReply) => {
     try {
-      const { db } = req.server;
+      const { db, baseDir } = req.server;
 
-      await userService.deleteAvatar(db, req.session.userId);
+      await userService.deleteAvatar(db, req.session.userId, baseDir);
 
       res.status(200).send({ status: 'Successfully deleted user avatar!' });
     } catch (error) {
+      if (error instanceof NoAvatarToDeleteError)
+        return res.status(400).send({ error: error.message });
+
       console.log(error);
       res.status(500).send({ error: 'Internal server error' });
     }

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { Client } from 'pg';
@@ -7,6 +8,7 @@ import {
   DuplicateDataError,
   type QueryError,
 } from '../../utils/repositoryTypes.ts';
+import { NoAvatarToDeleteError } from '../../utils/serviceTypes.ts';
 import { type RepositoryUser, userRespository } from './user.repository.ts';
 
 interface UserResult {
@@ -25,7 +27,10 @@ const userRowToResult = (
   createdAt: userRow.created_at.toJSON() as string,
   avatarUrl: path.join(
     baseUrl,
-    userRow.avatar_filename || '/static/default_avatar.png'
+    '/static',
+    userRow.avatar_filename
+      ? path.join('/avatars/uploaded', userRow.avatar_filename)
+      : path.join('/avatars', 'default_avatar.png')
   ),
 });
 
@@ -80,26 +85,41 @@ export const userService = {
     db: Client,
     userId: string,
     fileBuffer: Buffer<ArrayBufferLike>,
-    baseDir: string
+    baseDir: string,
+    baseUrl: string
   ): Promise<string> => {
-    // Make sure that the path exists
-    const saveDir = path.join(baseDir, '/static/uploads/avatars');
+    const rootSaveDir = path.join(baseDir, '/static/avatars/uploaded');
 
-    await fs.promises.mkdir(saveDir, { recursive: true });
+    await fs.promises.mkdir(rootSaveDir, { recursive: true });
 
-    const filename = path.join('/static/uploads/avatars', `${userId}.png`);
+    const user = await userRespository.getUserById(db, userId);
 
-    await sharp(fileBuffer)
-      .resize(512, 512)
-      .png()
-      .toFile(path.join(baseDir, filename));
+    // Random filename, or the same one the user already has
+    const filename = user?.avatar_filename || path.join(`${randomUUID()}.png`);
+
+    const absoluteFilename = path.join(rootSaveDir, filename);
+    await sharp(fileBuffer).resize(512, 512).png().toFile(absoluteFilename);
 
     await userRespository.setUserAvatarFilename(db, userId, filename);
 
-    return filename;
+    return path.join(baseUrl, '/static/avatars/uploaded', filename);
   },
 
-  deleteAvatar: async (db: Client, userId: string) => {
+  deleteAvatar: async (db: Client, userId: string, baseDir: string) => {
+    const user = await userRespository.getUserById(db, userId);
+    if (!user?.avatar_filename)
+      throw new NoAvatarToDeleteError(
+        "User doesn't have a set avatar to delete"
+      );
+
+    const fullAvatarPath = path.join(
+      baseDir,
+      '/static/avatars/uploaded',
+      user.avatar_filename
+    );
+
     await userRespository.setAvatarToNull(db, userId);
+
+    await fs.promises.unlink(path.join(fullAvatarPath));
   },
 };

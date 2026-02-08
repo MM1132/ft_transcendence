@@ -7,7 +7,7 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_DB=backend_database
     ports:
-      - ${POSTGRES_PORT}:5432
+      - 5432:5432
     volumes:
       - ./postgres:/var/lib/postgresql
       - ./postgresql_config:/etc/postgresql_config
