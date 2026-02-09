@@ -13,6 +13,7 @@ This file will be the application shell. It should handle:
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
   import SettingPage from './routes/SettingPage.svelte'
+  import SignUpPage from './routes/SignUp.svelte'
 
 
   const currentPath = writable(window.location.pathname || '/')
@@ -36,6 +37,8 @@ This file will be the application shell. It should handle:
   <HomePage />
 {:else if $currentPath === '/login'}
   <LoginPage />
+{:else if $currentPath === '/signup'}
+  <SignUpPage />
 {:else if $currentPath === '/dashboard'}
   <DashboardPage />
 {:else if $currentPath === '/settings'}

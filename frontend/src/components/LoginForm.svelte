@@ -1,6 +1,8 @@
 <script>
     import Button from './Button.svelte';
     import { authService } from '../services/authService';
+
+
     
     let username = $state('');
     let password = $state('');
@@ -23,7 +25,6 @@
         formError = '';
         usernameError = '';
         
-        // Validate username
         const usernameValidation = authService.validateUsername(username);
         if (usernameValidation)
         {
@@ -31,7 +32,6 @@
             return;
         }
         
-        // Validate password
         if (password.length === 0)
         {
             formError = 'Password is required';
@@ -49,11 +49,15 @@
 </script>
 
 
-<div id="login-form">
-    <form onsubmit={handleSubmit}>
-        <div class="input-group">
-            <p>USERNAME</p>
-            <input
+
+<div class="login-container">
+    
+    <div id="login-form">
+        <!-- <h1 class="login-title">LOGIN</h1> -->
+        <form onsubmit={handleSubmit}>
+            <div class="input-group">
+                <p>USERNAME</p>
+                <input
                 type="text"
                 name="username"
                 id="username"
@@ -62,43 +66,47 @@
                 oninput={validateUsernameInput}
                 class:error={usernameError}
                 required
-            />
-            {#if usernameError}
+                />
+                {#if usernameError}
                 <p class="error-message">{usernameError}</p>
-            {/if}
-        </div>
-        <div class="input-group">
-            <p>PASSWORD</p>
-            <input
+                {/if}
+            </div>
+            <div class="input-group">
+                <p>PASSWORD</p>
+                <input
                 type="password"
                 id="password"
                 placeholder="Password"
                 bind:value={password}
                 required
-            />
-        </div>
-        {#if formError}
+                />
+            </div>
+            {#if formError}
             <p class="error-message form-error">{formError}</p>
-        {/if}
-        <Button type="submit">Login</Button>
-    </form>
+            {/if}
+            <Button type="submit">Login</Button>
+        </form>
+        <p class="create-account">
+            Don't have an account? 
+            <a href="/signup" onclick={(e) => { e.preventDefault(); window.navigateTo('/signup'); }}>
+                Sign up
+            </a>
+        </p>
+    </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    
 
 <style>
+    
+    .login-container
+    {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
     #login-form
     {
         width: auto;
@@ -106,20 +114,15 @@
         padding: 6rem;
         border: 1px solid rgba(10, 235, 0, 0.1);
         border-radius: 0px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
         background: rgba(15, 19, 20, 0.6);
         backdrop-filter: blur(10px);
         transition: all 0.3s;
     }
-
+    
     #login-form:hover
     {
         border-color: #0AEB00;
         background: rgba(10, 235, 0, 0.02);
-        transform: translate(-50%, -50%) translateY(-5px);
     }
     
     input
@@ -135,9 +138,9 @@
     
     .input-group
     {
-        margin-bottom: 3rem;
+        margin-bottom: 5rem;
     }
-
+    
     .input-group p
     {
         text-align: left;
@@ -154,16 +157,48 @@
         margin: 8px 0 0 13px;
         text-align: left;
     }
-
+    
     .form-error
     {
         text-align: center;
         margin: 0 0 20px 0;
     }
-
+    
     input.error
     {
         border-color: #ff4444;
     }
 
+    .login-title
+    {
+        color: #B13BCC;
+        letter-spacing: 0.2em;
+        text-align: center;
+        margin-bottom: 3rem;
+        /* transform: translateX(20px); */
+    }
+
+    .create-account
+    {
+        text-align: center;
+        margin-top: 3rem;
+        color: #888;
+        font-size: 14px;
+        
+    }
+
+    .create-account a
+    {
+        color: #0AEB00;
+        text-decoration: none;
+        font-weight: 600;
+        margin-left: 20px;
+    }
+
+    .create-account a:hover
+    {
+        text-decoration: underline;
+        /* color: #B13BCC; */
+    }
+    
 </style>
