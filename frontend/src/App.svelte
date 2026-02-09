@@ -15,11 +15,20 @@ This file will be the application shell. It should handle:
   import SettingPage from './routes/SettingPage.svelte'
 
 
-  const currentPath = writable(window.location.hash.slice(1) || '/')
+  const currentPath = writable(window.location.pathname || '/')
 
-  window.addEventListener('hashchange', () => {
-    currentPath.set(window.location.hash.slice(1) || '/')
+
+  window.addEventListener('popstate', () => {
+    currentPath.set(window.location.pathname || '/')
   })
+
+  function navigateTo(path) 
+  {
+    window.history.pushState(null, '', path)
+    currentPath.set(path)
+  }
+
+  window.navigateTo = navigateTo
 </script>
 
 
@@ -27,8 +36,8 @@ This file will be the application shell. It should handle:
   <HomePage />
 {:else if $currentPath === '/login'}
   <LoginPage />
-{:else if $currentPath === '/settings'}
-    <SettingPage />
 {:else if $currentPath === '/dashboard'}
   <DashboardPage />
+{:else if $currentPath === '/settings'}
+  <SettingPage />
 {/if}

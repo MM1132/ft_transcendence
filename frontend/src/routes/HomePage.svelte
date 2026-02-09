@@ -27,7 +27,7 @@
         Compete with players worldwide in the ultimate arena.
       </p>
       <div class="hero-buttons">
-        <a href="#/login">
+        <a href="/login">
           <Button type="button">GET STARTED</Button>
         </a>
         <button class="btn-secondary">LEARN MORE</button>

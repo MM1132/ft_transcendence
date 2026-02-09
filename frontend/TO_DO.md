@@ -1,7 +1,7 @@
 # Frontend TODO
 
 ## 1. Initial Setup & Design Decisions
-- [ ] Decide on first landing page (LoginPage or separate Home/Landing page?)
+- [x] Decide on first landing page (LoginPage or separate Home/Landing page?)
 - [ ] Plan overall design system (colors, typography, spacing)
 - [ ] Create reusable component library structure
 - [ ] Decide on form handling approach (shared component vs separate forms)

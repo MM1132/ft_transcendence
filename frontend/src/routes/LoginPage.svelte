@@ -12,8 +12,7 @@
         if (isLoggedIn)
         {
             console.log('Login successful! User:', user);
-            // redirect to dashboard
-            // window.location.hash = '#/dashboard';
+            window.navigateTo('/dashboard')
         }
     }
 </script>
