@@ -30,6 +30,18 @@ export const userRoutes = async (fastify: FastifyInstance) => {
     userController.getUserById
   );
 
+  fastify.put(
+    '/me/avatar',
+    { preHandler: sessionAuth },
+    userController.changeUserAvatar
+  );
+
+  fastify.delete(
+    '/me/avatar',
+    { preHandler: sessionAuth },
+    userController.deleteAvatar
+  );
+
   // Register a new user
   fastify.post(
     '/',

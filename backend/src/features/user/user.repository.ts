@@ -6,12 +6,13 @@ export interface RepositoryUser extends QueryResultRow {
   username: string;
   password: string;
   created_at: DateTime;
+  avatar_filename: string;
 }
 
 export const userRespository = {
   getAllUsers: async (db: Client): Promise<RepositoryUser[]> => {
     const allUsers = await db.query<RepositoryUser>(
-      `SELECT id, username, password, created_at FROM users`
+      `SELECT id, username, password, created_at, avatar_filename FROM users`
     );
     return allUsers.rows;
   },
@@ -21,7 +22,7 @@ export const userRespository = {
     id: string
   ): Promise<RepositoryUser | null> => {
     const { rows } = await db.query<RepositoryUser>(
-      `SELECT id, username, password, created_at FROM users WHERE id = $1;`,
+      `SELECT id, username, password, created_at, avatar_filename FROM users WHERE id = $1;`,
       [id]
     );
     return rows[0] || null;
@@ -46,7 +47,7 @@ export const userRespository = {
     username: string
   ): Promise<RepositoryUser | null> => {
     const { rows } = await db.query<RepositoryUser>(
-      `SELECT id, username, password, created_at FROM users WHERE username = $1;`,
+      `SELECT id, username, password, created_at, avatar_filename FROM users WHERE username = $1;`,
       [username]
     );
     return rows[0] || null;
@@ -59,10 +60,35 @@ export const userRespository = {
   ): Promise<RepositoryUser | null> => {
     const { rows } = await db.query<RepositoryUser>(
       `
-      SELECT id, username, password, created_at FROM users
+      SELECT id, username, password, created_at, avatar_filename FROM users
       WHERE username = $1 AND password = $2;`,
       [username, passwordHash]
     );
     return rows[0] || null;
+  },
+
+  setUserAvatarFilename: async (
+    db: Client,
+    userId: string,
+    avatarFilename: string
+  ) => {
+    await db.query(
+      `
+      UPDATE users
+      SET avatar_filename = $1
+      WHERE id = $2`,
+      [avatarFilename, userId]
+    );
+  },
+
+  setAvatarToNull: async (db: Client, userId: string) => {
+    await db.query(
+      `
+      UPDATE users
+      SET avatar_filename = NULL
+      WHERE id = $1
+    `,
+      [userId]
+    );
   },
 };

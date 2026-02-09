@@ -1,0 +1,15 @@
+meta {
+  name: All Users
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{API_BASE_URL}}/user
+  body: none
+  auth: none
+}
+
+headers {
+  x-session-token: {{token}}
+}

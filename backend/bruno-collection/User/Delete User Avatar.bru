@@ -1,0 +1,28 @@
+meta {
+  name: Delete User Avatar
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{API_BASE_URL}}/user/me/avatar
+  body: none
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+body:multipart-form {
+  file: @file(/home/rreimann/Downloads/profile picture examples/cute-profile-pic-for-girls.webp)
+}
+
+body:file {
+  file: @file(/home/rreimann/Documents/ft_transcendence/backend/static/nikita.jpg) @contentType(image/jpeg)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
