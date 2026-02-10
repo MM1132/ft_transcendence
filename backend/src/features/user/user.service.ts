@@ -9,36 +9,21 @@ import {
   type QueryError,
 } from '../../utils/repositoryTypes.ts';
 import { NoAvatarToDeleteError } from '../../utils/serviceTypes.ts';
-import { type RepositoryUser, userRespository } from './user.repository.ts';
-
-interface UserResult {
-  id: number;
-  username: string;
-  createdAt: string;
-  avatarUrl: string;
-}
-
-const userRowToResult = (
-  userRow: RepositoryUser,
-  baseUrl: string
-): UserResult => ({
-  id: parseInt(userRow.id, 10),
-  username: userRow.username,
-  createdAt: userRow.created_at.toJSON() as string,
-  avatarUrl: path.join(
-    baseUrl,
-    '/static',
-    userRow.avatar_filename
-      ? path.join('/avatars/uploaded', userRow.avatar_filename)
-      : path.join('/avatars', 'default_avatar.png')
-  ),
-});
+import {
+  type UserResultGeneric,
+  userRowToResultDetailed,
+  userRowToResultGeneric,
+} from './user.mappers.ts';
+import { userRespository } from './user.repository.ts';
 
 export const userService = {
-  getAllUsers: async (db: Client, baseUrl: string): Promise<UserResult[]> => {
+  getAllUsers: async (
+    db: Client,
+    baseUrl: string
+  ): Promise<UserResultGeneric[]> => {
     const rows = await userRespository.getAllUsers(db);
     return rows.map((row) => {
-      return userRowToResult(row, baseUrl);
+      return userRowToResultGeneric(row, baseUrl);
     });
   },
 
@@ -46,10 +31,10 @@ export const userService = {
     db: Client,
     id: string,
     baseUrl: string
-  ): Promise<UserResult | null> => {
+  ): Promise<UserResultGeneric | null> => {
     const userRow = await userRespository.getUserById(db, id);
     if (!userRow) return null;
-    return userRowToResult(userRow, baseUrl);
+    return userRowToResultDetailed(userRow, baseUrl);
   },
 
   createUser: async (
@@ -57,7 +42,7 @@ export const userService = {
     username: string,
     password: string,
     baseUrl: string
-  ): Promise<UserResult> => {
+  ): Promise<UserResultGeneric> => {
     const encryptedPassword = encryptWithSalt(password);
 
     try {
@@ -78,7 +63,7 @@ export const userService = {
     if (!createdUser)
       throw new Error(`Created user ${username} was not found in the database`);
 
-    return userRowToResult(createdUser, baseUrl);
+    return userRowToResultDetailed(createdUser, baseUrl);
   },
 
   uploadAvatar: async (
