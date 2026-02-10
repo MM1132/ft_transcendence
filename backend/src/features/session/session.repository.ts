@@ -8,8 +8,6 @@ export interface RepositorySession extends QueryResultRow {
 }
 
 export const sessionRepository = {
-  createSession: async (db: Client, token: string, userId: string) => {},
-
   getSessionByToken: async (
     db: Client,
     token: string
@@ -64,5 +62,9 @@ export const sessionRepository = {
       `,
       [valid_until, userId]
     );
+  },
+
+  deleteInactiveSessions: async (db: Client) => {
+    return db.query(`DELETE FROM sessions WHERE valid_until < now()`);
   },
 };

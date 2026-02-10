@@ -4,13 +4,13 @@ import { profileController } from './profile.controller.ts';
 
 export const profileRoutes = (fastify: FastifyInstance) => {
   fastify.put(
-    '/me/avatar',
+    '/avatar',
     { preHandler: sessionAuth },
     profileController.changeUserAvatar
   );
 
   fastify.delete(
-    '/me/avatar',
+    '/avatar',
     { preHandler: sessionAuth },
     profileController.deleteAvatar
   );
