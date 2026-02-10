@@ -69,7 +69,7 @@ export const userController = {
       const user = await userService.getUserById(db, id, baseUrl);
 
       if (!user) {
-        res.status(404).send({ error: `No user with id ${id}` });
+        res.status(404).send({ error: `User with id ${id} was not found` });
       } else {
         res.status(200).send(user);
       }
@@ -110,6 +110,16 @@ export const userController = {
         error instanceof req.server.multipartErrors.RequestFileTooLargeError
       ) {
         return res.status(413).send({ error: 'Avatar image 2 mb maximum' });
+      }
+      if (error instanceof Error) {
+        if (
+          error.message.includes('Input buffer') ||
+          error.message.includes('Input Buffer')
+        ) {
+          return res
+            .status(415)
+            .send({ error: 'The uploaded file is not a valid image' });
+        }
       }
 
       req.log.error(error);
