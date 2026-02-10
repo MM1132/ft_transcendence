@@ -1,10 +1,11 @@
 import path from 'node:path';
 import dotenv from 'dotenv';
 import type { FastifyInstance } from 'fastify';
+import { initDatabase } from './initDatabase.ts';
 
 dotenv.config();
 
-export const addDecorators = (fastify: FastifyInstance) => {
+export const addDecorators = async (fastify: FastifyInstance) => {
   const port = process.env.BACKEND_PORT
     ? parseInt(process.env.BACKEND_PORT, 10)
     : 3000;
@@ -19,4 +20,14 @@ export const addDecorators = (fastify: FastifyInstance) => {
     ? `http://${process.env.BACKEND_URL}:${port}`
     : `no_url_provided`;
   fastify.decorate('baseUrl', baseUrl);
+
+  try {
+    const client = await initDatabase(fastify);
+    fastify.decorate('db', client);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`Error: ${error.message}`);
+    }
+    return;
+  }
 };

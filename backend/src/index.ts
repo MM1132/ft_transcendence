@@ -13,14 +13,17 @@ const fastify: FastifyInstance = Fastify({
   },
 });
 
-// Calculation of the environment variables
-addDecorators(fastify);
+const start = async () => {
+  // Calculation of the environment variables
+  await addDecorators(fastify);
 
-// Mostly fastify's own plugins that need to be registered
-registerPlugins(fastify);
+  // Mostly fastify's own plugins that need to be registered
+  registerPlugins(fastify);
 
-// All our own API routes definitions
-registerRoutes(fastify);
+  // All our own API routes definitions
+  registerRoutes(fastify);
 
-// And here is where we actually start the server
-startListening(fastify);
+  // And here is where we actually start the server
+  startListening(fastify);
+};
+start();
