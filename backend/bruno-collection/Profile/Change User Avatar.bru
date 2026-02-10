@@ -5,7 +5,7 @@ meta {
 }
 
 put {
-  url: {{API_BASE_URL}}/user/me/avatar
+  url: {{API_BASE_URL}}/profile/me/avatar
   body: multipartForm
   auth: inherit
 }
@@ -15,7 +15,7 @@ headers {
 }
 
 body:multipart-form {
-  file: @file(/home/rreimann/Downloads/emptyfile.png)
+  file: @file(/home/rreimann/Downloads/profile picture examples/cute-profile-pic-for-girls.webp)
 }
 
 body:file {
