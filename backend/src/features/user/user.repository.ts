@@ -7,6 +7,14 @@ export interface RepositoryUser extends QueryResultRow {
   password: string;
   created_at: DateTime;
   avatar_filename: string;
+  last_action_at: DateTime;
+}
+
+export interface RepositoryOnlineUser extends QueryResultRow {
+  id: string;
+  username: string;
+  avatar_filename: string;
+  last_action_at: DateTime;
 }
 
 export const userRespository = {
@@ -22,7 +30,7 @@ export const userRespository = {
     id: string
   ): Promise<RepositoryUser | null> => {
     const { rows } = await db.query<RepositoryUser>(
-      `SELECT id, username, password, created_at, avatar_filename FROM users WHERE id = $1;`,
+      `SELECT id, username, password, created_at, avatar_filename, last_action_at FROM users WHERE id = $1;`,
       [id]
     );
     return rows[0] || null;
@@ -86,6 +94,36 @@ export const userRespository = {
       `
       UPDATE users
       SET avatar_filename = NULL
+      WHERE id = $1
+    `,
+      [userId]
+    );
+  },
+
+  getOnlineUsers: async (db: Client): Promise<RepositoryOnlineUser[]> => {
+    const { rows } = await db.query(`
+      SELECT
+        u.id,
+        u.username,
+        u.avatar_filename,
+        u.last_action_at
+
+      FROM sessions as s
+      
+      JOIN users as u
+      ON s.user_id = u.id
+      
+      WHERE s.valid_until > now()
+    `);
+
+    return rows;
+  },
+
+  updateUserLastAction: async (db: Client, userId: string) => {
+    await db.query(
+      `
+      UPDATE users
+      SET last_action_at = now()
       WHERE id = $1
     `,
       [userId]
