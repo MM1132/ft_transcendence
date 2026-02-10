@@ -5,9 +5,7 @@ declare module 'fastify' {
     baseUrl: string;
     baseDir: string;
     db: Client;
-    config: {
-      PORT: string;
-    };
+    port: number;
   }
   interface FastifyRequest {
     session: {
