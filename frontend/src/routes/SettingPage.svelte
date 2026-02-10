@@ -1,3 +1,10 @@
+<script>
+  import Button from '../components/Button.svelte';
+  import SettingsForm from "../components/SettingsForm.svelte";
+</script>
+
+
+
 <header>
   <div id="header">
     <div class="header-logo">
@@ -8,6 +15,10 @@
     </div>
   </div>
 </header>
+
+<main>
+  <SettingsForm />
+</main>
 
 <footer>
 <div id="footer">
