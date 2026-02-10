@@ -13,7 +13,7 @@ This file will be the application shell. It should handle:
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
   import SettingPage from './routes/SettingPage.svelte'
-  import SignUpPage from './routes/SignUp.svelte'
+  import SignUpPage from './routes/SignUpPage.svelte'
 
 
   const currentPath = writable(window.location.pathname || '/')
