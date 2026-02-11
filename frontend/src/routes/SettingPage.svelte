@@ -18,6 +18,7 @@
 
 <main>
   <SettingsForm />
+  <Button type="button">Save</Button>
 </main>
 
 <footer>
