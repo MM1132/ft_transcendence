@@ -27,7 +27,7 @@
 <style>
     #settings-form
     {
-        width: min(1500px, 90vw);
+        width: min(1000px, 90vw);
         height: min(80vh, 1100px);
         border: 1px solid rgba(10, 235, 0, 0.1);
         border-radius: 0px;
