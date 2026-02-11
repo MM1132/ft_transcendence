@@ -1,8 +1,8 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { NoAvatarToDeleteError } from '../../utils/serviceTypes.ts';
-import { profileService } from './profile.service.ts';
+import { NoAvatarToDeleteError } from '../../../utils/serviceTypes.ts';
+import { userSettingsService } from './user-settings.service.ts';
 
-export const profileController = {
+export const userSettingsController = {
   changeUserAvatar: async (req: FastifyRequest, res: FastifyReply) => {
     try {
       const { db, baseDir, baseUrl } = req.server;
@@ -20,7 +20,7 @@ export const profileController = {
 
       const fileDataBuffer = await data.toBuffer();
 
-      const fullFilePath = await profileService.uploadAvatar(
+      const fullFilePath = await userSettingsService.uploadAvatar(
         db,
         req.session.userId,
         fileDataBuffer,
@@ -56,7 +56,7 @@ export const profileController = {
     try {
       const { db, baseDir } = req.server;
 
-      await profileService.deleteAvatar(db, req.session.userId, baseDir);
+      await userSettingsService.deleteAvatar(db, req.session.userId, baseDir);
 
       res.status(200).send({ status: 'Successfully deleted user avatar!' });
     } catch (error) {
