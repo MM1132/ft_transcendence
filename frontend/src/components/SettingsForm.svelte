@@ -1,5 +1,5 @@
 <div id="settings-form">
-    <form>
+    <form class="settings-content">
         <h2>SETTINGS</h2>
         <p style="opacity: 0.7;">Hier noch Settings rein.</p>
     </form>
@@ -8,26 +8,21 @@
 <style>
     #settings-form
     {
-        width: 90vw;
-        height: 75vh;
-        max-width: 1500px;
-        max-height: 850px;
+        width: min(1500px, 90vw);
+        height: min(80vh, 1100px);
         border: 1px solid rgba(10, 235, 0, 0.1);
         border-radius: 0px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -45%);
         background: rgba(15, 19, 20, 0.6);
         backdrop-filter: blur(10px);
         transition: all 0.3s;
+        box-sizing: border-box;
   }
 
     #settings-form:hover
     {
     border-color: #0AEB00;
     background: rgba(10, 235, 0, 0.02);
-    transform: translate(-50%, -45%) translateY(-5px);
+    transform: translateY(-5px);
     }
 
     h2
@@ -39,12 +34,15 @@
     letter-spacing: 1px;
     }
 
-    #settings-form form
+    .settings-content
     {
     height: 100%;
     display: flex;
     flex-direction: column;
+    gap: 16px;
     padding: 40px;
+    box-sizing: border-box;
+    overflow-y: auto;
     }
 
 </style>
