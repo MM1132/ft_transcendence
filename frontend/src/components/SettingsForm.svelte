@@ -1,7 +1,26 @@
+<script lang="ts">
+    import ToggleSetting from './Toggle.svelte';
+
+    let twoFactorEnabled = $state(false);
+    let notificationsEnabled = $state(true);
+    let testToggles = $state(
+        Array.from({ length: 14 }, (_, index) => ({
+            id: index + 1,
+            label: `Test Setting ${index + 1}`,
+            checked: index % 2 === 0
+        }))
+    );
+</script>
+
 <div id="settings-form">
     <form class="settings-content">
         <h2>SETTINGS</h2>
-        <p style="opacity: 0.7;">Hier noch Settings rein.</p>
+        <ToggleSetting label="very long text blablabla balbalblablablablablabla hmmmmmmmmm still not long enough, what do i do here ahhhhhhhhhhhhhhhhhhhh now we hit the 2nd line, looks weird.... whatever" />
+        <ToggleSetting label="Two Factor Authentication" bind:checked={twoFactorEnabled} />
+        <ToggleSetting label="Notifications" bind:checked={notificationsEnabled} />
+        {#each testToggles as toggle (toggle.id)}
+            <ToggleSetting label={toggle.label} bind:checked={toggle.checked} />
+        {/each}
     </form>
 </div>
 
