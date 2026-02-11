@@ -3,10 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { Client } from 'pg';
 import sharp from 'sharp';
-import { NoAvatarToDeleteError } from '../../utils/serviceTypes.ts';
-import { userRespository } from '../user/user.repository.ts';
+import { NoAvatarToDeleteError } from '../../../utils/serviceTypes.ts';
+import { userRespository } from '../user.repository.ts';
 
-export const profileService = {
+export const userSettingsService = {
   uploadAvatar: async (
     db: Client,
     userId: string,
