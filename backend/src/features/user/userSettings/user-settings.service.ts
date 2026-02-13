@@ -5,6 +5,15 @@ import type { Client } from 'pg';
 import sharp from 'sharp';
 import { NoAvatarToDeleteError } from '../../../utils/serviceTypes.ts';
 import { userRespository } from '../user.repository.ts';
+import { userSettingsRowToResult } from './user-settings.mappers.ts';
+import {
+  type NewRepositoryUserSettings,
+  userSettingsRepository,
+} from './user-settings.repository.ts';
+import type {
+  UpdateUserSettingsRequestBody,
+  UserSettingsResponse,
+} from './user-settings.types.ts';
 
 export const userSettingsService = {
   uploadAvatar: async (
@@ -47,5 +56,60 @@ export const userSettingsService = {
     await userRespository.setAvatarToNull(db, userId);
 
     await fs.promises.unlink(path.join(fullAvatarPath));
+  },
+
+  updateUserSettings: async (
+    db: Client,
+    userId: string,
+    settings: UpdateUserSettingsRequestBody
+  ): Promise<UserSettingsResponse> => {
+    // Get old settings
+    const oldSettings = await userSettingsRepository.getUserSettings(
+      db,
+      userId
+    );
+
+    if (!oldSettings)
+      throw new Error(`No settings for the user with id ${userId} found`);
+
+    // Replace only with valid new settings
+    const newRepositoryUserSettings: NewRepositoryUserSettings = {
+      birthday:
+        settings.birthday !== undefined
+          ? settings.birthday
+          : oldSettings.birthday
+            ? oldSettings.birthday.toFormat('yyyy-LL-dd')
+            : null,
+      fullName:
+        settings.fullName !== undefined
+          ? settings.fullName
+          : oldSettings.full_name,
+    };
+
+    // Overwrite in database
+    const updatedUserSettings = await userSettingsRepository.setUserSettings(
+      db,
+      userId,
+      newRepositoryUserSettings
+    );
+
+    if (!updatedUserSettings)
+      throw new Error('Something went wrong with changing user settings');
+
+    // Return new updated settings
+    return userSettingsRowToResult(updatedUserSettings);
+  },
+
+  getUserSettings: async (
+    db: Client,
+    userId: string
+  ): Promise<UserSettingsResponse> => {
+    const repositoryUserSettingsRow =
+      await userSettingsRepository.getUserSettings(db, userId);
+
+    if (!repositoryUserSettingsRow)
+      throw new Error(`No settings for the user with id ${userId} found`);
+
+    return userSettingsRowToResult(repositoryUserSettingsRow);
   },
 };

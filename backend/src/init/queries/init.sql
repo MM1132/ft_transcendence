@@ -5,8 +5,11 @@ CREATE TABLE IF NOT EXISTS users (
 	password VARCHAR(128) NOT NULL,
 	-- PostgreSQL UTC created_at. Gets set automatically and is not editable
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	last_action_at TIMESTAMPTZ DEFAULT NULL,
+	balance BIGINT DEFAULT 0 CHECK (balance >= 0),
 	avatar_filename TEXT DEFAULT NULL,
-	last_action_at TIMESTAMPTZ DEFAULT NULL
+	birthday DATE DEFAULT NULL CHECK (birthday >= '1900-01-01' AND birthday <= CURRENT_DATE),
+	full_name VARCHAR(100) DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
