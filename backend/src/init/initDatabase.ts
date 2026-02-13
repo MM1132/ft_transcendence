@@ -11,6 +11,10 @@ export const initDatabase = async (
   types.setTypeParser(types.builtins.TIMESTAMPTZ, (value) => {
     return DateTime.fromSQL(value, { zone: 'utc' });
   });
+  types.setTypeParser(types.builtins.DATE, (value) => {
+    if (value === null) return null;
+    return DateTime.fromISO(value, { zone: 'utc' });
+  });
 
   const client = new Client({
     user: process.env.POSTGRES_USER,
