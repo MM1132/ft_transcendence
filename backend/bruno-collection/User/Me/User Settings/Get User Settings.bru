@@ -1,11 +1,11 @@
 meta {
-  name: Get Online Users
+  name: Get User Settings
   type: http
   seq: 4
 }
 
 get {
-  url: {{API_BASE_URL}}/user/online
+  url: {{API_BASE_URL}}/user/me/settings
   body: none
   auth: inherit
 }

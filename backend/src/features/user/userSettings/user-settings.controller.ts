@@ -1,8 +1,64 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import { DateTime } from 'luxon';
 import { NoAvatarToDeleteError } from '../../../utils/serviceTypes.ts';
 import { userSettingsService } from './user-settings.service.ts';
+import type { UpdateUserSettingsRequestBody } from './user-settings.types.ts';
 
 export const userSettingsController = {
+  updateUserSettings: async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      const { db } = req.server;
+      const { userId } = req.session;
+
+      const newUserSettings = req.body as UpdateUserSettingsRequestBody;
+
+      if (newUserSettings.birthday) {
+        const birthdayDate = DateTime.fromISO(newUserSettings.birthday, {
+          zone: 'utc',
+        });
+        if (birthdayDate < DateTime.fromISO('1900-01-01'))
+          return res
+            .status(400)
+            .send({ error: 'Birthday cannot be before 1900-01-01' });
+        const utcDateTime = DateTime.utc();
+        if (birthdayDate > utcDateTime)
+          return res.status(400).send({
+            error: `Birthday cannot be after ${utcDateTime.toFormat('yyyy-LL-dd')}`,
+          });
+      }
+
+      const updatedUserSettings = await userSettingsService.updateUserSettings(
+        db,
+        userId,
+        newUserSettings
+      );
+
+      return res.status(200).send(updatedUserSettings);
+    } catch (error) {
+      console.log(error);
+      req.log.error(error);
+      return res.status(500).send({ error: 'Internal server error' });
+    }
+  },
+
+  getUserSettings: async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      const { db } = req.server;
+      const { userId } = req.session;
+
+      const userSettings = await userSettingsService.getUserSettings(
+        db,
+        userId
+      );
+
+      return res.status(200).send(userSettings);
+    } catch (error) {
+      console.log(error);
+      req.log.error(error);
+      return res.status(500).send({ error: 'Internal server error' });
+    }
+  },
+
   changeUserAvatar: async (req: FastifyRequest, res: FastifyReply) => {
     try {
       const { db, baseDir, baseUrl } = req.server;
