@@ -108,7 +108,7 @@ i need for the signup form the next variables
              <div class="input-group">
                 <p>CONFIRM PASSWORD</p>
                 <input
-                type="confirmPassword"
+                type="password"
                 id="confirmPassword"
                 placeholder="Confirm Password"
                 bind:value={confirmPassword}

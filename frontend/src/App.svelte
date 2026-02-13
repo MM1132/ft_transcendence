@@ -9,6 +9,8 @@ This file will be the application shell. It should handle:
 
 <script>
   import { writable } from 'svelte/store'
+  import { fade } from 'svelte/transition'
+  
   import LoginPage from './routes/LoginPage.svelte'
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
@@ -33,14 +35,18 @@ This file will be the application shell. It should handle:
 </script>
 
 
-{#if $currentPath === '/'}
-  <HomePage />
-{:else if $currentPath === '/login'}
-  <LoginPage />
-{:else if $currentPath === '/signup'}
-  <SignUpPage />
-{:else if $currentPath === '/dashboard'}
-  <DashboardPage />
-{:else if $currentPath === '/settings'}
-  <SettingPage />
-{/if}
+{#key $currentPath}
+  <div in:fade={{duration: 150 }} out:fade={{ duration: 150 }}>
+    {#if $currentPath === '/'}
+      <HomePage />
+    {:else if $currentPath === '/login'}
+      <LoginPage />
+    {:else if $currentPath === '/signup'}
+      <SignUpPage />
+    {:else if $currentPath === '/dashboard'}
+      <DashboardPage />
+    {:else if $currentPath === '/settings'}
+      <SettingPage />
+    {/if}
+  </div>
+{/key}
