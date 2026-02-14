@@ -21,11 +21,13 @@ i need for the signup form the next variables
     let password = $state ('');
     let email = $state('');
     let usernameError = $state('');
+    let passwordError = $state('');
     let emailError = $state('');
     let confirmPassword = $state('');
     let formError = $state('');
 
     const { onSubmit } = $props();
+
 
     function handleSubmit(event)
     {
@@ -34,6 +36,8 @@ i need for the signup form the next variables
         // Clear previous errors
         formError = '';
         usernameError = '';
+        passwordError = '';
+        emailError = '';
         
         const usernameValidation = authService.validateUsername(username);
         if (usernameValidation)
@@ -42,22 +46,21 @@ i need for the signup form the next variables
             return;
         }
         
-        if (password.length === 0)
+        const passwordValidation = authService.validatePassword(password);
+        if(passwordValidation)
         {
-            formError = 'Password is required';
+            passwordError = passwordValidation;
             return;
         }
-        
-        if (password.length < 4)
+
+        if(password !== confirmPassword)
         {
-            formError = 'Password must be at least 4 characters';
+            formError = 'Passwords do not match';
             return;
         }
-        
+    
         onSubmit?.({ username, password });
     }
-
-
 </script>
 
 
@@ -82,7 +85,7 @@ i need for the signup form the next variables
                 <p class="error-message">{usernameError}</p>
                 {/if}
             </div>
-            <div class="input-group">
+            <!-- <div class="input-group">
                 <p>EMAIL</p>
                 <input
                 type = "email"
@@ -92,9 +95,9 @@ i need for the signup form the next variables
                 required
                 />
                 {#if emailError}
-                <p class="error-message">{Error}</p>
+                <p class="error-message">{emailError}</p>
                 {/if}
-            </div>
+            </div> -->
             <div class="input-group">
                 <p>PASSWORD</p>
                 <input
@@ -102,8 +105,12 @@ i need for the signup form the next variables
                 id="password"
                 placeholder="Password"
                 bind:value={password}
+                class:error={passwordError}
                 required
                 />
+                {#if passwordError}
+                <p class="error-message">{passwordError}</p>
+                {/if}
             </div>
              <div class="input-group">
                 <p>CONFIRM PASSWORD</p>

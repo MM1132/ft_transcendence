@@ -68,7 +68,7 @@ export const authService =
     try
     {
       const response = await fetch(
-        `${API_URL}/users`,
+        `${API_URL}/user`,
         {method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',
@@ -80,6 +80,10 @@ export const authService =
       if(response.ok)
       {
         return {success:true, message: "Account created successful", user:data};
+      }
+      else if(response.status === 409)
+      {
+        return {success:false, message: "Username already taken"};
       }
       else
       {
