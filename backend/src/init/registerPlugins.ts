@@ -15,6 +15,12 @@ export const registerPlugins = (fastify: FastifyInstance) => {
     prefix: '/static',
   });
 
+  // fastify.register(cors, {
+  //   origin: 'http://localhost:5173',
+  //   credentials: true,
+  //   exposedHeaders: ['Authorization', 'Content-type']
+  // });
+
   fastify.register(cors, {
     origin: 'localhost:5173',
   });

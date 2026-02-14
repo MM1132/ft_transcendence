@@ -7,6 +7,6 @@
 
 <Header />
 <main>
-    {@render children()}
+    <slot />
 </main>
 <Footer />

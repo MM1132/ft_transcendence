@@ -2,7 +2,36 @@
     import { get } from "svelte/store";
     import LoginForm from "../components/LoginForm.svelte";
     import { authStore } from "../stores/authStore";
+    import { authService } from "../services/authService";
     import Layout from "../components/Layout.svelte";
+
+    let loginError = $state('');
+    let isLoading = $state(false);
+
+    // async function handleLogin({ username, password })
+    // {
+    //     loginError = '';
+    //     isLoading = true;
+
+    //     const result = await authService.login(username, password);
+        
+    //     isLoading = false;
+        
+    //     if(result.success)
+    //     {
+    //         authStore.update(state => ({
+    //             ...state,
+    //             isLoggedIn: true,
+    //             user: result.user
+    //         }));
+    //         window.navigateTo('/dashboard');
+    //     }
+    //     else
+    //     {
+    //         loginError = result.message;
+    //     }
+    // }
+
 
     async function handleLogin({ username, password })
     {
@@ -23,7 +52,7 @@
 <Layout>
     <LoginForm onSubmit={handleLogin} />
     
-    {#if $authStore.isLoading}
+    <!-- {#if $authStore.isLoading}
         <div class="loading-overlay">
             <p>Logging in...</p>
         </div>
@@ -39,7 +68,7 @@
         <div class="success-overlay">
             <p>Welcome, {$authStore.user}! ✓</p>
         </div>
-    {/if}
+    {/if} -->
 </Layout>
 
 

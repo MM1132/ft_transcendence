@@ -39,7 +39,7 @@ export const authService =
     try
     {
       const response = await fetch(
-        `${API_URL}/auth/login`,
+        `${API_URL}/session`,
         {method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',

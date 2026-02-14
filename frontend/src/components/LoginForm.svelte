@@ -3,10 +3,10 @@
     import { authService } from '../services/authService';
 
 
-    
     let username = $state('');
     let password = $state('');
     let usernameError = $state('');
+    let passwordError = $state('');
     let formError = $state('');
     
     const { onSubmit } = $props();
@@ -24,6 +24,7 @@
         // Clear previous errors
         formError = '';
         usernameError = '';
+        passwordError = '';
         
         const usernameValidation = authService.validateUsername(username);
         if (usernameValidation)
@@ -31,18 +32,25 @@
             usernameError = usernameValidation;
             return;
         }
-        
-        if (password.length === 0)
+
+         const passwordValidation = authService.validatePassword(password);
+        if(passwordValidation)
         {
-            formError = 'Password is required';
+            passwordError = passwordValidation;
             return;
         }
         
-        if (password.length < 4)
-        {
-            formError = 'Password must be at least 4 characters';
-            return;
-        }
+        // if (password.length === 0)
+        // {
+        //     formError = 'Password is required';
+        //     return;
+        // }
+        
+        // if (password.length < 4)
+        // {
+        //     formError = 'Password must be at least 4 characters';
+        //     return;
+        // }
         
         onSubmit?.({ username, password });
     }

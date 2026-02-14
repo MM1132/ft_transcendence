@@ -17,14 +17,16 @@ This file will be the application shell. It should handle:
   import SignUpPage from './routes/SignUpPage.svelte'
 
 
-  const currentPath = writable(window.location.pathname || '/')
+  // const currentPath = writable(window.location.pathname || '/')
+
+  export const currentPath = writable(window.location.pathname);
 
 
   window.addEventListener('popstate', () => {
     currentPath.set(window.location.pathname || '/')
   })
 
-  function navigateTo(path) 
+  export function navigateTo(path) 
   {
     window.history.pushState(null, '', path)
     currentPath.set(path)
