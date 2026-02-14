@@ -2,6 +2,7 @@
     import { get } from "svelte/store";
     import LoginForm from "../components/LoginForm.svelte";
     import { authStore } from "../stores/authStore";
+    import Layout from "../components/Layout.svelte";
 
     async function handleLogin({ username, password })
     {
@@ -17,17 +18,9 @@
     }
 </script>
 
-<header>
-  <div id="header">
-    <div class="header-logo">
-      <img src="src/images/c.svg" alt="Logo"/>
-    </div>
-     <div class="header-nav">
-    </div>
-  </div>
-</header>
 
-<main>
+
+<Layout>
     <LoginForm onSubmit={handleLogin} />
     
     {#if $authStore.isLoading}
@@ -47,13 +40,8 @@
             <p>Welcome, {$authStore.user}! ✓</p>
         </div>
     {/if}
-</main>
+</Layout>
 
-<footer>
-<div id="footer">
-  <p>&copy; 2026 ft_trancendence. All rights reserved.</p>
-</div>
-</footer>
 
 <style>
     .loading-overlay,

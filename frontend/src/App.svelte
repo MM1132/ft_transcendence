@@ -14,7 +14,6 @@ This file will be the application shell. It should handle:
   import LoginPage from './routes/LoginPage.svelte'
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
-  import SettingPage from './routes/SettingPage.svelte'
   import SignUpPage from './routes/SignUpPage.svelte'
 
 
@@ -45,8 +44,6 @@ This file will be the application shell. It should handle:
       <SignUpPage />
     {:else if $currentPath === '/dashboard'}
       <DashboardPage />
-    {:else if $currentPath === '/settings'}
-      <SettingPage />
     {/if}
   </div>
 {/key}
