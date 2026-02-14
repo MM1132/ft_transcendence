@@ -16,7 +16,8 @@ export const registerPlugins = (fastify: FastifyInstance) => {
   });
 
   fastify.register(cors, {
-    origin: 'localhost:5173',
+    origin: 'http://localhost:5173',
+    allowedHeaders: ['Content-Type', 'x-session-token'],
   });
 
   // This is for cleaning up all inactive session from the DB every 10 minutes
