@@ -1,78 +1,58 @@
 import path from 'node:path';
+import type { DateTime } from 'luxon';
 import type {
-  RepositoryOnlineUser,
-  RepositoryUser,
-} from './user.repository.ts';
+  RepositoryUserDetails,
+  RepositoryUserSummary,
+  UserDetails,
+  UserSummary,
+} from './user.types.ts';
 
-export interface UserResultGeneric {
-  id: number;
-  username: string;
-  avatarUrl: string;
-}
-
-export interface UserResultDetailed {
-  id: number;
-  username: string;
-  avatarUrl: string;
-  createdAt: string;
-  lastActionAt: string | null;
-}
-
-export interface OnlineUserResult {
-  id: number;
-  username: string;
-  avatarUrl: string;
-  lastActionAt: string | null;
-}
-
-export const userRowToResultGeneric = (
-  userRow: RepositoryUser,
+const buildAvatarUrl = (
+  avatarFilename: string | null,
   baseUrl: string
-): UserResultGeneric => ({
-  id: parseInt(userRow.id, 10),
-  username: userRow.username,
-  avatarUrl: path.join(
+): string => {
+  return path.join(
     baseUrl,
     '/static',
-    userRow.avatar_filename
-      ? path.join('/avatars/uploaded', userRow.avatar_filename)
+    avatarFilename
+      ? path.join('/avatars/uploaded', avatarFilename)
       : path.join('/avatars', 'default_avatar.png')
-  ),
-});
+  );
+};
 
-export const userRowToResultDetailed = (
-  userRow: RepositoryUser,
-  baseUrl: string
-): UserResultDetailed => ({
-  id: parseInt(userRow.id, 10),
-  username: userRow.username,
-  createdAt: userRow.created_at.toJSON() as string,
-  avatarUrl: path.join(
-    baseUrl,
-    '/static',
-    userRow.avatar_filename
-      ? path.join('/avatars/uploaded', userRow.avatar_filename)
-      : path.join('/avatars', 'default_avatar.png')
-  ),
-  lastActionAt: userRow.last_action_at
-    ? (userRow.last_action_at.toJSON() as string)
-    : null,
-});
+const buildUserDateTime = (dateTime: DateTime): string => {
+  return dateTime.toJSON() as string;
+};
 
-export const userRowToOnlineUser = (
-  userRow: RepositoryOnlineUser,
-  baseUrl: string
-): OnlineUserResult => ({
-  id: parseInt(userRow.id, 10),
-  username: userRow.username,
-  avatarUrl: path.join(
-    baseUrl,
-    '/static',
-    userRow.avatar_filename
-      ? path.join('/avatars/uploaded', userRow.avatar_filename)
-      : path.join('/avatars', 'default_avatar.png')
-  ),
-  lastActionAt: userRow.last_action_at
-    ? (userRow.last_action_at.toJSON() as string)
-    : null,
-});
+const buildUserDateTimeNullable = (dateTime: DateTime): string | null => {
+  return dateTime ? dateTime.toJSON() : null;
+};
+
+const buildUserDateNullable = (date: DateTime): string | null => {
+  return date ? date.toFormat('yyyy-LL-dd') : null;
+};
+
+export const userRepositoryMappers = {
+  toSummary: (
+    userRow: RepositoryUserSummary,
+    baseUrl: string
+  ): UserSummary => ({
+    id: parseInt(userRow.id, 10),
+    username: userRow.username,
+    avatarUrl: buildAvatarUrl(userRow.avatar_filename, baseUrl),
+    lastActionAt: buildUserDateTimeNullable(userRow.last_action_at),
+  }),
+  toDetails: (
+    userRow: RepositoryUserDetails,
+    baseUrl: string
+  ): UserDetails => ({
+    id: parseInt(userRow.id, 10),
+    username: userRow.username,
+    avatarUrl: buildAvatarUrl(userRow.avatar_filename, baseUrl),
+    lastActionAt: buildUserDateTimeNullable(userRow.last_action_at),
+    balance: parseInt(userRow.balance, 10),
+    birthday: buildUserDateNullable(userRow.birthday),
+    createdAt: buildUserDateTime(userRow.created_at),
+    fullName: userRow.full_name,
+  }),
+};

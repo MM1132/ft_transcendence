@@ -4,22 +4,15 @@ import {
   DuplicateDataError,
   type QueryError,
 } from '../../utils/repositoryTypes.ts';
-import {
-  type UserResultGeneric,
-  userRowToOnlineUser,
-  userRowToResultDetailed,
-  userRowToResultGeneric,
-} from './user.mappers.ts';
+import { userRepositoryMappers } from './user.mappers.ts';
 import { userRespository } from './user.repository.ts';
+import type { UserDetails, UserSummary } from './user.types.ts';
 
 export const userService = {
-  getAllUsers: async (
-    db: Client,
-    baseUrl: string
-  ): Promise<UserResultGeneric[]> => {
+  getAllUsers: async (db: Client, baseUrl: string): Promise<UserSummary[]> => {
     const rows = await userRespository.getAllUsers(db);
     return rows.map((row) => {
-      return userRowToResultGeneric(row, baseUrl);
+      return userRepositoryMappers.toSummary(row, baseUrl);
     });
   },
 
@@ -27,10 +20,11 @@ export const userService = {
     db: Client,
     id: string,
     baseUrl: string
-  ): Promise<UserResultGeneric | null> => {
+  ): Promise<UserDetails | null> => {
     const userRow = await userRespository.getUserById(db, id);
     if (!userRow) return null;
-    return userRowToResultDetailed(userRow, baseUrl);
+
+    return userRepositoryMappers.toDetails(userRow, baseUrl);
   },
 
   createUser: async (
@@ -38,15 +32,17 @@ export const userService = {
     username: string,
     password: string,
     baseUrl: string
-  ): Promise<UserResultGeneric> => {
+  ): Promise<UserDetails | null> => {
     const encryptedPassword = encryptWithSalt(password);
 
     try {
-      await userRespository.insertNewUserToDatabase(
-        db,
+      const newUser = await userRespository.insertNewUserToDatabase(db, {
         username,
-        encryptedPassword
-      );
+        encryptedPassword,
+      });
+      if (!newUser) return null;
+
+      return userRepositoryMappers.toDetails(newUser, baseUrl);
     } catch (error) {
       const queryError = error as QueryError;
 
@@ -54,19 +50,17 @@ export const userService = {
         throw new DuplicateDataError(`Username ${username} already exists`);
     }
 
-    const createdUser = await userRespository.getUserByUsername(db, username);
-
-    if (!createdUser)
-      throw new Error(`Created user ${username} was not found in the database`);
-
-    return userRowToResultDetailed(createdUser, baseUrl);
+    return null;
   },
 
-  getOnlineUsers: async (db: Client, baseUrl: string) => {
+  getOnlineUsers: async (
+    db: Client,
+    baseUrl: string
+  ): Promise<UserSummary[]> => {
     const onlineUserRows = await userRespository.getOnlineUsers(db);
 
     return onlineUserRows.map((row) => {
-      return userRowToOnlineUser(row, baseUrl);
+      return userRepositoryMappers.toSummary(row, baseUrl);
     });
   },
 };

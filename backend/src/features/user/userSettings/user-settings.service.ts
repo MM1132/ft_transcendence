@@ -53,7 +53,7 @@ export const userSettingsService = {
       user.avatar_filename
     );
 
-    await userRespository.setAvatarToNull(db, userId);
+    await userRespository.setUserAvatarFilename(db, userId, null);
 
     await fs.promises.unlink(path.join(fullAvatarPath));
   },
