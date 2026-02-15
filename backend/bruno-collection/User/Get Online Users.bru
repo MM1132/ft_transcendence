@@ -1,0 +1,20 @@
+meta {
+  name: Get Online Users
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{API_BASE_URL}}/user/online
+  body: none
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

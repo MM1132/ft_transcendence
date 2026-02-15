@@ -6,17 +6,17 @@ export const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get(
     '/',
     {
-      preHandler: sessionAuth,
+      preValidation: sessionAuth,
     },
     userController.getAllUsers
   );
 
-  fastify.get('/me', { preHandler: sessionAuth }, userController.getMyUser);
+  fastify.get('/me', { preValidation: sessionAuth }, userController.getMyUser);
 
   fastify.get<{ Params: UserIdParams }>(
     '/:id',
     {
-      preHandler: sessionAuth,
+      preValidation: sessionAuth,
       schema: {
         params: {
           type: 'object',
@@ -30,18 +30,6 @@ export const userRoutes = async (fastify: FastifyInstance) => {
     userController.getUserById
   );
 
-  fastify.put(
-    '/me/avatar',
-    { preHandler: sessionAuth },
-    userController.changeUserAvatar
-  );
-
-  fastify.delete(
-    '/me/avatar',
-    { preHandler: sessionAuth },
-    userController.deleteAvatar
-  );
-
   // Register a new user
   fastify.post(
     '/',
@@ -52,12 +40,24 @@ export const userRoutes = async (fastify: FastifyInstance) => {
           required: ['username', 'password'],
           additionalProperties: false,
           properties: {
-            username: { type: 'string', minLength: 6, maxLength: 30 },
+            username: {
+              type: 'string',
+              minLength: 6,
+              maxLength: 30,
+              pattern: '^[A-Za-z\\d]+$',
+            },
             password: { type: 'string', minLength: 12, maxLength: 128 },
           },
         },
       },
     },
     userController.createUser
+  );
+
+  // Get all currently online users
+  fastify.get(
+    '/online',
+    { preValidation: sessionAuth },
+    userController.getOnlineUsers
   );
 };

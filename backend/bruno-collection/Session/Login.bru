@@ -10,15 +10,11 @@ post {
   auth: none
 }
 
-script:pre-request {
-  req.setBody({
-    "username": "AnotherAwesomeUser",
+body:json {
+  {
+    "username": "Kanguste",
     "password": "verysecretpass"
-  });
-  
-  req.setHeaders({"Content-Type": "application/json"});
-   
-  req.setMethod("POST");
+  }
   
 }
 
