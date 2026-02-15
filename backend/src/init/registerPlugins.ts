@@ -1,4 +1,5 @@
 import path from 'node:path';
+import cors from '@fastify/cors';
 import fastifyMultipart from '@fastify/multipart';
 import { fastifySchedule } from '@fastify/schedule';
 import fastifyStatic from '@fastify/static';
@@ -12,6 +13,12 @@ export const registerPlugins = (fastify: FastifyInstance) => {
   fastify.register(fastifyStatic, {
     root: path.join(fastify.baseDir, '/static'),
     prefix: '/static',
+  });
+
+  fastify.register(cors, {
+    origin: 'http://localhost:5173',
+    credentials: true,
+    exposedHeaders: ['Authorization', 'Content-type'],
   });
 
   // This is for cleaning up all inactive session from the DB every 10 minutes

@@ -12,6 +12,7 @@ export const userSettingsController = {
 
       const newUserSettings = req.body as UpdateUserSettingsRequestBody;
 
+      // Check birthday
       if (newUserSettings.birthday) {
         const birthdayDate = DateTime.fromISO(newUserSettings.birthday, {
           zone: 'utc',
@@ -25,6 +26,13 @@ export const userSettingsController = {
           return res.status(400).send({
             error: `Birthday cannot be after ${utcDateTime.toFormat('yyyy-LL-dd')}`,
           });
+      }
+      if (newUserSettings.fullName) {
+        if (newUserSettings.fullName.trim().length === 0) {
+          return res
+            .status(400)
+            .send({ error: 'fullName must be more than just spaces' });
+        }
       }
 
       const updatedUserSettings = await userSettingsService.updateUserSettings(

@@ -1,3 +1,5 @@
+# COPY-PASTE THIS FILE AND NAME IT  .env, THEN REPLACE WITH YOUR OWN SETTINGS
+
 BACKEND_PORT=3000
 BACKEND_URL=localhost
 # Set this if backend cannot automatically find the project root
