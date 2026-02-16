@@ -35,13 +35,11 @@
 
     async function handleLogin({ username, password })
     {
-        console.log('Login attempt:', username, password);
         await authStore.login(username, password);
 
-        const { isLoggedIn, user } = get(authStore);
+        const { isLoggedIn } = get(authStore);
         if (isLoggedIn)
         {
-            console.log('Login successful! User:', user);
             window.navigateTo('/dashboard')
         }
     }
@@ -73,7 +71,7 @@
 
 
 <style>
-    .loading-overlay,
+    /* .loading-overlay,
     .error-overlay,
     .success-overlay
     {
@@ -104,7 +102,7 @@
         background: rgba(10, 235, 0, 0.3);
         border: 1px solid #0AEB00;
         color: #0AEB00;
-    }
+    } */
 
     @keyframes slideIn
     {
