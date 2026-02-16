@@ -12,4 +12,7 @@ declare module 'fastify' {
       userId: string;
     };
   }
+  interface FastifyContextConfig {
+    isPublic?: boolean;
+  }
 }

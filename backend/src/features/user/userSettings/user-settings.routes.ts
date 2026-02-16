@@ -1,12 +1,10 @@
 import type { FastifyInstance } from 'fastify';
-import { sessionAuth } from '../../auth/sessionAuth.ts';
 import { userSettingsController } from './user-settings.controller.ts';
 
 export const userSettingsRoutes = (fastify: FastifyInstance) => {
   fastify.put(
     '/',
     {
-      preValidation: sessionAuth,
       schema: {
         body: {
           type: 'object',
@@ -25,20 +23,9 @@ export const userSettingsRoutes = (fastify: FastifyInstance) => {
     userSettingsController.updateUserSettings
   );
 
-  fastify.get(
-    '/',
-    { preValidation: sessionAuth },
-    userSettingsController.getUserSettings
-  ),
-    fastify.put(
-      '/avatar',
-      { preValidation: sessionAuth },
-      userSettingsController.changeUserAvatar
-    );
+  fastify.get('/', userSettingsController.getUserSettings);
 
-  fastify.delete(
-    '/avatar',
-    { preValidation: sessionAuth },
-    userSettingsController.deleteAvatar
-  );
+  fastify.put('/avatar', userSettingsController.changeUserAvatar);
+
+  fastify.delete('/avatar', userSettingsController.deleteAvatar);
 };

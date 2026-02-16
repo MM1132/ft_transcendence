@@ -1,14 +1,8 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { DuplicateDataError } from '../../utils/repositoryTypes.ts';
 import { userService } from './user.service.ts';
 
 export interface UserIdParams {
   id: string;
-}
-
-export interface CreateUserBody {
-  username: string;
-  password: string;
 }
 
 /*
@@ -74,35 +68,6 @@ export const userController = {
       }
     } catch (err) {
       console.log(err);
-      req.log.error(err);
-      res.status(500).send({ error: 'Internal server error' });
-    }
-  },
-
-  createUser: async (
-    req: FastifyRequest<{ Body: CreateUserBody }>,
-    res: FastifyReply
-  ) => {
-    try {
-      const { db, baseUrl } = req.server;
-
-      const username = req.body.username;
-      const password = req.body.password;
-
-      const createdUser = await userService.createUser(
-        db,
-        username,
-        password,
-        baseUrl
-      );
-
-      res.status(200).send(createdUser);
-    } catch (err) {
-      if (err instanceof DuplicateDataError)
-        return res
-          .status(409)
-          .send({ error: `User with this name already exists` });
-
       req.log.error(err);
       res.status(500).send({ error: 'Internal server error' });
     }

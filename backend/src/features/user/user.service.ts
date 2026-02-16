@@ -31,6 +31,7 @@ export const userService = {
     db: Client,
     username: string,
     password: string,
+    email: string,
     baseUrl: string
   ): Promise<UserDetails | null> => {
     const encryptedPassword = encryptWithSalt(password);
@@ -39,6 +40,7 @@ export const userService = {
       const newUser = await userRespository.insertNewUserToDatabase(db, {
         username,
         encryptedPassword,
+        email,
       });
       if (!newUser) return null;
 
@@ -46,8 +48,18 @@ export const userService = {
     } catch (error) {
       const queryError = error as QueryError;
 
-      if (queryError.code === '23505')
-        throw new DuplicateDataError(`Username ${username} already exists`);
+      console.log(queryError.detail);
+
+      if (queryError.code === '23505') {
+        if (queryError.detail.includes('(username)')) {
+          queryError.message = 'User with this username already exists';
+          throw new DuplicateDataError(queryError);
+        }
+        if (queryError.detail.includes('(email)')) {
+          queryError.message = 'User with this email already exists';
+          throw new DuplicateDataError(queryError);
+        }
+      }
     }
 
     return null;

@@ -1,22 +1,14 @@
 import type { FastifyInstance } from 'fastify';
-import { sessionAuth } from '../auth/sessionAuth.ts';
 import { type UserIdParams, userController } from './user.controller.ts';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
-  fastify.get(
-    '/',
-    {
-      preValidation: sessionAuth,
-    },
-    userController.getAllUsers
-  );
+  fastify.get('/', userController.getAllUsers);
 
-  fastify.get('/me', { preValidation: sessionAuth }, userController.getMyUser);
+  fastify.get('/me', userController.getMyUser);
 
   fastify.get<{ Params: UserIdParams }>(
     '/:id',
     {
-      preValidation: sessionAuth,
       schema: {
         params: {
           type: 'object',
@@ -30,34 +22,6 @@ export const userRoutes = async (fastify: FastifyInstance) => {
     userController.getUserById
   );
 
-  // Register a new user
-  fastify.post(
-    '/',
-    {
-      schema: {
-        body: {
-          type: 'object',
-          required: ['username', 'password'],
-          additionalProperties: false,
-          properties: {
-            username: {
-              type: 'string',
-              minLength: 6,
-              maxLength: 30,
-              pattern: '^[A-Za-z\\d]+$',
-            },
-            password: { type: 'string', minLength: 12, maxLength: 128 },
-          },
-        },
-      },
-    },
-    userController.createUser
-  );
-
   // Get all currently online users
-  fastify.get(
-    '/online',
-    { preValidation: sessionAuth },
-    userController.getOnlineUsers
-  );
+  fastify.get('/online', userController.getOnlineUsers);
 };

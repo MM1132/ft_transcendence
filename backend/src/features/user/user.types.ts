@@ -13,6 +13,7 @@ export interface RepositoryUserDetails extends QueryResultRow {
   id: string;
   username: string;
   password: string;
+  email: string;
   avatar_filename: string | null;
   last_action_at: DateTime;
   created_at: DateTime;
@@ -30,6 +31,7 @@ export interface UserSummary {
 }
 
 export interface UserDetails extends UserSummary {
+  email: string;
   createdAt: string;
   birthday: string | null;
   fullName: string | null;

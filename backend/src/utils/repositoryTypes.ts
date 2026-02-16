@@ -1,14 +1,12 @@
 export class QueryError extends Error {
   code: string;
+  detail: string;
 
-  constructor(message: string, code: string) {
-    super(message);
-    this.code = code;
+  constructor(data: { message: string; code: string; detail: string }) {
+    super(data.message);
+    this.code = data.code;
+    this.detail = data.detail;
   }
 }
 
-export class DuplicateDataError extends QueryError {
-  constructor(message: string) {
-    super(message, '23505');
-  }
-}
+export class DuplicateDataError extends QueryError {}
