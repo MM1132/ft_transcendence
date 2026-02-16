@@ -40,7 +40,12 @@ export const userRoutes = async (fastify: FastifyInstance) => {
           required: ['username', 'password'],
           additionalProperties: false,
           properties: {
-            username: { type: 'string', minLength: 6, maxLength: 30 },
+            username: {
+              type: 'string',
+              minLength: 6,
+              maxLength: 30,
+              pattern: '^[A-Za-z\\d]+$',
+            },
             password: { type: 'string', minLength: 12, maxLength: 128 },
           },
         },

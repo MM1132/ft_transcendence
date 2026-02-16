@@ -1,9 +1,9 @@
+# COPY-PASTE THIS FILE AND NAME IT  .env, THEN REPLACE WITH YOUR OWN SETTINGS
+
 BACKEND_PORT=3000
 BACKEND_URL=localhost
 # Set this if backend cannot automatically find the project root
-# BACKEND_ROOT_PATH=/home/rreimann/Documents/ft_transcendence/backend
-BACKEND_ROOT_PATH=/home/kkaratsi/Desktop/ft_transcendence/backend
-
+BACKEND_ROOT_PATH=/home/rreimann/Documents/ft_transcendence/backend
 
 POSTGRES_USER=user
 POSTGRES_PASSWORD=password
