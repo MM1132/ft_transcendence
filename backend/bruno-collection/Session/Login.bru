@@ -5,17 +5,16 @@ meta {
 }
 
 post {
-  url: {{API_BASE_URL}}/session
+  url: {{API_BASE_URL}}/login
   body: json
   auth: none
 }
 
 body:json {
   {
-    "username": "Kanguste",
+    "username": "NewUsername123",
     "password": "verysecretpass"
   }
-  
 }
 
 script:post-response {

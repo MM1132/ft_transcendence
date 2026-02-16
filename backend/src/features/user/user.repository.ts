@@ -7,6 +7,7 @@ import type {
 export interface RepositoryNewUserDetails {
   username: string;
   encryptedPassword: string;
+  email: string;
 }
 
 export const userRespository = {
@@ -26,6 +27,7 @@ export const userRespository = {
         id,
         username,
         password,
+        email,
         avatar_filename,
         last_action_at,
         created_at,
@@ -41,15 +43,15 @@ export const userRespository = {
 
   insertNewUserToDatabase: async (
     db: Client,
-    newUserDetails: RepositoryNewUserDetails
+    details: RepositoryNewUserDetails
   ): Promise<RepositoryUserDetails | null> => {
     const { rows } = await db.query<RepositoryUserDetails>(
       `
       INSERT INTO users
-      (username, password)
-      VALUES ($1, $2)
+      (username, password, email)
+      VALUES ($1, $2, $3)
       RETURNING *;`,
-      [newUserDetails.username, newUserDetails.encryptedPassword]
+      [details.username, details.encryptedPassword, details.email]
     );
     return rows[0] || null;
   },
@@ -65,6 +67,7 @@ export const userRespository = {
         id,
         username,
         password,
+        email,
         avatar_filename,
         last_action_at,
         created_at,

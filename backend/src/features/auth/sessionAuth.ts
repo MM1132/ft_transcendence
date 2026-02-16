@@ -6,6 +6,9 @@ import { userRespository } from '../user/user.repository.ts';
 
 export const sessionAuth = async (req: FastifyRequest, res: FastifyReply) => {
   try {
+    // Skip auth if route is public
+    if (req.routeOptions.config.isPublic) return;
+
     const sessionToken = req.raw.headers['x-session-token'] as string;
 
     if (!sessionToken) {
