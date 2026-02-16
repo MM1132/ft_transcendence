@@ -2,7 +2,7 @@
     import { get } from "svelte/store";
     import LoginForm from "../components/LoginForm.svelte";
     import { authStore } from "../stores/authStore";
-    import { authService } from "../services/authService";
+    // import { authService } from "../services/authService";
     import Layout from "../components/Layout.svelte";
 
     let loginError = $state('');

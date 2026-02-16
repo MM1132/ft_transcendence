@@ -33,24 +33,14 @@
             return;
         }
 
-         const passwordValidation = authService.validatePassword(password);
+        const passwordValidation = authService.validatePassword(password);
         if(passwordValidation)
         {
             passwordError = passwordValidation;
             return;
         }
         
-        // if (password.length === 0)
-        // {
-        //     formError = 'Password is required';
-        //     return;
-        // }
         
-        // if (password.length < 4)
-        // {
-        //     formError = 'Password must be at least 4 characters';
-        //     return;
-        // }
         
         onSubmit?.({ username, password });
     }

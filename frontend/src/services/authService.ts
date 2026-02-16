@@ -63,6 +63,7 @@ export const authService =
     }
   },
 
+  
   async signup(username: string, password:string) : Promise<AuthResult>
   {
     try
