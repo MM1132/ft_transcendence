@@ -1,19 +1,17 @@
-<header>
-  <div id="header">
-    <div class="header-logo">
-      <img src="src/images/c.svg" alt="Logo"/>
-    </div>
-     <div class="header-nav">
-      <a href="#/">LOGIN</a>
-    </div>
-  </div>
-</header>
+<script>
+  import Layout from "../components/Layout.svelte";
+  import Button from "../components/Button.svelte";
+  import { onMount } from "svelte";
 
-<main>
-</main>
+   onMount(() => {
+    history.pushState(null, '', location.href);
+    window.addEventListener('popstate', () => {
+      history.pushState(null, '', location.href);
+    });
+  });
 
-<footer>
-<div id="footer">
-  <p>&copy; 2026 ft_trancendence. All rights reserved.</p>
-</div>
-</footer>
+</script>
+
+<Layout>
+</Layout>
+<Button type="button" on:click={logout}>Logout</Button>

@@ -1,21 +1,14 @@
 <script>
   import Button from '../components/Button.svelte';
+  import Layout from '../components/Layout.svelte';
 </script>
 
-<header>
-  <div id="header">
-    <div class="header-logo">
-      <img src="src/images/c.svg" alt="Logo"/>
-    </div>
-    <div class="header-nav">
-    </div>
-  </div>
-</header>
 
-<main class="hero-section">
-  <!-- <div class="glow-effect"></div> -->
-  <div class="hero-content">
-    <div class="hero-text">
+<Layout>
+  <div class="hero-section">
+    <!-- <div class="glow-effect"></div> -->
+    <div class="hero-content">
+      <div class="hero-text">
       <p class="hero-subtitle">BLACK MAMBA</p>
       <h1 class="hero-title">
         COMPETE.<br/>
@@ -27,7 +20,7 @@
         Compete with players worldwide in the ultimate arena.
       </p>
       <div class="hero-buttons">
-        <a href="#/login">
+        <a href="/login" onclick={(e) => { e.preventDefault(); window.navigateTo('/login'); }}>
           <Button type="button">GET STARTED</Button>
         </a>
         <button class="btn-secondary">LEARN MORE</button>
@@ -59,16 +52,15 @@
       </svg>
     </div>
   </div>
-</main>
-
-<footer>
-  <div id="footer">
-    <p>&copy; 2026 ft_trancendence. All rights reserved.</p>
   </div>
-</footer>
+</Layout>
+
+
+
+
 
 <style>
-  main.hero-section {
+  div.hero-section {
     position: relative;
     height: calc(100vh - 120px);
     display: flex;

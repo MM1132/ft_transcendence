@@ -1,21 +1,33 @@
+<!--
+i need for the signup form the next variables
+#username
+#email
+#password
+#confirmPassword
+#usernameDublicateError   (check the name did not exist)
+#formError
+
+1) a fuction that will validate the name
+2) a function that will handle the event
+3)
+-->
+
+
 <script>
     import Button from './Button.svelte';
     import { authService } from '../services/authService';
 
-
     let username = $state('');
-    let password = $state('');
+    let password = $state ('');
+    let email = $state('');
     let usernameError = $state('');
     let passwordError = $state('');
+    let emailError = $state('');
+    let confirmPassword = $state('');
     let formError = $state('');
-    
+
     const { onSubmit } = $props();
 
-    // Validate username in real-time as user types
-    function validateUsernameInput()
-    {
-        usernameError = authService.validateUsername(username) || '';
-    }
 
     function handleSubmit(event)
     {
@@ -25,6 +37,7 @@
         formError = '';
         usernameError = '';
         passwordError = '';
+        emailError = '';
         
         const usernameValidation = authService.validateUsername(username);
         if (usernameValidation)
@@ -32,43 +45,59 @@
             usernameError = usernameValidation;
             return;
         }
-
+        
         const passwordValidation = authService.validatePassword(password);
         if(passwordValidation)
         {
             passwordError = passwordValidation;
             return;
         }
-        
-        
-        
+
+        if(password !== confirmPassword)
+        {
+            formError = 'Passwords do not match';
+            return;
+        }
+    
         onSubmit?.({ username, password });
     }
 </script>
 
 
 
-<div class="login-container">
-    
-    <div id="login-form">
-        <h1 class="login-title">LOGIN</h1>
+
+<div class="signup-container">
+    <div id="signup-form">
+        <h1 class="signup-title">SIGN UP</h1>
         <form onsubmit={handleSubmit}>
             <div class="input-group">
                 <p>USERNAME</p>
                 <input
-                type="text"
-                name="username"
-                id="username"
-                placeholder="Username"
+                type = "text"
+                name = "username"
+                id = "username"
+                placeholder = "Username"
                 bind:value={username}
-                oninput={validateUsernameInput}
                 class:error={usernameError}
                 required
                 />
                 {#if usernameError}
-                    <p class="error-message">{usernameError}</p>
+                <p class="error-message">{usernameError}</p>
                 {/if}
             </div>
+            <!-- <div class="input-group">
+                <p>EMAIL</p>
+                <input
+                type = "email"
+                placeholder = "Email"
+                bind:value={email}
+                class:error={emailError}
+                required
+                />
+                {#if emailError}
+                <p class="error-message">{emailError}</p>
+                {/if}
+            </div> -->
             <div class="input-group">
                 <p>PASSWORD</p>
                 <input
@@ -76,28 +105,36 @@
                 id="password"
                 placeholder="Password"
                 bind:value={password}
+                class:error={passwordError}
+                required
+                />
+                {#if passwordError}
+                <p class="error-message">{passwordError}</p>
+                {/if}
+            </div>
+             <div class="input-group">
+                <p>CONFIRM PASSWORD</p>
+                <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm Password"
+                bind:value={confirmPassword}
                 required
                 />
             </div>
             {#if formError}
-                <p class="error-message form-error">{formError}</p>
+            <p class="error-message form-error">{formError}</p>
             {/if}
-            <Button type="submit">Login</Button>
+            <Button type="submit">Sign up</Button>
         </form>
-        <p class="signup">
-            Don't have an account? 
-            <a href="/signup" onclick={(e) => { e.preventDefault(); window.navigateTo('/signup'); }}>
-                Sign up
-            </a>
-        </p>
     </div>
 </div>
-    
-    
+
+
 
 <style>
     
-    .login-container
+    .signup-container
     {
         position: absolute;
         top: 50%;
@@ -105,12 +142,13 @@
         transform: translate(-50%, -50%);
     }
 
-    #login-form
+    #signup-form
     {
         width: auto;
         margin: 0 auto;
         padding: 6rem;
-        padding-top: 2rem;
+        padding-top: 4rem;
+        padding-bottom: 6rem;
         border: 1px solid rgba(10, 235, 0, 0.1);
         border-radius: 0px;
         background: rgba(15, 19, 20, 0.6);
@@ -118,7 +156,7 @@
         transition: all 0.3s;
     }
     
-    #login-form:hover
+    #signup-form:hover
     {
         border-color: #0AEB00;
         background: rgba(10, 235, 0, 0.02);
@@ -168,37 +206,13 @@
         border-color: #ff4444;
     }
 
-    .login-title
+    .signup-title
     {
         color: #B13BCC;
         letter-spacing: 0.2em;
         text-align: center;
-        margin-bottom: 1rem;
-        padding: 2rem;
-        /* transform: translateX(-90px); */
+        margin-bottom: 3rem;
+        /* transform: translateX(20px); */
     }
 
-    .signup
-    {
-        text-align: center;
-        margin-top: 3rem;
-        color: #888;
-        font-size: 14px;
-        
-    }
-
-    .signup a
-    {
-        color: #0AEB00;
-        text-decoration: none;
-        font-weight: 600;
-        margin-left: 20px;
-    }
-
-    .signup a:hover
-    {
-        text-decoration: underline;
-        /* color: #B13BCC; */
-    }
-    
 </style>

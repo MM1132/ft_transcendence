@@ -9,26 +9,43 @@ This file will be the application shell. It should handle:
 
 <script>
   import { writable } from 'svelte/store'
+  import { fade } from 'svelte/transition'
+  
   import LoginPage from './routes/LoginPage.svelte'
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
-  import SettingPage from './routes/SettingPage.svelte'
+  import SignUpPage from './routes/SignUpPage.svelte'
 
 
-  const currentPath = writable(window.location.hash.slice(1) || '/')
+  // const currentPath = writable(window.location.pathname || '/')
 
-  window.addEventListener('hashchange', () => {
-    currentPath.set(window.location.hash.slice(1) || '/')
+  export const currentPath = writable(window.location.pathname);
+
+
+  window.addEventListener('popstate', () => {
+    currentPath.set(window.location.pathname || '/')
   })
+
+  export function navigateTo(path) 
+  {
+    window.history.pushState(null, '', path)
+    currentPath.set(path)
+  }
+
+  window.navigateTo = navigateTo
 </script>
 
 
-{#if $currentPath === '/'}
-  <HomePage />
-{:else if $currentPath === '/login'}
-  <LoginPage />
-{:else if $currentPath === '/settings'}
-    <SettingPage />
-{:else if $currentPath === '/dashboard'}
-  <DashboardPage />
-{/if}
+{#key $currentPath}
+  <div in:fade={{duration: 150 }} out:fade={{ duration: 150 }}>
+    {#if $currentPath === '/'}
+      <HomePage />
+    {:else if $currentPath === '/login'}
+      <LoginPage />
+    {:else if $currentPath === '/signup'}
+      <SignUpPage />
+    {:else if $currentPath === '/dashboard'}
+      <DashboardPage />
+    {/if}
+  </div>
+{/key}

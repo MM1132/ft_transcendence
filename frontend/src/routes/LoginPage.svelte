@@ -2,36 +2,55 @@
     import { get } from "svelte/store";
     import LoginForm from "../components/LoginForm.svelte";
     import { authStore } from "../stores/authStore";
+    // import { authService } from "../services/authService";
+    import Layout from "../components/Layout.svelte";
+
+    let loginError = $state('');
+    let isLoading = $state(false);
+
+    // async function handleLogin({ username, password })
+    // {
+    //     loginError = '';
+    //     isLoading = true;
+
+    //     const result = await authService.login(username, password);
+        
+    //     isLoading = false;
+        
+    //     if(result.success)
+    //     {
+    //         authStore.update(state => ({
+    //             ...state,
+    //             isLoggedIn: true,
+    //             user: result.user
+    //         }));
+    //         window.navigateTo('/dashboard');
+    //     }
+    //     else
+    //     {
+    //         loginError = result.message;
+    //     }
+    // }
+
 
     async function handleLogin({ username, password })
     {
-        console.log('Login attempt:', username, password);
         await authStore.login(username, password);
 
-        const { isLoggedIn, user } = get(authStore);
+        const { isLoggedIn } = get(authStore);
         if (isLoggedIn)
         {
-            console.log('Login successful! User:', user);
-            // redirect to dashboard
-            // window.location.hash = '#/dashboard';
+            window.navigateTo('/dashboard')
         }
     }
 </script>
 
-<header>
-  <div id="header">
-    <div class="header-logo">
-      <img src="src/images/c.svg" alt="Logo"/>
-    </div>
-     <div class="header-nav">
-    </div>
-  </div>
-</header>
 
-<main>
+
+<Layout>
     <LoginForm onSubmit={handleLogin} />
     
-    {#if $authStore.isLoading}
+    <!-- {#if $authStore.isLoading}
         <div class="loading-overlay">
             <p>Logging in...</p>
         </div>
@@ -47,17 +66,12 @@
         <div class="success-overlay">
             <p>Welcome, {$authStore.user}! ✓</p>
         </div>
-    {/if}
-</main>
+    {/if} -->
+</Layout>
 
-<footer>
-<div id="footer">
-  <p>&copy; 2026 ft_trancendence. All rights reserved.</p>
-</div>
-</footer>
 
 <style>
-    .loading-overlay,
+    /* .loading-overlay,
     .error-overlay,
     .success-overlay
     {
@@ -88,7 +102,7 @@
         background: rgba(10, 235, 0, 0.3);
         border: 1px solid #0AEB00;
         color: #0AEB00;
-    }
+    } */
 
     @keyframes slideIn
     {
