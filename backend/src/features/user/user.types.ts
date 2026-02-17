@@ -20,6 +20,7 @@ export interface RepositoryUserDetails extends QueryResultRow {
   birthday: DateTime;
   full_name: string | null;
   balance: string;
+  bio: string | null;
 }
 
 // Output types
@@ -36,4 +37,5 @@ export interface UserDetails extends UserSummary {
   birthday: string | null;
   fullName: string | null;
   balance: number;
+  bio: string | null;
 }

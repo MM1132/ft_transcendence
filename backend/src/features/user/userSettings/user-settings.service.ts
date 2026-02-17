@@ -84,6 +84,7 @@ export const userSettingsService = {
         settings.fullName !== undefined
           ? settings.fullName
           : oldSettings.full_name,
+      bio: settings.bio !== undefined ? settings.bio : oldSettings.bio,
     };
 
     // Overwrite in database

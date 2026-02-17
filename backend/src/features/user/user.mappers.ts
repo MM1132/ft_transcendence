@@ -52,8 +52,9 @@ export const userRepositoryMappers = {
     avatarUrl: buildAvatarUrl(userRow.avatar_filename, baseUrl),
     lastActionAt: buildUserDateTimeNullable(userRow.last_action_at),
     balance: parseInt(userRow.balance, 10),
-    birthday: buildUserDateNullable(userRow.birthday),
     createdAt: buildUserDateTime(userRow.created_at),
+    birthday: buildUserDateNullable(userRow.birthday),
     fullName: userRow.full_name,
+    bio: userRow.bio,
   }),
 };

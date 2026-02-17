@@ -6,4 +6,5 @@ export const userSettingsRowToResult = (
 ): UserSettingsResponse => ({
   birthday: settings.birthday ? settings.birthday.toFormat('yyyy-LL-dd') : null,
   fullName: settings.full_name,
+  bio: settings.bio,
 });
