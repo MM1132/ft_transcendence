@@ -63,7 +63,6 @@ export const userSettingsService = {
     userId: string,
     settings: UpdateUserSettingsRequestBody
   ): Promise<UserSettingsResponse> => {
-    // Get old settings
     const oldSettings = await userSettingsRepository.getUserSettings(
       db,
       userId
