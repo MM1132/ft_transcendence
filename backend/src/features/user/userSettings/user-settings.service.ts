@@ -4,6 +4,7 @@ import path from 'node:path';
 import type { Client } from 'pg';
 import sharp from 'sharp';
 import { NoAvatarToDeleteError } from '../../../utils/serviceTypes.ts';
+import { buildAvatarUrl } from '../user.mappers.ts';
 import { userRespository } from '../user.repository.ts';
 import { userSettingsRowToResult } from './user-settings.mappers.ts';
 import {
@@ -37,7 +38,7 @@ export const userSettingsService = {
 
     await userRespository.setUserAvatarFilename(db, userId, filename);
 
-    return path.join(baseUrl, '/static/avatars/uploaded', filename);
+    return buildAvatarUrl(filename, baseUrl);
   },
 
   deleteAvatar: async (db: Client, userId: string, baseDir: string) => {

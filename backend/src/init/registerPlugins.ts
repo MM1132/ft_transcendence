@@ -13,7 +13,7 @@ export const registerPlugins = (fastify: FastifyInstance) => {
 
   fastify.register(fastifyStatic, {
     root: path.join(fastify.baseDir, '/static'),
-    prefix: '/static',
+    prefix: '/api/v1/static',
   });
 
   fastify.register(cors, {

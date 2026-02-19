@@ -7,16 +7,16 @@ import type {
   UserSummary,
 } from './user.types.ts';
 
-const buildAvatarUrl = (
+export const buildAvatarUrl = (
   avatarFilename: string | null,
   baseUrl: string
 ): string => {
   return path.join(
     baseUrl,
-    '/static',
+    '/api/v1/static/avatars',
     avatarFilename
-      ? path.join('/avatars/uploaded', avatarFilename)
-      : path.join('/avatars', 'default_avatar.png')
+      ? path.join('/uploaded', avatarFilename)
+      : 'default_avatar.png'
   );
 };
 
