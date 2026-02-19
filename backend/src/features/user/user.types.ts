@@ -7,6 +7,8 @@ export interface RepositoryUserSummary extends QueryResultRow {
   username: string;
   last_action_at: DateTime;
   avatar_filename: string | null;
+
+  online: boolean;
 }
 
 export interface RepositoryUserDetails extends QueryResultRow {
@@ -21,6 +23,8 @@ export interface RepositoryUserDetails extends QueryResultRow {
   full_name: string | null;
   balance: string;
   bio: string | null;
+
+  online: boolean;
 }
 
 // Output types
@@ -29,6 +33,8 @@ export interface UserSummary {
   username: string;
   avatarUrl: string;
   lastActionAt: string | null;
+
+  online: boolean;
 }
 
 export interface UserDetails extends UserSummary {

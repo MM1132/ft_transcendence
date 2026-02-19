@@ -20,8 +20,9 @@ export const userController = {
       const allUsers = await userService.getAllUsers(db, baseUrl);
 
       res.status(200).send(allUsers);
-    } catch (err) {
-      req.log.error(err);
+    } catch (error) {
+      req.log.error(error);
+      console.log(error);
       res.status(500).send({ error: 'Internal server error' });
     }
   },

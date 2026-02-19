@@ -29,7 +29,7 @@ export const sessionController = {
       const loginResult = await sessionService.login(db, username, password);
 
       if (!loginResult) {
-        return res.status(401).send({ error: 'Unauthorized' });
+        return res.status(401).send({ error: 'Wrong username or password' });
       }
 
       await userRespository.updateUserLastAction(db, loginResult.userId);

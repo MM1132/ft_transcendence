@@ -41,6 +41,7 @@ export const userRepositoryMappers = {
     username: userRow.username,
     avatarUrl: buildAvatarUrl(userRow.avatar_filename, baseUrl),
     lastActionAt: buildUserDateTimeNullable(userRow.last_action_at),
+    online: userRow.online,
   }),
   toDetails: (
     userRow: RepositoryUserDetails,
@@ -56,5 +57,6 @@ export const userRepositoryMappers = {
     birthday: buildUserDateNullable(userRow.birthday),
     fullName: userRow.full_name,
     bio: userRow.bio,
+    online: userRow.online,
   }),
 };
