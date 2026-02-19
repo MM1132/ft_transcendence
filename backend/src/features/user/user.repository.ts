@@ -33,7 +33,8 @@ export const userRespository = {
         created_at,
         birthday,
         full_name,
-        balance
+        balance,
+        bio
       FROM users
       WHERE id = $1;`,
       [id]
@@ -73,7 +74,8 @@ export const userRespository = {
         created_at,
         birthday,
         full_name,
-        balance
+        balance,
+        bio
       FROM users
       WHERE username = $1 AND password = $2;`,
       [username, passwordHash]

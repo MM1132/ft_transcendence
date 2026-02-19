@@ -63,7 +63,6 @@ export const userSettingsService = {
     userId: string,
     settings: UpdateUserSettingsRequestBody
   ): Promise<UserSettingsResponse> => {
-    // Get old settings
     const oldSettings = await userSettingsRepository.getUserSettings(
       db,
       userId
@@ -84,6 +83,7 @@ export const userSettingsService = {
         settings.fullName !== undefined
           ? settings.fullName
           : oldSettings.full_name,
+      bio: settings.bio !== undefined ? settings.bio : oldSettings.bio,
     };
 
     // Overwrite in database
