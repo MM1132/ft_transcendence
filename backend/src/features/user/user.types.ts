@@ -25,7 +25,7 @@ export interface RepositoryUserDetails extends QueryResultRow {
 
 // Output types
 export interface UserSummary {
-  id: number;
+  id: string;
   username: string;
   avatarUrl: string;
   lastActionAt: string | null;

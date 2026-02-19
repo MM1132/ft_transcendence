@@ -37,7 +37,7 @@ export const userRepositoryMappers = {
     userRow: RepositoryUserSummary,
     baseUrl: string
   ): UserSummary => ({
-    id: parseInt(userRow.id, 10),
+    id: userRow.id,
     username: userRow.username,
     avatarUrl: buildAvatarUrl(userRow.avatar_filename, baseUrl),
     lastActionAt: buildUserDateTimeNullable(userRow.last_action_at),
@@ -46,7 +46,7 @@ export const userRepositoryMappers = {
     userRow: RepositoryUserDetails,
     baseUrl: string
   ): UserDetails => ({
-    id: parseInt(userRow.id, 10),
+    id: userRow.id,
     username: userRow.username,
     email: userRow.email,
     avatarUrl: buildAvatarUrl(userRow.avatar_filename, baseUrl),
