@@ -19,17 +19,9 @@ export const registerRoutes = (fastify: FastifyInstance) => {
 
 /*
 
-GET    /api/v1/friends
-DELETE /api/v1/friends/:userId
-
 GET    /api/v1/friend-requests            -> List incoming friend requests
 POST   /api/v1/friend-requests            -> send a request (body: { userId })
 DELETE /api/v1/friend-requests            -> Delete a sent friend request
 PATCH  /api/v1/friend-requests/:requestId -> Accept or decline (body: { action: "accept" | "decline" })
-
-GET    /api/v1/blocked-users             → list blocked users
-POST   /api/v1/blocked-users             → block a user (body: { userId })
-DELETE /api/v1/blocked-users/:userId     → unblock a user
-
 
 */

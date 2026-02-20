@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS users (
 	last_action_at TIMESTAMPTZ DEFAULT NULL,
 	balance BIGINT DEFAULT 0 CHECK (balance >= 0),
 	avatar_filename TEXT DEFAULT NULL,
-	birthday DATE DEFAULT NULL CHECK (birthday >= '1900-01-01' AND birthday <= CURRENT_DATE),
+
+	birthday DATE DEFAULT NULL
+		CHECK (birthday >= '1900-01-01' AND birthday <= CURRENT_DATE),
 	full_name VARCHAR(100) DEFAULT NULL,
 	bio VARCHAR(500) DEFAULT NULL
 );
@@ -25,6 +27,8 @@ CREATE TABLE IF NOT EXISTS friend_requests (
 	user_from_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 	user_to_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	status TEXT NOT NULL DEFAULT 'PENDING'
+		CHECK (status in ('PENDING', 'ACCEPTED', 'REJECTED')),
 	
 	CHECK (user_from_id <> user_to_id),
 	UNIQUE (user_from_id, user_to_id)

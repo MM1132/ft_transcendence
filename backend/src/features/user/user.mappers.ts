@@ -1,5 +1,9 @@
 import path from 'node:path';
 import type { DateTime } from 'luxon';
+import {
+  buildDateTime,
+  buildDateTimeNullable,
+} from '../../utils/mapperUtils.ts';
 import type {
   RepositoryUserDetails,
   RepositoryUserSummary,
@@ -20,14 +24,6 @@ const buildAvatarUrl = (
   );
 };
 
-const buildUserDateTime = (dateTime: DateTime): string => {
-  return dateTime.toJSON() as string;
-};
-
-const buildUserDateTimeNullable = (dateTime: DateTime): string | null => {
-  return dateTime ? dateTime.toJSON() : null;
-};
-
 const buildUserDateNullable = (date: DateTime): string | null => {
   return date ? date.toFormat('yyyy-LL-dd') : null;
 };
@@ -40,7 +36,7 @@ export const userRepositoryMappers = {
     id: userRow.id,
     username: userRow.username,
     avatarUrl: buildAvatarUrl(userRow.avatar_filename, baseUrl),
-    lastActionAt: buildUserDateTimeNullable(userRow.last_action_at),
+    lastActionAt: buildDateTimeNullable(userRow.last_action_at),
     online: userRow.online,
   }),
   toDetails: (
@@ -51,9 +47,9 @@ export const userRepositoryMappers = {
     username: userRow.username,
     email: userRow.email,
     avatarUrl: buildAvatarUrl(userRow.avatar_filename, baseUrl),
-    lastActionAt: buildUserDateTimeNullable(userRow.last_action_at),
+    lastActionAt: buildDateTimeNullable(userRow.last_action_at),
     balance: parseInt(userRow.balance, 10),
-    createdAt: buildUserDateTime(userRow.created_at),
+    createdAt: buildDateTime(userRow.created_at),
     birthday: buildUserDateNullable(userRow.birthday),
     fullName: userRow.full_name,
     bio: userRow.bio,
