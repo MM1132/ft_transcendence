@@ -16,14 +16,19 @@
   </div>
 </header>
 
+
+
+
 <main>
   <div class="settings-layout">
     <SettingsForm />
     <div class="settings-actions">
-      <Button type="button">Save</Button>
+      <Button type="button" variant="save">Save</Button>
     </div>
   </div>
 </main>
+
+
 
 <footer>
 <div id="footer">
@@ -35,19 +40,19 @@
   .settings-layout
   {
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
   }
 
   .settings-actions
   {
-    padding: 10px 0px 0px;
+    width: 150px;
+    display: flex;
   }
+
   main
   {
-    min-height: 100vh;
     padding: 110px 24px 56px;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
   }
 </style>
