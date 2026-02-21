@@ -3,14 +3,15 @@
     {
         type?: 'button' | 'submit' | 'reset';
         disabled?: boolean;
+        form?: string;
         variant?: 'default' | 'save';
         children: any;
     }
     
-    const { type = 'button', disabled = false, variant = 'default', children }: Props = $props();
+    const { type = 'button', disabled = false, form, variant = 'default', children }: Props = $props();
 </script>
 
-<button {type} {disabled} class:save={variant === 'save'}>
+<button {type} {disabled} {form} class:save={variant === 'save'}>
     {@render children()}
 </button>
 

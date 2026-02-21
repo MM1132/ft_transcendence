@@ -23,7 +23,7 @@
   <div class="settings-layout">
     <SettingsForm />
     <div class="settings-actions">
-      <Button type="button" variant="save">Save</Button>
+      <Button type="submit" form="settings-form-main" variant="save">Save</Button>
     </div>
   </div>
 </main>
