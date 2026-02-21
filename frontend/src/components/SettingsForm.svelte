@@ -1,6 +1,11 @@
 <script lang="ts">
+    import DateSliderField from './DateSliderField.svelte';
+    import InputField from './Input.svelte';
     import ToggleSetting from './Toggle.svelte';
 
+    let fullName = $state('');
+    let bio = $state('');
+    let birthDate = $state('');
     let twoFactorEnabled = $state(false);
     let notificationsEnabled = $state(true);
 
@@ -14,6 +19,34 @@
 <div id="settings-form">
     <form id="settings-form-main" class="settings-content" onsubmit={handleSubmit}>
         <h2>settings</h2>
+        <InputField
+            id="full-name"
+            name="fullName"
+            label="Full Name"
+            placeholder="Enter your full name"
+            bind:value={fullName}
+            minlength={1}
+            maxlength={120}
+            summary
+        />
+        <InputField
+            id="bio"
+            name="bio"
+            label="Bio"
+            placeholder="Write something about yourself..."
+            bind:value={bio}
+            minlength={1}
+            maxlength={500}
+            multiline
+            rows={6}
+            summary
+        />
+        <DateSliderField
+            label="Date"
+            bind:value={birthDate}
+            placeholder="Select your birth date"
+            minYear={1900}
+        />
         <ToggleSetting label="very long text blablabla balbalblablablablablabla
          hmmmmmmmmm still not long enough, what do i do here ahhhhhhhhhhhhhhhhhhhh now we hit the 2nd line,
           looks weird.... whatever" />
