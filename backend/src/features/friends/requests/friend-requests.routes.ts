@@ -1,5 +1,9 @@
 import type { FastifyInstance } from 'fastify';
-import { friendRequestsController } from './friend-requests.controller.ts';
+import {
+  type FriendRequestIdParams,
+  friendRequestsController,
+  type MakeFriendRequestBody,
+} from './friend-requests.controller.ts';
 
 export const friendRequestsRoutes = async (fastify: FastifyInstance) => {
   fastify.get(
@@ -7,19 +11,52 @@ export const friendRequestsRoutes = async (fastify: FastifyInstance) => {
     {
       schema: {
         querystring: {
-          required: ['direction'],
           type: 'object',
+          additionalProperties: false,
           properties: {
             direction: {
               type: 'string',
               enum: ['in', 'out'],
             },
           },
+          required: ['direction'],
         },
       },
     },
     friendRequestsController.getFriendRequests
   );
 
-  fastify.post('/', friendRequestsController.makeFriendRequest);
+  fastify.post<{ Body: MakeFriendRequestBody }>(
+    '/',
+    {
+      schema: {
+        body: {
+          additionalProperties: false,
+          type: 'object',
+          properties: {
+            userId: { type: 'string', format: 'uuid' },
+          },
+          required: ['userId'],
+        },
+      },
+    },
+    friendRequestsController.makeFriendRequest
+  );
+
+  fastify.delete<{ Params: FriendRequestIdParams }>(
+    '/:userId',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            userId: { type: 'string', format: 'uuid' },
+          },
+          required: ['userId'],
+        },
+      },
+    },
+    friendRequestsController.deleteFriendRequest
+  );
 };

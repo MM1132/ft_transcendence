@@ -1,13 +1,17 @@
 meta {
-  name: Get User by ID
+  name: Get Friend Requests
   type: http
-  seq: 3
+  seq: 1
 }
 
 get {
-  url: {{API_BASE_URL}}/user/019c7667-04ca-7954-af33-2c6d28563c8f
+  url: {{API_BASE_URL}}/friend-requests?direction=in
   body: none
   auth: inherit
+}
+
+params:query {
+  direction: in
 }
 
 headers {

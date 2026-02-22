@@ -16,12 +16,3 @@ export const registerRoutes = (fastify: FastifyInstance) => {
 
   fastify.register(friendRequestsRoutes, { prefix: '/api/v1/friend-requests' });
 };
-
-/*
-
-GET    /api/v1/friend-requests            -> List incoming friend requests
-POST   /api/v1/friend-requests            -> send a request (body: { userId })
-DELETE /api/v1/friend-requests            -> Delete a sent friend request
-PATCH  /api/v1/friend-requests/:requestId -> Accept or decline (body: { action: "accept" | "decline" })
-
-*/

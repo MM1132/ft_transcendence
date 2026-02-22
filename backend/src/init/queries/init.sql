@@ -26,10 +26,16 @@ CREATE TABLE IF NOT EXISTS friend_requests (
 	id UUID PRIMARY KEY DEFAULT uuidv7(),
 	user_from_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 	user_to_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	status TEXT NOT NULL DEFAULT 'PENDING'
-		CHECK (status in ('PENDING', 'ACCEPTED', 'REJECTED')),
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 	
-	CHECK (user_from_id <> user_to_id),
-	UNIQUE (user_from_id, user_to_id)
+	CHECK (user_from_id <> user_to_id)
+);
+
+CREATE TABLE IF NOT EXISTS friends (
+	user1_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	user2_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+	CHECK (user1_id <> user2_id),
+	PRIMARY KEY (user1_id, user2_id)
 );
