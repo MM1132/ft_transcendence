@@ -162,19 +162,19 @@
 
     .summary-view
     {
-        width: 100%;
+        /* width: 100%; */
         border: 1px solid rgba(10, 235, 0, 0.35);
         background: rgba(15, 19, 20, 0.85);
-        color: #fff;
-        font-size: 1rem;
+        /* color: #ffffff;
+        font-size: 1rem;  */
         padding: 1rem;
         box-sizing: border-box;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        cursor: text;
-        transition: border-color 0.2s, background 0.2s;
+        /* gap: 16px;
+        cursor: text; */
+        transition: border-color 0.3s, background 0.3s;
     }
 
     .summary-view:hover,
@@ -193,9 +193,9 @@
 
     .summary-label
     {
+        font-size: 0.78rem;
         color: rgba(177, 59, 204, 0.95);
         text-transform: uppercase;
-        font-size: 0.78rem;
         font-weight: 800;
         letter-spacing: 0.45px;
     }
@@ -219,9 +219,9 @@
         right: 12px;
         color: rgba(177, 59, 204, 0.95);
         text-transform: uppercase;
-        font-size: 0.72rem;
         font-weight: 800;
         letter-spacing: 0.45px;
+        font-size: 0.72rem;
         pointer-events: none;
         z-index: 2;
     }
@@ -237,7 +237,7 @@
         padding: 1.65rem 1rem 0.9rem;
         box-sizing: border-box;
         outline: none;
-        transition: border-color 0.2s, background 0.2s;
+        transition: border-color 0.3s, background 0.3s;
     }
 
     textarea
