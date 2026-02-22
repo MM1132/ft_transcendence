@@ -1,5 +1,4 @@
 import type { DateTime } from 'luxon';
-import type { UserSummary } from '../../user/user.types.ts';
 
 // export interface RepositoryFriendRequest {
 //   id: string;
@@ -9,12 +8,6 @@ import type { UserSummary } from '../../user/user.types.ts';
 // }
 
 // RESPONSES FROM THE API
-export interface ResponseOutgoingFriendRequest {
-  id: string;
-  userTo: UserSummary;
-  createdAt: string;
-}
-
 export interface RepositoryOutgoingFriendRequest {
   id: string;
   created_at: DateTime;
@@ -23,12 +16,6 @@ export interface RepositoryOutgoingFriendRequest {
   avatar_filename: string;
   last_action_at: DateTime;
   online: boolean;
-}
-
-export interface ResponseIncomingFriendRequest {
-  id: string;
-  userFrom: UserSummary;
-  createdAt: string;
 }
 
 export interface RepositoryIncomingFriendRequest {

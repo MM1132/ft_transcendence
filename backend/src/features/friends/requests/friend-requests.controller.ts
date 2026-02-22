@@ -10,7 +10,7 @@ export interface MakeFriendRequestBody {
   userId: string;
 }
 
-export interface FriendRequestIdParams {
+export interface FriendParams {
   userId: string;
 }
 
@@ -76,7 +76,7 @@ export const friendRequestsController = {
   },
 
   deleteFriendRequest: async (
-    req: FastifyRequest<{ Params: FriendRequestIdParams }>,
+    req: FastifyRequest<{ Params: FriendParams }>,
     res: FastifyReply
   ) => {
     try {

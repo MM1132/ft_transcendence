@@ -2,12 +2,12 @@ import type { Client } from 'pg';
 import {
   mapIncomingFriendRequest,
   mapOutgoingFriendRequest,
+  type ResponseOutgoingFriendRequest,
 } from './friend-requests.mapper.ts';
 import {
   friendRequestsRepository,
   type RepositoryCreateFriendRequestOutcome,
 } from './friend-requests.repository.ts';
-import type { ResponseOutgoingFriendRequest } from './friend-requests.types.ts';
 
 export type MakeFriendRequestOutcome =
   | RepositoryCreateFriendRequestOutcome

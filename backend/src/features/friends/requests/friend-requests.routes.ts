@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import {
-  type FriendRequestIdParams,
+  type FriendParams,
   friendRequestsController,
   type MakeFriendRequestBody,
 } from './friend-requests.controller.ts';
@@ -43,7 +43,7 @@ export const friendRequestsRoutes = async (fastify: FastifyInstance) => {
     friendRequestsController.makeFriendRequest
   );
 
-  fastify.delete<{ Params: FriendRequestIdParams }>(
+  fastify.delete<{ Params: FriendParams }>(
     '/:userId',
     {
       schema: {

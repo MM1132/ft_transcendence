@@ -1,13 +1,24 @@
 import { buildDateTime } from '../../../utils/mapperUtils.ts';
 import { userRepositoryMappers } from '../../user/user.mappers.ts';
+import type { UserSummary } from '../../user/user.types.ts';
 import type { RepositoryDeleteFriendRequestOutcome } from './friend-requests.repository.ts';
 import type { MakeFriendRequestOutcome } from './friend-requests.service.ts';
 import type {
   RepositoryIncomingFriendRequest,
   RepositoryOutgoingFriendRequest,
-  ResponseIncomingFriendRequest,
-  ResponseOutgoingFriendRequest,
 } from './friend-requests.types.ts';
+
+export interface ResponseOutgoingFriendRequest {
+  id: string;
+  userTo: UserSummary;
+  createdAt: string;
+}
+
+export interface ResponseIncomingFriendRequest {
+  id: string;
+  userFrom: UserSummary;
+  createdAt: string;
+}
 
 export const mapMakeFriendRequestStatus = (
   outcome: MakeFriendRequestOutcome

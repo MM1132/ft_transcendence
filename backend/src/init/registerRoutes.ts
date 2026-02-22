@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { sessionAuth } from '../features/auth/sessionAuth.ts';
+import { friendsRoutes } from '../features/friends/friends.routes.ts';
 import { friendRequestsRoutes } from '../features/friends/requests/friend-requests.routes.ts';
 import { skillsRoutes } from '../features/levels/levels.routes.ts';
 import { sessionRoutes } from '../features/session/session.routes.ts';
@@ -15,4 +16,5 @@ export const registerRoutes = (fastify: FastifyInstance) => {
   fastify.register(skillsRoutes, { prefix: '/api/v1/skills' });
 
   fastify.register(friendRequestsRoutes, { prefix: '/api/v1/friend-requests' });
+  fastify.register(friendsRoutes, { prefix: '/api/v1/friends' });
 };
