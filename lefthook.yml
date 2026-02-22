@@ -2,4 +2,7 @@ pre-commit:
   jobs:
     - name: Check backend code linting and format
       root: backend
+      skip:
+        - merge
+        - rebase
       run: npx biome check --staged --log-kind=compact
