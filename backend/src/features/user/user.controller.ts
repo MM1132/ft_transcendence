@@ -57,7 +57,6 @@ export const userController = {
   ) => {
     try {
       const { db, baseUrl } = req.server;
-
       const id = req.params.id;
 
       const user = await userService.getUserById(db, id, baseUrl);

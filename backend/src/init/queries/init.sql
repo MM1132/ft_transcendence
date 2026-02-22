@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS users (
 	-- Hashed password, 128 characters long
 	password VARCHAR(128) NOT NULL,
 	email TEXT NOT NULL UNIQUE,
-	bio TEXT DEFAULT NULL,
 	-- PostgreSQL UTC created_at. Gets set automatically and is not editable
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	last_action_at TIMESTAMPTZ DEFAULT NULL,
@@ -27,9 +26,10 @@ CREATE TABLE IF NOT EXISTS friend_requests (
 	id UUID PRIMARY KEY DEFAULT uuidv7(),
 	user_from_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 	user_to_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	
-	CHECK (user_from_id <> user_to_id)
+	CHECK (user_from_id <> user_to_id),
+	UNIQUE (user_from_id, user_to_id)
 );
 
 CREATE TABLE IF NOT EXISTS friends (
