@@ -16,3 +16,13 @@ export const encryptWithSalt = (password: string) => {
     64
   ).toString('hex');
 };
+
+export const handleGeneralError = (
+  req: FastifyRequest,
+  res: FastifyReply,
+  error: unknown
+) => {
+  req.log.error(error);
+  console.log(error);
+  return res.status(500).send({ error: 'Internal server error' });
+};

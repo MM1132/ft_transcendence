@@ -14,7 +14,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
           type: 'object',
           required: ['id'],
           properties: {
-            id: { type: 'string', pattern: '^[1-9][0-9]*$' },
+            id: { type: 'string', format: 'uuid' },
           },
         },
       },

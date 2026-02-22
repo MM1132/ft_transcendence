@@ -13,7 +13,18 @@ export interface RepositoryNewUserDetails {
 export const userRespository = {
   getAllUsers: async (db: Client): Promise<RepositoryUserSummary[]> => {
     const allUsers = await db.query<RepositoryUserSummary>(
-      `SELECT id, username, last_action_at, avatar_filename FROM users`
+      `SELECT
+        u.id,
+        u.username, 
+        u.last_action_at, 
+        u.avatar_filename,
+
+        EXISTS (
+          SELECT 1 FROM sessions s
+          WHERE s.user_id = u.id
+          AND s.valid_until > NOW()
+        ) AS online
+      FROM users u`
     );
     return allUsers.rows;
   },
@@ -24,18 +35,14 @@ export const userRespository = {
   ): Promise<RepositoryUserDetails | null> => {
     const { rows } = await db.query<RepositoryUserDetails>(
       `SELECT
-        id,
-        username,
-        password,
-        email,
-        avatar_filename,
-        last_action_at,
-        created_at,
-        birthday,
-        full_name,
-        balance,
-        bio
-      FROM users
+        u.*,
+
+        EXISTS (
+          SELECT 1 FROM sessions s
+          WHERE s.user_id = u.id
+          AND s.valid_until > NOW()
+        ) AS online
+      FROM users u
       WHERE id = $1;`,
       [id]
     );
@@ -65,18 +72,14 @@ export const userRespository = {
     const { rows } = await db.query<RepositoryUserDetails>(
       `
       SELECT
-        id,
-        username,
-        password,
-        email,
-        avatar_filename,
-        last_action_at,
-        created_at,
-        birthday,
-        full_name,
-        balance,
-        bio
-      FROM users
+        u.*,
+
+        EXISTS (
+          SELECT 1 FROM sessions s
+          WHERE s.user_id = u.id
+          AND s.valid_until > NOW()
+        ) AS online
+      FROM users u
       WHERE username = $1 AND password = $2;`,
       [username, passwordHash]
     );
@@ -103,7 +106,8 @@ export const userRespository = {
         u.id,
         u.username,
         u.last_action_at,
-        u.avatar_filename
+        u.avatar_filename,
+        true AS online
 
       FROM sessions as s
       
