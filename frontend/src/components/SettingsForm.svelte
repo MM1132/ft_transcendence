@@ -1,5 +1,4 @@
 <script lang="ts">
-    import DateSliderField from './DateSliderField.svelte';
     import InputField from './Input.svelte';
     import ToggleSetting from './Toggle.svelte';
 
@@ -41,11 +40,14 @@
             rows={6}
             summary
         />
-        <DateSliderField
+        <InputField
+            id="birth-date"
+            name="birthDate"
             label="Date"
-            bind:value={birthDate}
+            type="date"
             placeholder="Select your birth date"
-            minYear={1900}
+            bind:value={birthDate}
+            summary
         />
         <ToggleSetting label="very long text blablabla balbalblablablablablabla
          hmmmmmmmmm still not long enough, what do i do here ahhhhhhhhhhhhhhhhhhhh now we hit the 2nd line,

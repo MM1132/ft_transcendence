@@ -5,7 +5,7 @@
     {
         label?: string;
         value?: string;
-        type?: 'text' | 'email' | 'password' | 'search' | 'url';
+        type?: 'text' | 'email' | 'password' | 'search' | 'url' | 'date';
         placeholder?: string;
         id?: string;
         name?: string;
@@ -253,6 +253,13 @@
         border-color: #0AEB00;
         background: rgba(10, 235, 0, 0.06);
     }
+
+    input[type='date']::-webkit-calendar-picker-indicator
+    {
+        filter: invert(39%) sepia(92%) saturate(1122%) hue-rotate(279deg) brightness(89%) contrast(96%);
+        cursor: pointer;
+    }
+    /* Faerbt das Kalender Icon */
 
     .char-count
     {
