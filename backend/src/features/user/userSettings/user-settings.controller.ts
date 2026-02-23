@@ -31,7 +31,14 @@ export const userSettingsController = {
         if (newUserSettings.fullName.trim().length === 0) {
           return res
             .status(400)
-            .send({ error: 'fullName must be more than just spaces' });
+            .send({ error: "User's fullName must be more than just spaces" });
+        }
+      }
+      if (newUserSettings.bio) {
+        if (newUserSettings.bio.trim().length === 0) {
+          return res
+            .status(400)
+            .send({ error: "User's bio must be more than just spaces" });
         }
       }
 

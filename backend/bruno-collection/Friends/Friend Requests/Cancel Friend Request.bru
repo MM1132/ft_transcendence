@@ -1,11 +1,11 @@
 meta {
-  name: Get User by ID
+  name: Cancel Friend Request
   type: http
   seq: 3
 }
 
-get {
-  url: {{API_BASE_URL}}/user/019c7667-04ca-7954-af33-2c6d28563c8f
+delete {
+  url: {{API_BASE_URL}}/friend-requests/019c7706-6eae-7e8b-98b3-38d9063cbc4a
   body: none
   auth: inherit
 }
