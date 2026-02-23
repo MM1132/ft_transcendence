@@ -144,7 +144,7 @@ FROM base AS development
 RUN npm install
 COPY . .
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["npm", "run", "dev"]
 
 # --- Stage 3: Build ---
 FROM base AS build

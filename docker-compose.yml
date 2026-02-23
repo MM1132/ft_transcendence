@@ -53,6 +53,7 @@ services:
       target: development
     container_name: transcendence_backend
     environment:
+      - BACKEND_ROOT_PATH=/app
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=${BACKEND_PORT:-3000}
       - POSTGRES_USER=${POSTGRES_USER}
