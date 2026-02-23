@@ -16,10 +16,10 @@ export const addDecorators = async (fastify: FastifyInstance) => {
     : path.join(import.meta.dirname, '../..');
   fastify.decorate('baseDir', baseDir);
 
-  const baseUrl = process.env.BACKEND_URL
-    ? `http://${process.env.BACKEND_URL}:${port}`
-    : `no_url_provided`;
-  fastify.decorate('baseUrl', baseUrl);
+  fastify.decorate(
+    'baseUrl',
+    process.env.BACKEND_URL ?? 'no_backend_url_provided'
+  );
 
   try {
     const client = await initDatabase(fastify);

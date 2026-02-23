@@ -8,13 +8,17 @@ import { userRoutes } from '../features/user/user.routes.ts';
 import { userSettingsRoutes } from '../features/user/userSettings/user-settings.routes.ts';
 
 export const registerRoutes = (fastify: FastifyInstance) => {
-  fastify.addHook('preValidation', sessionAuth);
+  // Encapsulation to make sure routes like
+  // `/static` can be accessed without session token
+  fastify.register(async (authRoutes: FastifyInstance) => {
+    authRoutes.addHook('preValidation', sessionAuth);
 
-  fastify.register(sessionRoutes, { prefix: '/api/v1/' });
-  fastify.register(userRoutes, { prefix: '/api/v1/user' });
-  fastify.register(userSettingsRoutes, { prefix: '/api/v1/user/me/settings' });
-  fastify.register(skillsRoutes, { prefix: '/api/v1/skills' });
+    authRoutes.register(sessionRoutes, { prefix: '/api/v1/' });
+    authRoutes.register(userRoutes, { prefix: '/api/v1/user' });
+    authRoutes.register(userSettingsRoutes, { prefix: '/api/v1/user/me/settings' });
 
-  fastify.register(friendRequestsRoutes, { prefix: '/api/v1/friend-requests' });
-  fastify.register(friendsRoutes, { prefix: '/api/v1/friends' });
+    fastify.register(skillsRoutes, { prefix: '/api/v1/skills' });
+    fastify.register(friendRequestsRoutes, { prefix: '/api/v1/friend-requests' });
+    fastify.register(friendsRoutes, { prefix: '/api/v1/friends' });
+  });
 };

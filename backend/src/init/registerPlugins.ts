@@ -13,11 +13,11 @@ export const registerPlugins = (fastify: FastifyInstance) => {
 
   fastify.register(fastifyStatic, {
     root: path.join(fastify.baseDir, '/static'),
-    prefix: '/static',
+    prefix: '/api/v1/static',
   });
 
   fastify.register(cors, {
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'http://localhost:8080'],
     credentials: true,
     exposedHeaders: ['Authorization', 'Content-type'],
   });
