@@ -49,6 +49,7 @@
   {
     width: 150px;
     display: flex;
+    /* flex-direction: column-reverse; */
   }
 
   main
