@@ -87,7 +87,7 @@ rebuild-frontend:
 # --- Single services ---
 
 backend:
-	docker compose up -d db backend
+	docker compose --env-file .env.example up -d db backend nginx
 	@echo "DB + backend running. API at http://localhost:8080/api/v1"
 
 frontend:
