@@ -1,0 +1,20 @@
+meta {
+  name: Get All My Friends
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{API_BASE_URL}}/friends
+  body: none
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

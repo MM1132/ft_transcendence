@@ -1,18 +1,30 @@
-import type { DateTime } from 'luxon';
-import type { Client, QueryResultRow } from 'pg';
+import type { Client } from 'pg';
+import type {
+  RepositoryUserDetails,
+  RepositoryUserSummary,
+} from './user.types.ts';
 
-export interface RepositoryUser extends QueryResultRow {
-  id: string;
+export interface RepositoryNewUserDetails {
   username: string;
-  password: string;
-  created_at: DateTime;
-  avatar_filename: string;
+  encryptedPassword: string;
+  email: string;
 }
 
 export const userRespository = {
-  getAllUsers: async (db: Client): Promise<RepositoryUser[]> => {
-    const allUsers = await db.query<RepositoryUser>(
-      `SELECT id, username, password, created_at, avatar_filename FROM users`
+  getAllUsers: async (db: Client): Promise<RepositoryUserSummary[]> => {
+    const allUsers = await db.query<RepositoryUserSummary>(
+      `SELECT
+        u.id,
+        u.username, 
+        u.last_action_at, 
+        u.avatar_filename,
+
+        EXISTS (
+          SELECT 1 FROM sessions s
+          WHERE s.user_id = u.id
+          AND s.valid_until > NOW()
+        ) AS online
+      FROM users u`
     );
     return allUsers.rows;
   },
@@ -20,9 +32,18 @@ export const userRespository = {
   getUserById: async (
     db: Client,
     id: string
-  ): Promise<RepositoryUser | null> => {
-    const { rows } = await db.query<RepositoryUser>(
-      `SELECT id, username, password, created_at, avatar_filename FROM users WHERE id = $1;`,
+  ): Promise<RepositoryUserDetails | null> => {
+    const { rows } = await db.query<RepositoryUserDetails>(
+      `SELECT
+        u.*,
+
+        EXISTS (
+          SELECT 1 FROM sessions s
+          WHERE s.user_id = u.id
+          AND s.valid_until > NOW()
+        ) AS online
+      FROM users u
+      WHERE id = $1;`,
       [id]
     );
     return rows[0] || null;
@@ -30,25 +51,15 @@ export const userRespository = {
 
   insertNewUserToDatabase: async (
     db: Client,
-    username: string,
-    encryptedPassword: string
-  ) => {
-    return db.query(
+    details: RepositoryNewUserDetails
+  ): Promise<RepositoryUserDetails | null> => {
+    const { rows } = await db.query<RepositoryUserDetails>(
       `
       INSERT INTO users
-      (username, password)
-      VALUES ($1, $2);`,
-      [username, encryptedPassword]
-    );
-  },
-
-  getUserByUsername: async (
-    db: Client,
-    username: string
-  ): Promise<RepositoryUser | null> => {
-    const { rows } = await db.query<RepositoryUser>(
-      `SELECT id, username, password, created_at, avatar_filename FROM users WHERE username = $1;`,
-      [username]
+      (username, password, email)
+      VALUES ($1, $2, $3)
+      RETURNING *;`,
+      [details.username, details.encryptedPassword, details.email]
     );
     return rows[0] || null;
   },
@@ -57,10 +68,18 @@ export const userRespository = {
     db: Client,
     username: string,
     passwordHash: string
-  ): Promise<RepositoryUser | null> => {
-    const { rows } = await db.query<RepositoryUser>(
+  ): Promise<RepositoryUserDetails | null> => {
+    const { rows } = await db.query<RepositoryUserDetails>(
       `
-      SELECT id, username, password, created_at, avatar_filename FROM users
+      SELECT
+        u.*,
+
+        EXISTS (
+          SELECT 1 FROM sessions s
+          WHERE s.user_id = u.id
+          AND s.valid_until > NOW()
+        ) AS online
+      FROM users u
       WHERE username = $1 AND password = $2;`,
       [username, passwordHash]
     );
@@ -70,7 +89,7 @@ export const userRespository = {
   setUserAvatarFilename: async (
     db: Client,
     userId: string,
-    avatarFilename: string
+    avatarFilename: string | null
   ) => {
     await db.query(
       `
@@ -81,11 +100,31 @@ export const userRespository = {
     );
   },
 
-  setAvatarToNull: async (db: Client, userId: string) => {
+  getOnlineUsers: async (db: Client): Promise<RepositoryUserSummary[]> => {
+    const { rows } = await db.query<RepositoryUserSummary>(`
+      SELECT
+        u.id,
+        u.username,
+        u.last_action_at,
+        u.avatar_filename,
+        true AS online
+
+      FROM sessions as s
+      
+      JOIN users as u
+      ON s.user_id = u.id
+      
+      WHERE s.valid_until > now()
+    `);
+
+    return rows;
+  },
+
+  updateUserLastAction: async (db: Client, userId: string) => {
     await db.query(
       `
       UPDATE users
-      SET avatar_filename = NULL
+      SET last_action_at = now()
       WHERE id = $1
     `,
       [userId]

@@ -1,12 +1,12 @@
 meta {
-  name: Change User Avatar
+  name: Delete User Avatar
   type: http
   seq: 3
 }
 
-put {
-  url: {{API_BASE_URL}}/user/me/avatar
-  body: multipartForm
+delete {
+  url: {{API_BASE_URL}}/user/me/settings/avatar
+  body: none
   auth: inherit
 }
 
@@ -15,7 +15,7 @@ headers {
 }
 
 body:multipart-form {
-  file: @file(/home/rreimann/Downloads/profile picture examples/the man.png)
+  file: @file(/home/rreimann/Downloads/profile picture examples/cute-profile-pic-for-girls.webp)
 }
 
 body:file {

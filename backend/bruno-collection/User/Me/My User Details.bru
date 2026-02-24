@@ -1,0 +1,20 @@
+meta {
+  name: My User Details
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{API_BASE_URL}}/user/me
+  body: none
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

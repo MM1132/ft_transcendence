@@ -5,21 +5,16 @@ meta {
 }
 
 post {
-  url: {{API_BASE_URL}}/session
+  url: {{API_BASE_URL}}/login
   body: json
   auth: none
 }
 
-script:pre-request {
-  req.setBody({
-    "username": "AnotherAwesomeUser",
+body:json {
+  {
+    "username": "019c8364-c15e-7bd0-a500-a527dba88437",
     "password": "verysecretpass"
-  });
-  
-  req.setHeaders({"Content-Type": "application/json"});
-   
-  req.setMethod("POST");
-  
+  }
 }
 
 script:post-response {

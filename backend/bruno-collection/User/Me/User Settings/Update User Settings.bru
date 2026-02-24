@@ -1,0 +1,28 @@
+meta {
+  name: Update User Settings
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{API_BASE_URL}}/user/me/settings
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+body:json {
+  {
+    "birthday": "2010-01-01",
+    "fullName": "Robert Reimann",
+    "bio": "Welcome to the awesome profile of the amazing person known as Robert Reimann aka NewUser"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
