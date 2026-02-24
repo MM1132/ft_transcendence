@@ -40,3 +40,16 @@ CREATE TABLE IF NOT EXISTS friends (
 	CHECK (user1_id <> user2_id),
 	PRIMARY KEY (user1_id, user2_id)
 );
+
+-- DUMMY DATA
+INSERT INTO users
+(id, username, password, email, balance)
+VALUES (
+	'019c8f02-765b-7865-b202-97008ab62579', 
+	'DevUser', 
+	'f8373c5c44d24505fdd7e4ab7a97ab391dc199ed60dee48270c7280d78707fc1f973ee26955bd3c284213aec3191071c4de16264a08d37cad935f197e1a4e885',
+	'dev@user.de',
+	1000
+)
+ON CONFLICT DO NOTHING;
+
