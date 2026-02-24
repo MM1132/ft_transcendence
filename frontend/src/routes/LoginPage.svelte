@@ -5,15 +5,12 @@
 
     async function handleLogin({ username, password })
     {
-        console.log('Login attempt:', username, password);
         await authStore.login(username, password);
 
-        const { isLoggedIn, user } = get(authStore);
+        const { isLoggedIn } = get(authStore);
         if (isLoggedIn)
         {
-            console.log('Login successful! User:', user);
-            // redirect to dashboard
-            // window.location.hash = '#/dashboard';
+            window.location.hash = '#/welcome';
         }
     }
 </script>
@@ -43,11 +40,6 @@
         </div>
     {/if}
     
-    {#if $authStore.isLoggedIn}
-        <div class="success-overlay">
-            <p>Welcome, {$authStore.user}! ✓</p>
-        </div>
-    {/if}
 </main>
 
 <footer>
