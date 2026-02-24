@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "moduleResolution": "bundler",
+    "allowArbitraryExtensions": true,
     "target": "ESNext",
     "module": "ESNext",
     /**
@@ -29,5 +30,5 @@
    * Use global.d.ts instead of compilerOptions.types
    * to avoid limiting type declarations.
    */
-  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte", "src/services/authService.ts", "src/services/authService.ts", "src/stores/authStore.svelte.tseltesrc/stores/authStore.svelte.tstore.svelte.ts"]
+  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte"]
 }

@@ -3,13 +3,15 @@
     {
         type?: 'button' | 'submit' | 'reset';
         disabled?: boolean;
+        form?: string;
+        variant?: 'default' | 'save';
         children: any;
     }
     
-    const { type = 'button', disabled = false, children }: Props = $props();
+    const { type = 'button', disabled = false, form, variant = 'default', children }: Props = $props();
 </script>
 
-<button {type} {disabled}>
+<button {type} {disabled} {form} class:save={variant === 'save'}>
     {@render children()}
 </button>
 
@@ -36,5 +38,11 @@
     {
         opacity: 0.6;
         cursor: not-allowed;
+    }
+
+    button.save
+    {
+        font-size: 1.1rem;
+        font-family: 'Orbitron', sans-serif;
     }
 </style>
