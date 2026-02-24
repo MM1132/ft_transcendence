@@ -15,10 +15,14 @@ export const registerRoutes = (fastify: FastifyInstance) => {
 
     authRoutes.register(sessionRoutes, { prefix: '/api/v1/' });
     authRoutes.register(userRoutes, { prefix: '/api/v1/user' });
-    authRoutes.register(userSettingsRoutes, { prefix: '/api/v1/user/me/settings' });
+    authRoutes.register(userSettingsRoutes, {
+      prefix: '/api/v1/user/me/settings',
+    });
 
     fastify.register(skillsRoutes, { prefix: '/api/v1/skills' });
-    fastify.register(friendRequestsRoutes, { prefix: '/api/v1/friend-requests' });
+    fastify.register(friendRequestsRoutes, {
+      prefix: '/api/v1/friend-requests',
+    });
     fastify.register(friendsRoutes, { prefix: '/api/v1/friends' });
   });
 };
