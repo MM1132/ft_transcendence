@@ -10,6 +10,8 @@
         const { isLoggedIn } = get(authStore);
         if (isLoggedIn)
         {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             window.location.hash = '#/welcome';
         }
     }
@@ -37,6 +39,12 @@
     {#if $authStore.errorMessage}
         <div class="error-overlay">
             <p>{$authStore.errorMessage}</p>
+        </div>
+    {/if}
+    
+       {#if $authStore.isLoggedIn}
+        <div class="success-overlay">
+            <p>Welcome, {$authStore.user}! ✓</p>
         </div>
     {/if}
     

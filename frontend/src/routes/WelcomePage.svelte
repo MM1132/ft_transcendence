@@ -1,5 +1,5 @@
 <script>
-  // No logic needed for this simple welcome page
+	
 </script>
 
 <style>

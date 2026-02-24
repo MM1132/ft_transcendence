@@ -115,25 +115,25 @@ function logout()
     }));
 }
 
-function getAuthHeaders()
-{
-    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
-    if (!raw) return {};
+// function getAuthHeaders()
+// {
+//     const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
+//     if (!raw) return {};
 
-    try
-    {
-        const parsed = JSON.parse(raw) as { sessionToken?: string };
-        if (!parsed.sessionToken) return {};
+//     try
+//     {
+//         const parsed = JSON.parse(raw) as { sessionToken?: string };
+//         if (!parsed.sessionToken) return {};
 
-        return {
-            'x-session-token': parsed.sessionToken
-        };
-    }
-    catch (_error)
-    {
-        return {};
-    }
-}
+//         return {
+//             'x-session-token': parsed.sessionToken
+//         };
+//     }
+//     catch (_error)
+//     {
+//         return {};
+//     }
+// }
 
 function initFromSession()
 {
@@ -176,4 +176,5 @@ function initFromSession()
     }
 }
 
-export const authStore = { subscribe, login, logout, initFromSession, getAuthHeaders };
+// export const authStore = { subscribe, login, logout, initFromSession, getAuthHeaders };
+export const authStore = { subscribe, login, logout, initFromSession };
