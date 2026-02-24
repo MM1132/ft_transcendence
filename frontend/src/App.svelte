@@ -13,13 +13,16 @@ This file will be the application shell. It should handle:
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
   import SettingPage from './routes/SettingPage.svelte'
-
+  import { authStore } from './stores/authStore'
+  import WelcomePage from './routes/WelcomePage.svelte';
 
   const currentPath = writable(window.location.hash.slice(1) || '/')
 
   window.addEventListener('hashchange', () => {
     currentPath.set(window.location.hash.slice(1) || '/')
   })
+
+  authStore.initFromSession()
 </script>
 
 
@@ -28,7 +31,13 @@ This file will be the application shell. It should handle:
 {:else if $currentPath === '/login'}
   <LoginPage />
 {:else if $currentPath === '/settings'}
-    <SettingPage />
+  <SettingPage />
 {:else if $currentPath === '/dashboard'}
   <DashboardPage />
+{:else if $currentPath === '/welcome'}
+  {#if $authStore.isLoggedIn}
+    <WelcomePage />
+  {:else}
+    <LoginPage />
+  {/if}
 {/if}

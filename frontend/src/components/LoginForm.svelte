@@ -32,15 +32,10 @@
         }
         
         // Validate password
-        if (password.length === 0)
+        const passwordValidation = authService.validatePassword(password);
+        if (passwordValidation)
         {
-            formError = 'Password is required';
-            return;
-        }
-        
-        if (password.length < 4)
-        {
-            formError = 'Password must be at least 4 characters';
+            formError = passwordValidation;
             return;
         }
         
