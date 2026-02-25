@@ -6,12 +6,12 @@
   let signupError = $state('');
   let isLoading = $state(false);
 
-  async function handleSignup({ username, password })
+  async function handleSignup({ username, password, email })
   {
     signupError = '';
     isLoading = true;
 
-    const result = await authService.signup(username, password);
+    const result = await authService.signup(username, password, email);
     
     isLoading = false;
     

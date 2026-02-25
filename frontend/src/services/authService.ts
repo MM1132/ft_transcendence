@@ -33,13 +33,26 @@ export const authService =
     return null;
   },
 
+  validateEmail(email: string) : string | null
+  {
+    if(email.length === 0) return "Email is required";
+    
+    const emailregex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailregex.test(email))
+    {
+      return "bad email";
+    }
+
+    return null;
+  },
+
 
   async login(username: string, password: string): Promise<AuthResult>
   {
     try
     {
       const response = await fetch(
-        `${API_URL}/session`,
+        `${API_URL}/login`,
         {method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',
@@ -64,16 +77,16 @@ export const authService =
   },
 
   
-  async signup(username: string, password:string) : Promise<AuthResult>
+  async signup(username: string, password:string, email:string) : Promise<AuthResult>
   {
     try
     {
       const response = await fetch(
-        `${API_URL}/user`,
+        `${API_URL}/register`,
         {method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',
-        body: JSON.stringify({username, password})
+        body: JSON.stringify({username, password, email})
       });
 
       const data = await response.json();

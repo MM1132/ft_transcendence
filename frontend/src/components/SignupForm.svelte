@@ -58,8 +58,15 @@ i need for the signup form the next variables
             formError = 'Passwords do not match';
             return;
         }
+
+        const emailValidation = authService.validateEmail(email)
+        if(emailValidation)
+        {
+            emailError = emailValidation;
+            return ;
+        }
     
-        onSubmit?.({ username, password });
+        onSubmit?.({ username, password, email });
     }
 </script>
 
@@ -85,7 +92,7 @@ i need for the signup form the next variables
                 <p class="error-message">{usernameError}</p>
                 {/if}
             </div>
-            <!-- <div class="input-group">
+            <div class="input-group">
                 <p>EMAIL</p>
                 <input
                 type = "email"
@@ -97,7 +104,7 @@ i need for the signup form the next variables
                 {#if emailError}
                 <p class="error-message">{emailError}</p>
                 {/if}
-            </div> -->
+            </div>
             <div class="input-group">
                 <p>PASSWORD</p>
                 <input
