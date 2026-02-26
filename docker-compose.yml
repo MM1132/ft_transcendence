@@ -23,7 +23,6 @@ services:
       - "${NGINX_PORT:-8080}:80"
     depends_on:
       - backend
-      - frontend
     networks:
       - app-network
     restart: unless-stopped

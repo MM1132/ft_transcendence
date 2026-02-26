@@ -1,16 +1,59 @@
 <script lang="ts">
-    import InputField from './Input.svelte';
     import ToggleSetting from './Toggle.svelte';
+    import InputField from './Input.svelte';
+    import { onMount } from 'svelte';
+    import { settingsService } from '../services/settingsService';
 
     let fullName = $state('');
     let bio = $state('');
     let birthDate = $state('');
     let twoFactorEnabled = $state(false);
     let notificationsEnabled = $state(true);
+    let isSaving = $state(false);
+    let feedback = $state('');
+    let feedbackType = $state<'success' | 'error' | '' > (''); // erlaubt sind  success, error oder leer und ('') ist startwert
 
-    function handleSubmit(event: SubmitEvent) {
-        event.preventDefault();
-        // TODO: fetch ans Backend
+    onMount(async () => { // beim oeffnen der seite, wird funktion aufgerufen, laedt user daten
+        try {
+            const settings = await settingsService.getUserSettings(); // await wartet auf server antwort
+            fullName = settings.fullName ?? '';
+            bio = settings.bio ?? '';
+            birthDate = settings.birthday ?? '';
+        } catch (error) {
+            feedback = error instanceof Error ? error.message : 'Could not load settings';
+            feedbackType = 'error';
+        }
+    });
+
+    async function handleSubmit(event: SubmitEvent) {
+        event.preventDefault(); // verhindert, dass seite neu geladen wird
+        isSaving = true;
+        feedback = '';
+        feedbackType = '';
+
+        try
+        { // werte in settingsService updaten, trim und wenn leer dann null
+            const updated = await settingsService.updateUserSettings({
+                fullName: fullName.trim() || null,
+                bio: bio.trim() || null,
+                birthday: birthDate || null,
+            });
+            // bei succes werte in form updaten
+            fullName = updated.fullName ?? '';
+            bio = updated.bio ?? '';
+            birthDate = updated.birthday ?? '';
+            feedback = 'Settings saved';
+            feedbackType = 'success';
+        }
+        catch (error)
+        {
+            feedback = error instanceof Error ? error.message : 'Save failed';
+            feedbackType = 'error';
+        }
+        finally
+        {
+            isSaving = false;
+        }
     }
 </script>
 <!-- state macht variable reaktiv damit bind sie aendern kann -->
@@ -25,7 +68,7 @@
             placeholder="Enter your full name"
             bind:value={fullName}
             minlength={1}
-            maxlength={120}
+            maxlength={100}
             summary
         />
         <InputField
@@ -54,6 +97,17 @@
           looks weird.... whatever" />
         <ToggleSetting label="Two Factor Authentication" bind:checked={twoFactorEnabled} />
         <ToggleSetting label="Notifications" bind:checked={notificationsEnabled} />
+
+        {#if feedback}
+            <p class={feedbackType}>
+                {feedback}
+            </p>
+        {/if}
+
+        {#if isSaving} 
+            <p>Saving...</p>
+        {/if}
+        <!-- ladehinweis, falls backend haengt oder verbindung stirbt -->
     </form>
 </div>
 <!-- bind: aendert die variable gleich mit -->
@@ -92,6 +146,19 @@
     flex-direction: column;
     gap: 16px;
     padding: 40px;
+    }
+
+    /* p nimmt ein element, dass die class succes hat. p weil nur text */
+    p.success 
+    {
+        color: #0AEB00;
+        margin: 0;
+    }
+
+    p.error
+    {
+        color: #ff5e5e;
+        margin: 0;
     }
 
 </style>
