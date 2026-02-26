@@ -1,0 +1,24 @@
+meta {
+  name: Get Friend Requests
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{API_BASE_URL}}/friend-requests?direction=in
+  body: none
+  auth: inherit
+}
+
+params:query {
+  direction: in
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

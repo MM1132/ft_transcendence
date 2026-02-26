@@ -48,8 +48,6 @@ export const userService = {
     } catch (error) {
       const queryError = error as QueryError;
 
-      console.log(queryError.detail);
-
       if (queryError.code === '23505') {
         if (queryError.detail.includes('(username)')) {
           queryError.message = 'User with this username already exists';

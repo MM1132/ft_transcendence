@@ -1,0 +1,20 @@
+meta {
+  name: Remove Friend
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{API_BASE_URL}}/friends/019c8264-b4aa-7153-a684-78e0eafebb40
+  body: none
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

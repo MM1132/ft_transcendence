@@ -19,7 +19,7 @@ export const initDatabase = async (
   const client = new Client({
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    host: 'localhost',
+    host: process.env.POSTGRES_HOST ?? 'localhost',
     ...(process.env.POSTGRES_PORT && {
       port: parseInt(process.env.POSTGRES_PORT, 10),
     }),

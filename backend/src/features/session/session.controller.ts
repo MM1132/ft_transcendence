@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { DuplicateDataError } from '../../utils/repositoryTypes.ts';
+import { userRespository } from '../user/user.repository.ts';
 import { userService } from '../user/user.service.ts';
 import { sessionService } from './session.service.ts';
 
@@ -28,8 +29,10 @@ export const sessionController = {
       const loginResult = await sessionService.login(db, username, password);
 
       if (!loginResult) {
-        res.status(401).send({ error: 'Unauthorized' });
+        return res.status(401).send({ error: 'Wrong username or password' });
       }
+
+      await userRespository.updateUserLastAction(db, loginResult.userId);
 
       res.status(200).send(loginResult);
     } catch (_error) {

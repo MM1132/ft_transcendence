@@ -6,6 +6,7 @@ import { userRespository } from '../user/user.repository.ts';
 import { sessionRepository } from './session.repository.ts';
 
 export interface LoginResult {
+  userId: string;
   sessionToken: string;
 }
 
@@ -41,6 +42,7 @@ export const sessionService = {
     );
 
     return {
+      userId: user.id,
       sessionToken: newSessionToken,
     };
   },

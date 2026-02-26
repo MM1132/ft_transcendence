@@ -16,6 +16,7 @@ export const userSettingsRoutes = (fastify: FastifyInstance) => {
               maxLength: 100,
               minLength: 1,
             },
+            bio: { type: ['string', 'null'], minLength: 1, maxLength: 500 },
           },
         },
       },

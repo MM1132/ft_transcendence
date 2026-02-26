@@ -13,13 +13,22 @@ export const registerPlugins = (fastify: FastifyInstance) => {
 
   fastify.register(fastifyStatic, {
     root: path.join(fastify.baseDir, '/static'),
-    prefix: '/static',
+    prefix: '/api/v1/static',
   });
 
   fastify.register(cors, {
-    origin: 'http://localhost:5173',
-    credentials: true,
-    exposedHeaders: ['Authorization', 'Content-type'],
+    origin: ['http://localhost:5173', 'http://localhost:8080'],
+    allowedHeaders: ['x-session-token', 'x-dev', 'content-type'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  });
+
+  fastify.register(fastifyRateLimit, {
+    global: true,
+    max: 100,
+    timeWindow: '1 minute',
+    keyGenerator: (req: FastifyRequest) => {
+      return req?.session?.userId ?? req.ip;
+    },
   });
 
   fastify.register(fastifyRateLimit, {

@@ -1,0 +1,244 @@
+openapi: 3.0.0
+info:
+  title: bruno-spec
+  version: 1.0.0
+paths:
+  /api/v1/login:
+    post:
+      summary: Login
+      operationId: Login
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      requestBody:
+        $ref: '#/components/requestBodies/login'
+  /api/v1/logout:
+    delete:
+      summary: Logout
+      operationId: Logout
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+  /api/v1/register:
+    post:
+      summary: Register
+      operationId: Register
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      requestBody:
+        $ref: '#/components/requestBodies/register'
+  /api/v1/skills/work:
+    post:
+      summary: Work
+      operationId: Work
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+  undefined: {}
+  /api/v1/user/me/settings/avatar:
+    delete:
+      summary: Delete User Avatar
+      operationId: Delete User Avatar
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+  /api/v1/user/me/settings:
+    get:
+      summary: Get User Settings
+      operationId: Get User Settings
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+    put:
+      summary: Update User Settings
+      operationId: Update User Settings
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+      requestBody:
+        $ref: '#/components/requestBodies/update_user_settings'
+  /api/v1/user/me:
+    get:
+      summary: My User Details
+      operationId: My User Details
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+  /api/v1/user:
+    get:
+      summary: All Users
+      operationId: All Users
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+  /api/v1/user/online:
+    get:
+      summary: Get Online Users
+      operationId: Get Online Users
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+  /api/v1/user/4:
+    get:
+      summary: Get User by ID
+      operationId: Get User by ID
+      description: ''
+      tags:
+        - null
+      responses:
+        '200':
+          description: ''
+      parameters:
+        - name: x-session-token
+          in: header
+          description: ''
+          required: true
+          example: '{{token}}'
+servers:
+  - url: http://localhost:3000
+components:
+  schemas:
+    login:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    register:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+    change_user_avatar:
+      type: object
+      properties:
+        file:
+          type: array
+          items:
+            type: string
+          properties:
+            '0':
+              type: string
+    update_user_settings:
+      type: object
+      properties:
+        birthday:
+          type: string
+        fullName:
+          type: string
+        bio:
+          type: string
+  requestBodies:
+    login:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/login'
+      description: ''
+      required: true
+    register:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/register'
+      description: ''
+      required: true
+    change_user_avatar:
+      content:
+        'multipart/form-data:':
+          schema:
+            $ref: '#/components/schemas/change_user_avatar'
+      description: ''
+      required: true
+    update_user_settings:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/update_user_settings'
+      description: ''
+      required: true
+  securitySchemes: {}

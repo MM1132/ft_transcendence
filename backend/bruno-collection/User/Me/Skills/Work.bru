@@ -1,0 +1,20 @@
+meta {
+  name: Work
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{API_BASE_URL}}/skills/work
+  body: none
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

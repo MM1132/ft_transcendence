@@ -1,0 +1,20 @@
+meta {
+  name: Cancel Friend Request
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{API_BASE_URL}}/friend-requests/019c7706-6eae-7e8b-98b3-38d9063cbc4a
+  body: none
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

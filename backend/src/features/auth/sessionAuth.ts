@@ -9,6 +9,17 @@ export const sessionAuth = async (req: FastifyRequest, res: FastifyReply) => {
     // Skip auth if route is public
     if (req.routeOptions.config.isPublic) return;
 
+    // DEV
+    // TODO: REMOVE FOR PRODUCTION!!!
+    if ('x-dev' in req.raw.headers) {
+      req.session = {
+        userId: '019c8f02-765b-7865-b202-97008ab62579',
+      };
+      return;
+    }
+    // End of the DEV todo
+
+    req.raw.headers;
     const sessionToken = req.raw.headers['x-session-token'] as string;
 
     if (!sessionToken) {

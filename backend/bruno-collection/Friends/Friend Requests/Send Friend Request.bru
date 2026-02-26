@@ -1,0 +1,26 @@
+meta {
+  name: Send Friend Request
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{API_BASE_URL}}/friend-requests
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-session-token: {{token}}
+}
+
+body:json {
+  {
+    "userId": "019c8364-5231-74d6-8b7d-cf8939fc752c"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
