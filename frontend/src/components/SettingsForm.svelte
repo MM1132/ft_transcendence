@@ -68,7 +68,7 @@
             placeholder="Enter your full name"
             bind:value={fullName}
             minlength={1}
-            maxlength={120}
+            maxlength={100}
             summary
         />
         <InputField
