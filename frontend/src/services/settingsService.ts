@@ -10,13 +10,13 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
   bio?: string | null;
 };
 
-const API_BASE = import.meta.env.VITE_API_URL ?? '';
+// const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
 function api(path: string): string {
-  return `${API_BASE}${path}`;
+  return `http://localhost:8080/api/v1${path}`;
 }
 
-const SETTINGS_PATH = '/api/v1/user/me/settings';
+const SETTINGS_PATH = '/user/me/settings';
 
 export const settingsService = {
   async getUserSettings(): Promise<UserSettings> {
