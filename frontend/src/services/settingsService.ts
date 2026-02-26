@@ -10,14 +10,19 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
   bio?: string | null;
 };
 
-const SETTINGS_URL = '/api/v1/user/me/settings';
+const API_BASE = import.meta.env.VITE_API_URL ?? '';
+
+function api(path: string): string {
+  return `${API_BASE}${path}`;
+}
+
+const SETTINGS_PATH = '/api/v1/user/me/settings';
 
 export const settingsService = {
   async getUserSettings(): Promise<UserSettings> {
-    const response = await fetch(SETTINGS_URL, { //fetch request an backend
+    const response = await fetch(api(SETTINGS_PATH), { //fetch request an backend
       method: 'GET',
       headers: buildAuthHeaders(), // send session token
-      credentials: 'include', // fuer cookies usw.
     });
 
     if (!response.ok) { // falls antwort nicht ok ist, error message aus response extrahieren und error werfen
@@ -31,13 +36,12 @@ export const settingsService = {
   async updateUserSettings( // die eingegebenen werte ans backend schicken als 'payload'
     payload: UpdateUserSettingsPayload
   ): Promise<UserSettings> {
-    const response = await fetch(SETTINGS_URL, {
+    const response = await fetch(api(SETTINGS_PATH), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json', // damit backend weiss, dass es json ist
         ...buildAuthHeaders(), // ... klappt die werte aus
       },
-      credentials: 'include',
       body: JSON.stringify(payload), // payload in json umwandeln, damit es ans backend geschickt werden kann
     });
 

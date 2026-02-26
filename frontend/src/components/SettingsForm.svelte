@@ -99,7 +99,7 @@
         <ToggleSetting label="Notifications" bind:checked={notificationsEnabled} />
 
         {#if feedback}
-            <p class:success={feedbackType === 'success'} class:error={feedbackType === 'error'}>
+            <p class={feedbackType}>
                 {feedback}
             </p>
         {/if}
