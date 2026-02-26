@@ -18,8 +18,7 @@ export const registerPlugins = (fastify: FastifyInstance) => {
 
   fastify.register(cors, {
     origin: ['http://localhost:5173', 'http://localhost:8080'],
-    credentials: true,
-    exposedHeaders: ['Authorization', 'Content-type'],
+    allowedHeaders: ['x-session-token'],
   });
 
   fastify.register(fastifyRateLimit, {
