@@ -4,6 +4,8 @@ import { authService } from '../services/authService';
 type AuthState =
 {
     user: string | null;
+    userId: string | null;
+    sessionToken: string | null;
     isLoggedIn: boolean;
     isLoading: boolean;
     errorMessage: string;
@@ -12,12 +14,15 @@ type AuthState =
 const initialState: AuthState =
 {
     user: null,
+    userId: null,
+    sessionToken: null,
     isLoggedIn: false,
     isLoading: false,
     errorMessage: ""
 };
 
 const { subscribe, update } = writable(initialState);
+const SESSION_STORAGE_KEY = 'auth_session';
 
 async function login(username: string, password: string)
 {
@@ -27,6 +32,16 @@ async function login(username: string, password: string)
         update((currenState) => ({
             ...currenState, // <== spread operator(copies all existing properties so only change the ones we list)
             errorMessage: validationError
+        }));
+        return;
+    }
+
+    const passError = authService.validatePassword(password);
+    if (passError)
+    {
+        update((currenState) => ({
+            ...currenState, // <== spread operator(copies all existing properties so only change the ones we list)
+            errorMessage: passError
         }));
         return;
     }
@@ -70,4 +85,128 @@ async function login(username: string, password: string)
     }
 }
 
-export const authStore = { subscribe, login };
+
+async   function signup(username: string, password: string, email: string)
+{
+    const usernameError = authService.validateUsername(username);
+    if(usernameError)
+    {
+        update((state) => ({
+            ...state,
+            errorMessage: usernameError
+        }));
+        return;
+    }
+
+    const passwordError = authService.validatePassword(password);
+    if(passwordError)
+    {
+        update((state) => ({
+            ...state,
+            errorMessage: passwordError
+        }));
+        return;
+    }
+
+    const emailError = authService.validateEmail(email);
+    if(emailError)
+    {
+        update((state) => ({
+            ...state,
+            errorMessage: emailError
+        }));
+        return;
+    }
+
+    update((state) => ({
+        ...state,
+        isLoading: true,
+        errorMessage: ""
+    }));
+
+    try
+    {
+        const result = await authService.signup(username, password, email);
+        if(result.success)
+        {
+            sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ user: username, userId: result.userId, sessionToken: result.sessionToken }));
+            update((state) => ({
+                ...state,
+                isLoggedIn: true,
+                user: username,
+                userId: result.userId,
+                sessionToken: result.sessionToken,
+                isLoading: false
+            }));
+        }
+        else
+        {
+            update((state) => ({
+                ...state,
+                isLoggedIn: false,
+                user: null,
+                userId: null,
+                sessionToken: null,
+                errorMessage: result.message,
+                isLoading: false
+            }));
+        }   
+    }
+    catch(e)
+    {
+        update((state) => ({
+            ...state,
+            errorMessage: "Connection failed. Is the server running?",
+            isLoading: false
+        }));
+    }
+}
+
+
+function initFromSession()
+{
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return;
+
+    try
+    {
+        const parsed = JSON.parse(raw) as {
+            user?: string;
+            userId?: string;
+            sessionToken?: string;
+        };
+
+        if (!parsed.user || !parsed.userId || !parsed.sessionToken)
+        {
+            sessionStorage.removeItem(SESSION_STORAGE_KEY);
+            return;
+        }
+
+        update((state) => ({
+            ...state,
+            user: parsed.user,
+            userId: parsed.userId,
+            sessionToken: parsed.sessionToken,
+            isLoggedIn: true,
+            errorMessage: ""
+        }));
+
+        void authService.getMyUser(parsed.sessionToken).then((user) => {
+            if (!user || user.id !== parsed.userId)
+            {
+                // logout();
+            }
+        });
+    }
+    catch (_error)
+    {
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    }
+}
+
+
+
+
+
+
+export const authStore = { subscribe, login, signup };

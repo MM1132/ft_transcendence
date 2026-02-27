@@ -1,18 +1,3 @@
-<!--
-i need for the signup form the next variables
-#username
-#email
-#password
-#confirmPassword
-#usernameDublicateError   (check the name did not exist)
-#formError
-
-1) a fuction that will validate the name
-2) a function that will handle the event
-3)
--->
-
-
 <script>
     import Button from './Button.svelte';
     import { authService } from '../services/authService';
@@ -20,11 +5,13 @@ i need for the signup form the next variables
     let username = $state('');
     let password = $state ('');
     let email = $state('');
+    let confirmPassword = $state('');
+    
     let usernameError = $state('');
     let passwordError = $state('');
+    let confirmPasswordError = $state('');
     let emailError = $state('');
-    let confirmPassword = $state('');
-    let formError = $state('');
+
 
     const { onSubmit } = $props();
 
@@ -34,7 +21,7 @@ i need for the signup form the next variables
         event.preventDefault();
         
         // Clear previous errors
-        formError = '';
+        confirmPasswordError = '';
         usernameError = '';
         passwordError = '';
         emailError = '';
@@ -55,7 +42,7 @@ i need for the signup form the next variables
 
         if(password !== confirmPassword)
         {
-            formError = 'Passwords do not match';
+            confirmPasswordError = 'Passwords do not match';
             return;
         }
 
@@ -126,12 +113,13 @@ i need for the signup form the next variables
                 id="confirmPassword"
                 placeholder="Confirm Password"
                 bind:value={confirmPassword}
+                class:error={confirmPasswordError}
                 required
                 />
+                {#if confirmPasswordError}
+                <p class="error-message">{confirmPasswordError}</p>
+                {/if}
             </div>
-            {#if formError}
-            <p class="error-message form-error">{formError}</p>
-            {/if}
             <Button type="submit">Sign up</Button>
         </form>
     </div>
@@ -179,7 +167,26 @@ i need for the signup form the next variables
         background-color: #1a1a1a;
         color: white;
     }
+
+    input:focus
+    {
+        outline: none;
+        border-color: #B13BCC;
+    }
     
+    input:-webkit-autofill
+    {
+        background-color: #1a1a1a !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+    }
+
+    input.error
+    {
+        border: 2px solid #ff4444;
+    }
+
     .input-group
     {
         margin-bottom: 4rem;
@@ -194,7 +201,7 @@ i need for the signup form the next variables
         margin: 0 0 8px 13px;
     }
 
-    .error-message
+    p.error-message
     {
         color: #ff4444;
         font-size: 12px;
@@ -202,24 +209,12 @@ i need for the signup form the next variables
         text-align: left;
     }
     
-    .form-error
-    {
-        text-align: center;
-        margin: 0 0 20px 0;
-    }
-    
-    input.error
-    {
-        border-color: #ff4444;
-    }
-
     .signup-title
     {
         color: #B13BCC;
         letter-spacing: 0.2em;
         text-align: center;
         margin-bottom: 3rem;
-        /* transform: translateX(20px); */
     }
 
 </style>

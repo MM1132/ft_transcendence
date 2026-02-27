@@ -1,11 +1,19 @@
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = 'http://localhost:8080/api/v1';
 
 export interface AuthResult
 {
   success: boolean;
   message: string;
   user?: any;
+  userId?: string;
+  sessionToken?: string;
+  statusCode?: number;
 }
+
+type MyUserResponse = 
+{
+  id: string;
+};
 
 export const authService =
 {
@@ -67,12 +75,16 @@ export const authService =
       }
       else
       {
-        return{success:false, message: data.message || "Login failed"};
+        return{
+          success: false,
+          message: data.message || data.error || "Login failed",
+          statusCode: response.status
+        };
       }
     }
     catch(error)
     {
-      return{success:false, message: "Network error. Please try again."};
+      return{success:false, message: "Network error. Please try again.", statusCode: 0};
     }
   },
 
@@ -85,15 +97,15 @@ export const authService =
         `${API_URL}/register`,
         {method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
         body: JSON.stringify({username, password, email})
       });
 
-      const data = await response.json();
+      // const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if(response.ok)
       {
-        return {success:true, message: "Account created successful", user:data};
+        return {success:true, message: "Account created successful", userId: data.userId, sessionToken: data.sessionToken};
       }
       else if(response.status === 409)
       {
@@ -101,12 +113,34 @@ export const authService =
       }
       else
       {
-        return{success:false, message: data.message || "Signup failed"};
+        return{success:false, message: data.message || "Signup failed", statusCode: response.status};
       }
     }
     catch(error)
     {
-      return{success:false, message: "Network error. Please try again."};
+      return{success:false, message: "Network error. Please try again.", statusCode: 0};
+    }
+  },
+
+  async getMyUser(sessionToken: string): Promise<MyUserResponse | null>
+  {
+    try
+    {
+      const response = await fetch(`${API_URL}/user/me`,
+      {
+        method: 'GET',
+        headers: {
+          'x-session-token': sessionToken,
+        },
+      });
+
+      if (!response.ok) return null;
+
+      return await response.json();
+    }
+    catch (_error)
+    {
+      return null;
     }
   }
 }

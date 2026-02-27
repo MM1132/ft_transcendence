@@ -5,24 +5,23 @@
 
     let username = $state('');
     let password = $state('');
+
     let usernameError = $state('');
     let passwordError = $state('');
-    let formError = $state('');
     
     const { onSubmit } = $props();
 
     // Validate username in real-time as user types
-    function validateUsernameInput()
-    {
-        usernameError = authService.validateUsername(username) || '';
-    }
+    // function validateUsernameInput()
+    // {
+    //     usernameError = authService.validateUsername(username) || '';
+    // }
 
     function handleSubmit(event)
     {
         event.preventDefault();
         
         // Clear previous errors
-        formError = '';
         usernameError = '';
         passwordError = '';
         
@@ -49,7 +48,6 @@
 
 
 <div class="login-container">
-    
     <div id="login-form">
         <h1 class="login-title">LOGIN</h1>
         <form onsubmit={handleSubmit}>
@@ -65,9 +63,9 @@
                 class:error={usernameError}
                 required
                 />
-                {#if usernameError}
+                <!-- {#if usernameError}
                     <p class="error-message">{usernameError}</p>
-                {/if}
+                {/if} -->
             </div>
             <div class="input-group">
                 <p>PASSWORD</p>
@@ -76,12 +74,16 @@
                 id="password"
                 placeholder="Password"
                 bind:value={password}
+                class:error={passwordError}
                 required
                 />
+                <!-- {#if passwordError}
+                    <p class="error-message">{passwordError}</p>
+                {/if} -->
+                {#if passwordError || usernameError}
+                   <p class="error-message">Wrong username or password</p>
+               {/if}
             </div>
-            {#if formError}
-                <p class="error-message form-error">{formError}</p>
-            {/if}
             <Button type="submit">Login</Button>
         </form>
         <p class="signup">
@@ -134,7 +136,21 @@
         background-color: #1a1a1a;
         color: white;
     }
+
+      input:focus
+    {
+        outline: none;
+        border-color: #B13BCC;
+    }
     
+    input:-webkit-autofill
+    {
+        background-color: #1a1a1a !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+    }
+
     .input-group
     {
         margin-bottom: 4rem;
@@ -149,24 +165,24 @@
         margin: 0 0 8px 13px;
     }
 
-    .error-message
+    p.error-message
+    {
+        color: #ff4444; p.error-message
     {
         color: #ff4444;
         font-size: 12px;
         margin: 8px 0 0 13px;
         text-align: left;
     }
-    
-    .form-error
-    {
-        text-align: center;
-        margin: 0 0 20px 0;
+        font-size: 12px;
+        margin: 8px 0 0 13px;
+        text-align: left;
     }
     
-    input.error
+    /* input.error
     {
-        border-color: #ff4444;
-    }
+        border: 2px solid #ff4444;
+    } */
 
     .login-title
     {
