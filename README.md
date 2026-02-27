@@ -2,7 +2,8 @@
 
 ### Instructions for developers:
 - Run dev: `docker compose up -d`
-- View logs `docker compose logs frontend -f`  
+- View logs `docker compose logs frontend -f` 
+- Stop dev: `docker compose down` 
 (replace "frontend" with "backend" if you wish)
 
 Both frontend and backend are automatically hot-reloaded when you save files. 

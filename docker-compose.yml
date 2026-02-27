@@ -74,7 +74,7 @@ services:
       dockerfile: Dockerfile
     container_name: transcendence_nginx
     ports:
-      - "${NGINX_PORT:-8080}:8080"
+      - "${NGINX_PORT}:8080"
     depends_on:
       - backend
       - frontend
