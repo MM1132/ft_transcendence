@@ -1,80 +1,49 @@
-# ============================================
-# ft_transcendence Docker Compose
-# ============================================
-# Architecture:
-#   nginx (port 8080) -> backend (port 3000) -> db (port 5432)
-#
-# Services:
-#   nginx   - Reverse proxy, routes /api /ws /static /health to backend
-#   backend - Fastify/Node.js server (built from backend/Dockerfile, dev stage)
-#   db      - PostgreSQL 18, auto-creates POSTGRES_DB on first run
-#
-# Env vars loaded from .env file (see .env for defaults)
-# ============================================
-
 services:
-  # --- Nginx reverse proxy ---
-  nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    container_name: transcendence_nginx
-    ports:
-      - "${NGINX_PORT:-8080}:80"
-    depends_on:
-      - backend
-    networks:
-      - app-network
-    restart: unless-stopped
-
-  # --- Frontend (Svelte + Vite dev server) ---
-  # Source code mounted as volume for hot-reload (HMR via nginx)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      target: development
+      target: dev
     container_name: transcendence_frontend
     volumes:
-      - ./frontend:/app          # Mount source for hot-reload
-      - /app/node_modules        # Exclude node_modules from mount
+      - ./frontend:/app
+    # ports:
+    #   - 8080:5173
     networks:
-      - app-network
+      - trans_network
     restart: unless-stopped
 
-  # --- Backend (Fastify + WebSocket) ---
-  # Uses multi-stage Dockerfile, target=development for hot-reload
-  # Source code mounted as volume for live editing
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: development
+      target: dev
     container_name: transcendence_backend
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - trans_network
     environment:
+      # Backend API needs to know its own directory (for file saving)
       - BACKEND_ROOT_PATH=/app
-      - NODE_ENV=${NODE_ENV:-development}
-      - PORT=${BACKEND_PORT:-3000}
+      
+      # Backend auto-defaults this to 3000 anyways
+      # - BACKEND_PORT=${BACKEND_PORT}
+
+      # Login details to connect to the database
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=db
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+
       # This is the URL backend returns for static files
       - BACKEND_URL=http://localhost:${NGINX_PORT}
-    volumes:
-      - ./backend:/app          # Mount source for hot-reload
-      - /app/node_modules       # Exclude node_modules from mount
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-network
-    restart: unless-stopped
-
-  # --- PostgreSQL database ---
-  # Creates POSTGRES_DB automatically on first start
-  # Data persisted in postgres_data volume
+  
   db:
     image: postgres:18-alpine
     container_name: transcendence_db
@@ -84,21 +53,37 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
+      #! This port is open for development purposes only so you can what is in the database
+      #! For developing Frontend, use PORT 8080 only
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgresql_config:/etc/postgresql_config
     networks:
-      - app-network
+      - trans_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
     restart: unless-stopped
+  
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: transcendence_nginx
+    ports:
+      - "${NGINX_PORT}:8080"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - trans_network
+    restart: unless-stopped
 
 networks:
-  app-network:
+  trans_network:
     driver: bridge
 
 volumes:
