@@ -1,12 +1,3 @@
-<!--
-This file will be the application shell. It should handle:
-1.  Rooting/Navigation - Which page to show based on URL or state
-2.  Global Layout - Elements that appear on All pages
-3.  Authentication Flow - Show Login Page vs Dashboard
-4.  Global State - Acess to stores for authentication status 
--->
-
-
 <script>
   import { writable } from 'svelte/store'
   import { fade } from 'svelte/transition'
@@ -15,6 +6,7 @@ This file will be the application shell. It should handle:
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
   import SignUpPage from './routes/SignUpPage.svelte'
+  import SettingPage from './routes/SettingPage.svelte'
 
 
   // const currentPath = writable(window.location.pathname || '/')
@@ -46,6 +38,8 @@ This file will be the application shell. It should handle:
       <SignUpPage />
     {:else if $currentPath === '/dashboard'}
       <DashboardPage />
+    {:else if $currentPath === '/setting'}
+      <SettingPage />
     {/if}
   </div>
 {/key}
