@@ -1,0 +1,2 @@
+ALTER TABLE users
+ADD online_status_public BOOLEAN NOT NULL DEFAULT TRUE;
