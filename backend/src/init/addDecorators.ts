@@ -21,6 +21,10 @@ export const addDecorators = async (fastify: FastifyInstance) => {
     process.env.BACKEND_URL ?? 'no_backend_url_provided'
   );
 
+  fastify.decorate(
+    'frontendOrigin', process.env.FRONTEND_ORIGIN ?? 'http://localhost:8080'
+  );
+
   try {
     const client = await initDatabase(fastify);
     fastify.decorate('db', client);

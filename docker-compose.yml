@@ -7,10 +7,10 @@ services:
     container_name: transcendence_frontend
     volumes:
       - ./frontend:/app
-    # ports:
-    #   - 8080:5173
     networks:
       - trans_network
+    environment:
+      - VITE_BACKEND_URL=${BACKEND_URL}:${NGINX_PORT}
     restart: unless-stopped
 
   backend:
@@ -31,8 +31,8 @@ services:
       # Backend API needs to know its own directory (for file saving)
       - BACKEND_ROOT_PATH=/app
       
-      # Backend auto-defaults this to 3000 anyways
-      # - BACKEND_PORT=${BACKEND_PORT}
+      # Backend auto-defaults this to 3000 anyways, so you don't need to set this
+      # - BACKEND_PORT=${BACKEND_PORT:-3000}
 
       # Login details to connect to the database
       - POSTGRES_USER=${POSTGRES_USER}
@@ -42,8 +42,11 @@ services:
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
 
       # This is the URL backend returns for static files
-      - BACKEND_URL=http://localhost:${NGINX_PORT}
-  
+      - BACKEND_URL=${BACKEND_URL}:${NGINX_PORT}
+
+      # So that the backend knows which IP to allow connecting to it
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+
   db:
     image: postgres:18-alpine
     container_name: transcendence_db
