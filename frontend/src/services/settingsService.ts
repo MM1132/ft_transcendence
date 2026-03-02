@@ -53,13 +53,13 @@ export const settingsService = {
 async function extractErrorMessage(response: Response): Promise<string>
 {
   try {
-    const body = (await response.json()) as { error?: string };
-    if (body?.error) return body.error;
+    const body = await response.json() as { error?: string };
+    return body.error || `Request failed (${response.status})`;
   } catch {
-    // Ignore JSON parsing errors and return a generic message below
+    return `Request failed (${response.status})`;
   }
-  return `Request failed (${response.status})`;
 }
+
 
 function buildAuthHeaders(): HeadersInit
 {

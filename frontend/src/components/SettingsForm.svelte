@@ -1,6 +1,7 @@
 <script lang="ts">
     import ToggleSetting from './Toggle.svelte';
     import InputField from './Input.svelte';
+    import Button from './Button.svelte';
     import { onMount } from 'svelte';
     import { settingsService } from '../services/settingsService';
 
@@ -9,9 +10,9 @@
     let birthDate = $state('');
     let twoFactorEnabled = $state(false);
     let notificationsEnabled = $state(true);
-    let isSaving = $state(false);
-    let feedback = $state('');
-    let feedbackType = $state<'success' | 'error' | '' > (''); // erlaubt sind  success, error oder leer und ('') ist startwert
+    const { setStatus } = $props<{ // props macht, dass parent component funktion uebergeben kann, damit child sie aufrufen kann
+        setStatus?: (status: { isSaving: boolean; feedback: string; feedbackType: 'success' | 'error' | '' }) => void;
+    }>();
 
     onMount(async () => { // beim oeffnen der seite, wird funktion aufgerufen, laedt user daten
         try {
@@ -20,16 +21,17 @@
             bio = settings.bio ?? '';
             birthDate = settings.birthday ?? '';
         } catch (error) {
-            feedback = error instanceof Error ? error.message : 'Could not load settings';
-            feedbackType = 'error';
+            setStatus?.({
+                isSaving: false,
+                feedback: error instanceof Error ? error.message : 'Could not load settings',
+                feedbackType: 'error',
+            });
         }
     });
 
     async function handleSubmit(event: SubmitEvent) {
         event.preventDefault(); // verhindert, dass seite neu geladen wird
-        isSaving = true;
-        feedback = '';
-        feedbackType = '';
+        setStatus?.({ isSaving: true, feedback: '', feedbackType: '' });
 
         try
         { // werte in settingsService updaten, trim und wenn leer dann null
@@ -42,18 +44,25 @@
             fullName = updated.fullName ?? '';
             bio = updated.bio ?? '';
             birthDate = updated.birthday ?? '';
-            feedback = 'Settings saved';
-            feedbackType = 'success';
+            setStatus?.({ isSaving: false, feedback: 'Settings saved', feedbackType: 'success' });
         }
         catch (error)
         {
-            feedback = error instanceof Error ? error.message : 'Save failed';
-            feedbackType = 'error';
+            setStatus?.({
+                isSaving: false,
+                feedback: error instanceof Error ? error.message : 'Save failed',
+                feedbackType: 'error',
+            });
         }
-        finally
-        {
-            isSaving = false;
-        }
+    }
+
+    function handleReset() {
+        fullName = '';
+        bio = '';
+        birthDate = '';
+        twoFactorEnabled = false;
+        notificationsEnabled = false;
+        setStatus?.({ isSaving: false, feedback: 'Click Save to apply.', feedbackType: 'error' });
     }
 </script>
 <!-- state macht variable reaktiv damit bind sie aendern kann -->
@@ -94,16 +103,10 @@
         />
         <ToggleSetting label="Two Factor Authentication" bind:checked={twoFactorEnabled} />
         <ToggleSetting label="Notifications" bind:checked={notificationsEnabled} />
+        <div class="form-actions">
+            <Button type="button" variant="reset" onclick={handleReset}>Reset</Button>
+        </div>
 
-        {#if feedback}
-            <p class={feedbackType}>
-                {feedback}
-            </p>
-        {/if}
-
-        {#if isSaving} 
-            <p>Saving...</p>
-        {/if}
         <!-- ladehinweis, falls backend haengt oder verbindung stirbt -->
     </form>
 </div>
@@ -145,17 +148,9 @@
     padding: 40px;
     }
 
-    /* p nimmt ein element, dass die class succes hat. p weil nur text */
-    p.success 
+    .form-actions
     {
-        color: #0AEB00;
-        margin: 0;
-    }
-
-    p.error
-    {
-        color: #ff5e5e;
-        margin: 0;
+        margin-top: 20px;
     }
 
 </style>

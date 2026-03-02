@@ -4,14 +4,22 @@
         type?: 'button' | 'submit' | 'reset';
         disabled?: boolean;
         form?: string;
-        variant?: 'default' | 'save';
+        variant?: 'default' | 'save' | 'reset';
+        onclick?: (event: MouseEvent) => void;
         children: any;
     }
     
-    const { type = 'button', disabled = false, form, variant = 'default', children }: Props = $props();
+    const { type = 'button', disabled = false, form, variant = 'default', onclick, children }: Props = $props();
 </script>
 
-<button {type} {disabled} {form} class:save={variant === 'save'}>
+<button
+    {type}
+    {disabled}
+    {form}
+    {onclick}
+    class:save={variant === 'save'}
+    class:reset={variant === 'reset'}
+>
     {@render children()}
 </button>
 
@@ -44,5 +52,21 @@
     {
         font-size: 1.1rem;
         font-family: 'Orbitron', sans-serif;
+    }
+
+    button.reset
+    {
+        width: auto;
+        min-width: 120px;
+        padding: 10px 16px;
+        border: 1px solid #ff4444;
+        background: rgba(255, 68, 68, 0.15);
+        color: #ff6b6b;
+    }
+
+    button.reset:hover:not(:disabled)
+    {
+        background: rgba(255, 68, 68, 0.28);
+        color: #ffd5d5;
     }
 </style>
