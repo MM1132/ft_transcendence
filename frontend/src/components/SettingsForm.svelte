@@ -3,6 +3,8 @@
     import InputField from './Input.svelte';
     import { onMount } from 'svelte';
     import { settingsService } from '../services/settingsService';
+    import Button from '../components/Button.svelte';
+
 
     let fullName = $state('');
     let bio = $state('');
@@ -202,11 +204,11 @@
             bind:value={birthDate}
             summary
         />
-        <ToggleSetting label="very long text blablabla balbalblablablablablabla
+        <!-- <ToggleSetting label="very long text blablabla balbalblablablablablabla
          hmmmmmmmmm still not long enough, what do i do here ahhhhhhhhhhhhhhhhhhhh now we hit the 2nd line,
           looks weird.... whatever" />
         <ToggleSetting label="Two Factor Authentication" bind:checked={twoFactorEnabled} />
-        <ToggleSetting label="Notifications" bind:checked={notificationsEnabled} />
+        <ToggleSetting label="Notifications" bind:checked={notificationsEnabled} /> -->
 
         {#if feedback}
             <p class={feedbackType}>
@@ -220,6 +222,14 @@
         <!-- ladehinweis, falls backend haengt oder verbindung stirbt -->
         </form>
     </div>
+
+    <div class="settings-actions">
+        <Button type="submit" form="settings-form-main" variant="save" class="save-settings">Save</Button>
+    </div>
+
+    <!-- <button form="settings-form-main" type="submit" class="btn-save-small" disabled={isSaving}>
+                {isSaving ? 'Saving...' : 'Save'}
+    </button> -->
 </div>
 <!-- bind: aendert die variable gleich mit -->
 
@@ -272,7 +282,8 @@
         margin: 0;
     }
 
-    .avatar-section {
+    .avatar-section
+    {
         display: flex;
         align-items: center;
         gap: 24px;
@@ -281,7 +292,8 @@
         border-bottom: 1px solid rgba(10, 235, 0, 0.1);
     }
 
-    .avatar-preview {
+    .avatar-preview
+    {
         width: 100px;
         height: 100px;
         border-radius: 50%;
@@ -293,25 +305,29 @@
         background: rgba(15, 19, 20, 0.8);
     }
 
-    .avatar-preview img {
+    .avatar-preview img
+    {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
-    .avatar-placeholder {
+    .avatar-placeholder
+    {
         width: 50px;
         height: 50px;
         color: rgba(10, 235, 0, 0.5);
     }
 
-    .avatar-actions {
+    .avatar-actions
+    {
         display: flex;
         flex-direction: column;
         gap: 12px;
     }
 
-    .btn-change-avatar {
+    .btn-change-avatar 
+    {
         background: rgba(10, 235, 0, 0.1);
         color: #0AEB00;
         border: 1px solid #0AEB00;
@@ -325,12 +341,14 @@
         font-family: inherit;
     }
 
-    .btn-change-avatar:hover:not(:disabled) {
+    .btn-change-avatar:hover:not(:disabled)
+    {
         background: rgba(10, 235, 0, 0.2);
         box-shadow: 0 0 10px rgba(10, 235, 0, 0.3);
     }
 
-    .btn-delete-avatar {
+    .btn-delete-avatar
+    {
         background: transparent;
         color: #ff5e5e;
         border: 1px solid rgba(255, 94, 94, 0.5);
@@ -344,15 +362,31 @@
         font-family: inherit;
     }
 
-    .btn-delete-avatar:hover:not(:disabled) {
+    .btn-delete-avatar:hover:not(:disabled)
+    {
         background: rgba(255, 94, 94, 0.1);
         border-color: #ff5e5e;
         box-shadow: 0 0 10px rgba(255, 94, 94, 0.2);
     }
 
-    button:disabled {
+    button:disabled
+    {
         opacity: 0.5;
         cursor: not-allowed;
     }
+
+    .settings-actions
+    {
+        
+        width: 100%;
+        /* display: flex; */
+        align-self: center;
+        margin-top: 16px;
+    }
+    
+.save-settings {
+    background: #eb8100 !important;
+    color: #f30000 !important;
+}
 
 </style>

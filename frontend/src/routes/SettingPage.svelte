@@ -1,5 +1,5 @@
 <script>
-  import Button from '../components/Button.svelte';
+  // import Button from '../components/Button.svelte';
   import SettingsForm from "../components/SettingsForm.svelte";
 </script>
 
@@ -22,9 +22,9 @@
 <main>
   <div class="settings-layout">
     <SettingsForm />
-    <div class="settings-actions">
+    <!-- <div class="settings-actions">
       <Button type="submit" form="settings-form-main" variant="save">Save</Button>
-    </div>
+    </div> -->
   </div>
 </main>
 
@@ -43,13 +43,6 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
-  }
-
-  .settings-actions
-  {
-    width: 150px;
-    display: flex;
-    /* flex-direction: column-reverse; */
   }
 
   main
