@@ -1,8 +1,8 @@
 <script>
   import SignupForm from "../components/SignupForm.svelte";
   import { authService } from "../services/authService";
-  import Layout from "../components/Layout.svelte";
-
+  import { navigateTo } from "../stores/router";
+  
   let signupError = $state('');
   let isLoading = $state(false);
 
@@ -17,7 +17,7 @@
     
     if(result.success)
     {
-      window.navigateTo('/login');
+      navigateTo('/login');
     }
     else
     {
@@ -27,7 +27,5 @@
   }
 </script>
 
-<Layout>
-  <SignupForm onSubmit={handleSignup}/>
-</Layout>
+<SignupForm onSubmit={handleSignup}/>
 

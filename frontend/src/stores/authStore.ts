@@ -211,6 +211,7 @@ function logout()
 {
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
     update(() => ({ ...initialState }));
+    
 }
 
 export const authStore = { subscribe, login, signup, logout, initFromSession };

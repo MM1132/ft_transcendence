@@ -1,6 +1,7 @@
 <script>
     import Button from './Button.svelte';
     import { authService } from '../services/authService';
+    import { navigateTo } from '../stores/router';
 
 
     let username = $state('');
@@ -84,7 +85,7 @@
         </form>
         <p class="signup">
             Don't have an account? 
-            <a href="/signup" onclick={(e) => { e.preventDefault(); window.navigateTo('/signup'); }}>
+            <a href="/signup" onclick={(e) => { e.preventDefault(); navigateTo('/signup'); }}>
                 Sign up
             </a>
         </p>

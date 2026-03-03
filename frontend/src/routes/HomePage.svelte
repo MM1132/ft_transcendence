@@ -1,11 +1,10 @@
 <script>
   import Button from '../components/Button.svelte';
-  import Layout from '../components/Layout.svelte';
+  import { navigateTo } from '../stores/router';
 </script>
 
 
-<Layout>
-  <div class="hero-section">
+<div class="hero-section">
     <!-- <div class="glow-effect"></div> -->
     <div class="hero-content">
       <div class="hero-text">
@@ -20,7 +19,7 @@
         Compete with players worldwide in the ultimate arena.
       </p>
       <div class="hero-buttons">
-        <a href="/login" onclick={(e) => { e.preventDefault(); window.navigateTo('/login'); }}>
+        <a href="/login" onclick={(e) => { e.preventDefault(); navigateTo('/login'); }}>
           <Button type="button">GET STARTED</Button>
         </a>
         <button class="btn-secondary">LEARN MORE</button>
@@ -53,7 +52,6 @@
     </div>
   </div>
   </div>
-</Layout>
 
 
 

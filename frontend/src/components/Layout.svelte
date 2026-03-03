@@ -6,7 +6,9 @@
 </script>
 
 <Header />
+
 <main>
-    <slot />
+    {@render children()}
 </main>
+
 <Footer />
