@@ -60,7 +60,7 @@
 
 <div id="settings-form">
     <form id="settings-form-main" class="settings-content" onsubmit={handleSubmit}>
-        <h2>settings</h2>
+        <h2>Settings</h2>
         <InputField
             id="full-name"
             name="fullName"
@@ -92,9 +92,6 @@
             bind:value={birthDate}
             summary
         />
-        <ToggleSetting label="very long text blablabla balbalblablablablablabla
-         hmmmmmmmmm still not long enough, what do i do here ahhhhhhhhhhhhhhhhhhhh now we hit the 2nd line,
-          looks weird.... whatever" />
         <ToggleSetting label="Two Factor Authentication" bind:checked={twoFactorEnabled} />
         <ToggleSetting label="Notifications" bind:checked={notificationsEnabled} />
 
