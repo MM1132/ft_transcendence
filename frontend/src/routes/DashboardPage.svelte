@@ -26,15 +26,5 @@
 </footer>
 
 <style>
-  main
-  {
-    padding: 110px 24px 56px;
-  }
 
-  .friends-layout
-  {
-    width: 100%;
-    min-height: 72vh;
-    position: relative;
-  }
 </style>

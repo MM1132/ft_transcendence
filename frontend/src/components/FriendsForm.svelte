@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Button from './Button.svelte';
+
     let isExpanded = $state(false);
 
     function togglePanel()
@@ -8,87 +10,56 @@
 </script>
 
 <aside class="friends-drawer" class:expanded={isExpanded}>
-    <button
-        class="friends-trigger"
+    <Button
         type="button"
+        variant="expand-trigger"
         onclick={togglePanel}
-        aria-expanded={isExpanded}
-        aria-label={isExpanded ? 'Close friends panel' : 'Open friends panel'}
+        ariaExpanded={isExpanded}
+        ariaLabel={isExpanded ? 'Close friends panel' : 'Open friends panel'}
     >
         FRIENDS
-    </button>
+    </Button>
 
-    <section class="friends-panel" aria-hidden={!isExpanded}>
-        <h2>Friends</h2>
-        <p>Friends form area</p>
-    </section>
-</aside>
+    {#if isExpanded}
+        <form class="friends-panel">
+            <h2>Friends</h2>
+        </form>
+    {/if}
+</aside> 
+<!-- aside ist container fuer ergaenzende inhalte -->
 
 <style>
     .friends-drawer
     {
         position: fixed;
-        top: 7vh;
-        left: 0px;
+        left: 0;
+        top: 100px;
+        bottom: 60px; /* 40 weniger als top, weil header 40px groeser ist als footer*/
         width: 50px;
-        height: 90vh;
-        background: transparent;
-        box-sizing: border-box;
-        overflow: hidden;
+        overflow: hidden; 
+        /* schneidet alles raus was aus drawer rausstehen wuerde */
         transition: width 0.3s ease;
-        z-index: 20;
     }
 
     .friends-drawer.expanded
     {
-        width: min(650px, 86vw);
+        width: max(320px, 33.333vw);
+        /* 1/3 vom bildschirm (33%) und mingroese von 320px fuer kleine bildschirme */
     }
 
-    .friends-trigger
-    {
-        position: absolute;
-        top: 12px;
-        left: 8px;
-        width: 32px;
-        height: calc(100% - 24px);
-        border: 0;
-        background: #0AEB00;
-        color: #062d04;
-        cursor: pointer;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-        transform: rotate(180deg);
-        border-radius: 1px;
-    }
 
     .friends-panel
     {
-        margin-left: 50px;
-        width: calc(100% - 50px);
+        margin-left: 55px;
         height: 100%;
+        box-sizing: border-box;
         border: 1px solid rgba(10, 235, 0, 0.1);
         background: rgba(15, 19, 20, 0.6);
         backdrop-filter: blur(10px);
-        box-sizing: border-box;
         padding: 36px;
-        color: #fff;
-        opacity: 0;
-        transform: translateX(-14px);
-        transition: opacity 0.2s ease, transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
-        pointer-events: none;
     }
 
-    .friends-drawer.expanded .friends-panel
-    {
-        opacity: 1;
-        transform: translateX(0);
-        pointer-events: auto;
-    }
-
-    .friends-drawer.expanded .friends-panel:hover
+    .friends-panel:hover
     {
         border-color: #0AEB00;
         background: rgba(10, 235, 0, 0.02);
@@ -100,12 +71,6 @@
         color: #0AEB00;
         text-transform: uppercase;
         letter-spacing: 1px;
-        text-align: left;
-    }
-
-    p
-    {
-        margin: 0;
         text-align: left;
     }
 </style>
