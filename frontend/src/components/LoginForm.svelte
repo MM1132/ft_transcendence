@@ -8,14 +8,14 @@
 
     let usernameError = $state('');
     let passwordError = $state('');
+    let hasAuthError = $state(false);
     
     const { onSubmit } = $props();
 
-    // Validate username in real-time as user types
-    // function validateUsernameInput()
-    // {
-    //     usernameError = authService.validateUsername(username) || '';
-    // }
+    function clearAuthError()
+    {
+        hasAuthError = false;
+    }
 
     function handleSubmit(event)
     {
@@ -29,6 +29,7 @@
         if (usernameValidation)
         {
             usernameError = usernameValidation;
+            hasAuthError = true;
             return;
         }
 
@@ -36,11 +37,11 @@
         if(passwordValidation)
         {
             passwordError = passwordValidation;
+            hasAuthError = true;
             return;
         }
         
-        
-        
+       
         onSubmit?.({ username, password });
     }
 </script>
@@ -59,13 +60,10 @@
                 id="username"
                 placeholder="Username"
                 bind:value={username}
-                oninput={validateUsernameInput}
-                class:error={usernameError}
+                oninput={clearAuthError}
+                class:error={hasAuthError}
                 required
                 />
-                <!-- {#if usernameError}
-                    <p class="error-message">{usernameError}</p>
-                {/if} -->
             </div>
             <div class="input-group">
                 <p>PASSWORD</p>
@@ -74,15 +72,13 @@
                 id="password"
                 placeholder="Password"
                 bind:value={password}
-                class:error={passwordError}
+                oninput={clearAuthError}
+                class:error={hasAuthError}
                 required
                 />
-                <!-- {#if passwordError}
-                    <p class="error-message">{passwordError}</p>
-                {/if} -->
-                {#if passwordError || usernameError}
-                   <p class="error-message">Wrong username or password</p>
-               {/if}
+                {#if hasAuthError}
+                    <p class="error-message">Wrong username or password</p>
+                {/if}
             </div>
             <Button type="submit">Login</Button>
         </form>
@@ -165,25 +161,19 @@
         margin: 0 0 8px 13px;
     }
 
-    p.error-message
+    input.error
     {
-        color: #ff4444; p.error-message
+        border: 2px solid #ff4444;
+    }
+
+    p.error-message
     {
         color: #ff4444;
         font-size: 12px;
         margin: 8px 0 0 13px;
         text-align: left;
     }
-        font-size: 12px;
-        margin: 8px 0 0 13px;
-        text-align: left;
-    }
-    
-    /* input.error
-    {
-        border: 2px solid #ff4444;
-    } */
-
+ 
     .login-title
     {
         color: #B13BCC;

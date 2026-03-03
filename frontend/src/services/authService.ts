@@ -63,7 +63,6 @@ export const authService =
         `${API_URL}/login`,
         {method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
         body: JSON.stringify({username, password})
       });
 
@@ -71,7 +70,7 @@ export const authService =
 
       if(response.ok)
       {
-        return {success:true, message: "Login successful", user:data};
+        return {success:true, message: "Login successful", userId:data.userId, sessionToken:data.sessionToken};
       }
       else
       {
@@ -100,8 +99,7 @@ export const authService =
         body: JSON.stringify({username, password, email})
       });
 
-      // const data = await response.json();
-      const data = await response.json().catch(() => ({}));
+      const data = await response.json();
 
       if(response.ok)
       {

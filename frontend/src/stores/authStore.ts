@@ -40,7 +40,7 @@ async function login(username: string, password: string)
     if (passError)
     {
         update((currenState) => ({
-            ...currenState, // <== spread operator(copies all existing properties so only change the ones we list)
+            ...currenState, 
             errorMessage: passError
         }));
         return;
@@ -57,10 +57,13 @@ async function login(username: string, password: string)
         const result = await authService.login(username, password);
         if (result.success)
         {
+            sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ user: username, userId: result.userId, sessionToken: result.sessionToken }));
             update((state) => ({
                 ...state,
                 isLoggedIn: true,
                 user: username,
+                userId: result.userId,
+                sessionToken: result.sessionToken,
                 isLoading: false
             }));
         }
@@ -194,7 +197,7 @@ function initFromSession()
         void authService.getMyUser(parsed.sessionToken).then((user) => {
             if (!user || user.id !== parsed.userId)
             {
-                // logout();
+                logout();
             }
         });
     }
@@ -204,9 +207,10 @@ function initFromSession()
     }
 }
 
+function logout()
+{
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    update(() => ({ ...initialState }));
+}
 
-
-
-
-
-export const authStore = { subscribe, login, signup };
+export const authStore = { subscribe, login, signup, logout, initFromSession };

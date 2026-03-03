@@ -40,6 +40,12 @@
             return;
         }
 
+        if (confirmPassword == '')
+        {
+            confirmPasswordError = 'Please fill out this field';
+            return;
+        }
+
         if(password !== confirmPassword)
         {
             confirmPasswordError = 'Passwords do not match';
@@ -63,7 +69,7 @@
 <div class="signup-container">
     <div id="signup-form">
         <h1 class="signup-title">SIGN UP</h1>
-        <form onsubmit={handleSubmit}>
+        <form onsubmit={handleSubmit} novalidate>
             <div class="input-group">
                 <p>USERNAME</p>
                 <input
