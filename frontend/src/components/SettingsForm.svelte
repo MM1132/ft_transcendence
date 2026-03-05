@@ -19,13 +19,22 @@
     let fileInput: HTMLInputElement;
     let isUploadingAvatar = $state(false);
 
+    // trick cache with a fake query parameter:
+    function withAvatarVersion(url: string): string {
+        const separator = url.includes('?') ? '&' : '?';
+        return `${url}${separator}v=${Date.now()}`;
+    }
+
     onMount(async () => { // beim oeffnen der seite, wird funktion aufgerufen, laedt user daten
         try {
-            const settings = await settingsService.getUserSettings(); // await wartet auf server antwort
+            const [settings, myAvatarUrl] = await Promise.all([
+                settingsService.getUserSettings(),
+                settingsService.getMyAvatarUrl(),
+            ]); // await wartet auf server antwort
             fullName = settings.fullName ?? '';
             bio = settings.bio ?? '';
             birthDate = settings.birthday ?? '';
-            avatarUrl = settings.avatar_url ?? null;
+            avatarUrl = myAvatarUrl ? withAvatarVersion(myAvatarUrl) : null;
         } catch (error) {
             feedback = error instanceof Error ? error.message : 'Could not load settings';
             feedbackType = 'error';
@@ -82,13 +91,16 @@
         feedbackType = '';
 
         try {
-            await settingsService.uploadAvatar(file);
+            const uploadedAvatarUrl = await settingsService.uploadAvatar(file);
             feedback = 'Avatar uploaded successfully';
             feedbackType = 'success';
-            
-            // Refresh settings to get the new avatar URL
-            const settings = await settingsService.getUserSettings();
-            avatarUrl = settings.avatar_url ?? null;
+
+            if (uploadedAvatarUrl) {
+                avatarUrl = withAvatarVersion(uploadedAvatarUrl);
+            } else {
+                const myAvatarUrl = await settingsService.getMyAvatarUrl();
+                avatarUrl = myAvatarUrl ? withAvatarVersion(myAvatarUrl) : null;
+            }
         } catch (error) {
             feedback = error instanceof Error ? error.message : 'Avatar upload failed';
             feedbackType = 'error';
@@ -109,10 +121,7 @@
             await settingsService.deleteAvatar();
             feedback = 'Avatar deleted successfully';
             feedbackType = 'success';
-            
-            // Refresh settings to get the updated status
-            const settings = await settingsService.getUserSettings();
-            avatarUrl = settings.avatar_url ?? null;
+            avatarUrl = null;
         } catch (error) {
             feedback = error instanceof Error ? error.message : 'Avatar deletion failed';
             feedbackType = 'error';

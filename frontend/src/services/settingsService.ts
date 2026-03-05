@@ -2,7 +2,10 @@ export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
   fullName: string | null;
   bio: string | null;
-  avatar_url?: string | null; // maybe exist,maybe not if so
+};
+
+type UserProfile = {
+  avatarUrl?: string | null;
 };
 
 export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optional auch nur z.B. bio (wegen dem ?)
@@ -16,6 +19,9 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
 function api(path: string): string {
   return `http://localhost:8080/api/v1${path}`;
 }
+// !NOT FOR DEPLOY
+//todo : ASK Robert first - check env probably <--------------------------------------
+const API_ORIGIN = 'http://localhost:8080';
 
 const SETTINGS_PATH = '/user/me/settings';
 
@@ -32,6 +38,23 @@ export const settingsService = {
     }
 
     return (await response.json()) as UserSettings; // json in UserSettings umwandeln
+  },
+
+  // fallback when upload response has no URL
+  async getMyAvatarUrl(): Promise<string | null> {
+    const response = await fetch(api('/user/me'), {
+      method: 'GET',
+      headers: buildAuthHeaders(),
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      const errorMessage = await extractErrorMessage(response);
+      throw new Error(errorMessage);
+    }
+
+    const user = (await response.json()) as UserProfile;
+    return normalizeAvatarUrl(user.avatarUrl ?? null);
   },
 
   async updateUserSettings( // die eingegebenen werte ans backend schicken als 'payload'
@@ -54,18 +77,13 @@ export const settingsService = {
     return (await response.json()) as UserSettings;
   },
 
-  async uploadAvatar(file: File): Promise<void> {
+  async uploadAvatar(file: File): Promise<string | null> {
     const formData = new FormData();
-    formData.append('file', file, 'my-avatar.png');  // ? maybe better change it to avatar 
-    // ! check backend
-    // * its fun to override , isnt it?
-
-    // create headers  authorization
-    const headers = buildAuthHeaders(); // as Record<string , string>; // for predicatable headers["authorization"]
+    formData.append('file', file, file.name);
 
     const response = await fetch(api(`${SETTINGS_PATH}/avatar`), {
       method: 'PUT',
-      headers,
+      headers: buildAuthHeaders(),
       body: formData,
     });
 
@@ -73,6 +91,10 @@ export const settingsService = {
       const errorMessage = await extractErrorMessage(response);
       throw new Error(errorMessage);
     }
+
+    // json is returned i must make it string
+    const body = (await response.json()) as { avatarUrl?: string | null };
+    return normalizeAvatarUrl(body.avatarUrl ?? null);
   },
 
   async deleteAvatar(): Promise<void> {
@@ -109,4 +131,15 @@ function buildAuthHeaders(): HeadersInit
 
   // ansonsten dev token in header
   return { 'x-dev': '1' };
+}
+
+// covert relative backend path - avoid broken image
+function normalizeAvatarUrl(url: string | null | undefined): string | null {
+  const value = url?.trim();
+  if (!value) return null;
+  if (value.startsWith('http://') || value.startsWith('https://')) return value;
+  if (value.startsWith('http:/')) return value.replace('http:/', 'http://');
+  if (value.startsWith('https:/')) return value.replace('https:/', 'https://');
+  if (value.startsWith('/')) return `${API_ORIGIN}${value}`;
+  return value;
 }
