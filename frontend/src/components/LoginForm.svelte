@@ -111,16 +111,16 @@
         padding: 6rem;
         padding-top: 2rem;
         border: 1px solid rgba(10, 235, 0, 0.1);
-        border-radius: 0px;
         background: rgba(15, 19, 20, 0.6);
         backdrop-filter: blur(10px);
+        border-radius: 0px;
         transition: all 0.3s;
     }
     
     #login-form:hover
     {
         border-color: #0AEB00;
-        background: rgba(10, 235, 0, 0.02);
+        /* background: rgba(10, 235, 0, 0.02); */
     }
     
     input

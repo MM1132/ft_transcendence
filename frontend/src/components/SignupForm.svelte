@@ -1,6 +1,7 @@
 <script>
     import Button from './Button.svelte';
     import { authService } from '../services/authService';
+    import { navigateTo } from '../stores/router';
 
     let username = $state('');
     let password = $state ('');
@@ -128,6 +129,12 @@
             </div>
             <Button type="submit">Sign up</Button>
         </form>
+        <p class="login">
+            Do you have an account? 
+            <a href="/login" onclick={(e) => { e.preventDefault(); navigateTo('/login'); }}>
+                Login
+            </a>
+        </p>
     </div>
 </div>
 
@@ -221,6 +228,29 @@
         letter-spacing: 0.2em;
         text-align: center;
         margin-bottom: 3rem;
+    }
+
+    .login
+    {
+        text-align: center;
+        margin-top: 3rem;
+        color: #888;
+        font-size: 14px;
+        
+    }
+
+    .login a
+    {
+        color: #0AEB00;
+        text-decoration: none;
+        font-weight: 600;
+        margin-left: 20px;
+    }
+
+    .login a:hover
+    {
+        text-decoration: underline;
+        /* color: #B13BCC; */
     }
 
 </style>

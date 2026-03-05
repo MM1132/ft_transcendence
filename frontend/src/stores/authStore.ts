@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import { authService } from '../services/authService';
+import { navigateTo } from './router';
 
 type AuthState =
 {
@@ -211,7 +212,7 @@ function logout()
 {
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
     update(() => ({ ...initialState }));
-    
+    navigateTo('/');
 }
 
 export const authStore = { subscribe, login, signup, logout, initFromSession };
