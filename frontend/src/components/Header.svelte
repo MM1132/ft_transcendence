@@ -32,30 +32,54 @@
 
 
 <header>
-  <div id="header">
-    {#if $authStore.isLoggedIn}
-    <!-- <button class="header-logo" type="button" onclick={goToDashboard}> -->
-     <Logo onclick={goToDashboard} />
-      <!-- <img src="src/images/c.svg" alt="Logo"/> -->
-    <!-- </button> -->
-     <div class="header-nav">
-        <div class="avatar-container">
-            <button class="avatar" type="button" onclick={toggleDropdown}>
-                <p>Image</p>
-            </button>
-            {#if showDropdown}
-                <div class="dropdown">
-                    <button type="button" onclick={goToSettings}>Settings</button>
-                    <button type="button" onclick={handleLogout}>Logout</button>
-                </div>
-            {/if}
-      </div>
+    <div id="header">
+        {#if $authStore.isLoggedIn}
+        <Logo handleLogoClick ={goToDashboard} />
+        <div class="header-nav">
+            <div class="avatar-container">
+                <button class="avatar" type="button" onclick={toggleDropdown}>
+                    <p>Image</p>
+                </button>
+                {#if showDropdown}
+                    <div class="dropdown">
+                        <button type="button" onclick={goToSettings}>Settings</button>
+                        <button type="button" onclick={handleLogout}>Logout</button>
+                    </div>
+                {/if}
+            </div>
+        </div>
+        {/if}
     </div>
-    {/if}
-</div>
 </header>
 
 <style>
+    #header
+    {
+        width: 100%;
+        height: 80px;
+        background-color: #0f1314;
+        backdrop-filter: blur(10px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+
+    .header-nav
+    {
+        display: flex;
+        gap: 60px;
+        flex: 1;
+        justify-content: flex-end;
+        margin-right: 45px;
+    }
+
     .avatar-container
     {
         position: relative;
@@ -63,8 +87,8 @@
 
     .avatar
     {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         border: 1px solid rgba(10, 235, 0, 0.1);
         background:rgba(255, 255, 255, 0.1);
@@ -73,6 +97,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor:pointer;
     }
 
     .avatar:hover
@@ -113,4 +138,5 @@
     {
         background: #B13BCC;
     }
+
 </style>
