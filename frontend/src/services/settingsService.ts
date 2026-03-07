@@ -16,7 +16,12 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
   bio?: string | null;
 };
 
-const API_ORIGIN = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080';
+
+// extra protection.It is fixed already in constants.ts in case avatar URLs from backend can be relative (e.g. /api/v1/static/...)
+// so we don't accidentally prefix /api/v1 twice.
+const API_ORIGIN = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080')
+  .replace(/\/+$/, '')
+  .replace(/\/api\/v1$/, '');
 const SETTINGS_PATH = '/user/me/settings';
 const SETTINGS_API_URL = buildApiPath(SETTINGS_PATH);
 
