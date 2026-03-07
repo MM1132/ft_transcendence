@@ -4,7 +4,6 @@ declare module 'fastify' {
   interface FastifyInstance {
     baseUrl: string;
     baseDir: string;
-    frontendOrigin: string;
     db: Client;
     port: number;
   }

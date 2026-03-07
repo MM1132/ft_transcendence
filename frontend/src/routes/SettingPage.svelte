@@ -6,37 +6,23 @@
   let feedback = $state('');
   let feedbackType = $state<'success' | 'error' | ''>('');
 
-  function setStatus(status: { isSaving: boolean; feedback: string; feedbackType: 'success' | 'error' | '' }) // wird von SettingsForm aufgerufen, um status zu aktualisieren
-  {
+  function setStatus(status: { isSaving: boolean; feedback: string; feedbackType: 'success' | 'error' | '' }) {
     isSaving = status.isSaving;
     feedback = status.feedback;
     feedbackType = status.feedbackType;
   }
 
-  $effect(() => { // wenn feedback oder isSaving sich aendert, wird funktion aufgerufen, um feedback nach 3 sekunden zu verstecken
+  $effect(() => {
     if (!feedback || isSaving) return;
-
     const timeoutId = setTimeout(() => {
       feedback = '';
       feedbackType = '';
     }, 3000);
-
     return () => clearTimeout(timeoutId);
   });
 </script>
 
 
-
-<header>
-  <div id="header">
-    <div class="header-logo">
-      <img src="src/images/c.svg" alt="Logo"/>
-    </div>
-     <div class="header-nav">
-      <a href="#/">LOGIN</a>
-    </div>
-  </div>
-</header>
 
 
 
@@ -45,7 +31,15 @@
   <div class="settings-layout">
     <SettingsForm {setStatus} />
     <div class="settings-actions">
-      <Button type="submit" form="settings-form-main" variant="save" disabled={isSaving}>Save</Button>
+      <Button
+        class="side-save-btn"
+        type="submit"
+        form="settings-form-main"
+        variant="save"
+        disabled={isSaving}
+      >
+        Save
+      </Button>
     </div>
   </div>
 
@@ -64,11 +58,6 @@
 
 
 
-<footer>
-<div id="footer">
-  <p>&copy; 2026 ft_trancendence. All rights reserved.</p>
-</div>
-
 <style>
   .settings-layout
   {
@@ -76,13 +65,20 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
+    align-items: stretch;
   }
 
   .settings-actions
   {
-    width: 150px;
+    width: 180px;
+    align-self: stretch;
     display: flex;
-    /* flex-direction: column-reverse; */
+  }
+
+  .settings-actions :global(.side-save-btn)
+  {
+    width: 100%;
+    height: 100%;
   }
 
   main
