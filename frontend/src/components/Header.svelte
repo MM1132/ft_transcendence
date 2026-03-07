@@ -1,11 +1,15 @@
 <script>
     import { authStore } from '../stores/authStore';
     import { navigateTo } from '../stores/router';
+    import { settingsService } from '../services/settingsService';
     
     let showDropdown = $state(false);
+    let avatarUrl = $state(null);
     
     function toggleDropdown()
     {
+        if (!$authStore.isLoggedIn)
+            return;
         showDropdown = !showDropdown;
     }
     
@@ -21,6 +25,37 @@
         showDropdown = false;
         navigateTo('/setting');
     }
+
+    // Keep avatar loading in one place so every route gets the same header behavior.
+    async function loadAvatar()
+    {
+        if (!$authStore.isLoggedIn)
+        {
+            avatarUrl = null;
+            return;
+        }
+
+        try
+        {
+            avatarUrl = await settingsService.getMyAvatarUrl();
+        }
+        catch (_error)
+        {
+            avatarUrl = null;
+        }
+    }
+
+    // Re-run when auth state changes (login/logout) to switch between user avatar and default icon.
+    $effect(() => {
+        if (!$authStore.isLoggedIn)
+        {
+            avatarUrl = null;
+            showDropdown = false;
+            return;
+        }
+
+        void loadAvatar();
+    });
 </script>
 
 
@@ -29,21 +64,28 @@
     <div class="header-logo">
       <img src="src/images/c.svg" alt="Logo"/>
     </div>
-     <div class="header-nav">
-     {#if $authStore.isLoggedIn}
+    <div class="header-nav">
         <div class="avatar-container">
-            <button class="avatar" onclick={toggleDropdown}>
-                <p>Image</p>
+            <!-- Always render the avatar button: image for logged-in users, default icon otherwise. -->
+            <button class="avatar" onclick={toggleDropdown} type="button" aria-label="Open user menu">
+                {#if avatarUrl}
+                    <img class="avatar-image" src={avatarUrl} alt="User avatar" />
+                {:else}
+                    <svg class="avatar-default-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                {/if}
             </button>
-            {#if showDropdown}
+            {#if $authStore.isLoggedIn && showDropdown}
                 <div class="dropdown">
                     <button onclick={goToSettings}>Settings</button>
                     <button onclick={handleLogout}>Logout</button>
                 </div>
             {/if}
-      </div>
-      {/if}
+        </div>
     </div>
+  </div>
 </header>
 
 <style>
@@ -64,11 +106,27 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 0;
     }
 
     .avatar:hover
     {
           border: 1px solid #0AEB00;
+    }
+
+    .avatar-image
+    {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .avatar-default-icon
+    {
+        width: 24px;
+        height: 24px;
+        color: #0AEB00;
     }
     .dropdown
     {
