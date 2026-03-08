@@ -4,7 +4,7 @@
   import ChatForm from "../components/ChatForm.svelte";
 </script>
 
-<header>
+<!-- <header>
   <div id="header">
     <div class="header-logo">
       <img src="src/images/c.svg" alt="Logo"/>
@@ -13,7 +13,7 @@
       <a href="#/">LOGIN</a>
     </div>
   </div>
-</header>
+</header> -->
 
 <main>
   <div class="dashboard-layout">
@@ -24,11 +24,11 @@
   </div>
 </main>
 
-<footer>
+<!-- <footer>
 <div id="footer">
   <p>&copy; 2026 ft_trancendence. All rights reserved.</p>
 </div>
-</footer>
+</footer> -->
 
 <style>
 .dashboard-layout {

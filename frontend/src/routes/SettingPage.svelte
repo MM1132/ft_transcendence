@@ -27,7 +27,7 @@
 
 
 
-<header>
+<!-- <header>
   <div id="header">
     <div class="header-logo">
       <img src="src/images/c.svg" alt="Logo"/>
@@ -36,7 +36,7 @@
       <a href="#/">LOGIN</a>
     </div>
   </div>
-</header>
+</header> -->
 
 
 
@@ -64,10 +64,10 @@
 
 
 
-<footer>
+<!-- <footer>
 <div id="footer">
   <p>&copy; 2026 ft_trancendence. All rights reserved.</p>
-</div>
+</div> -->
 
 <style>
   .settings-layout
