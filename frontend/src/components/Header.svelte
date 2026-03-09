@@ -73,7 +73,7 @@
     </div>
     <div class="header-nav">
     <!-- When route becomes /, that whole block is not rendered. -->
-        {#if $currentPath !== '/' && $currentPath !== '/login'}
+        {#if $currentPath !== '/' && $currentPath !== '/login' && $currentPath !== '/signup'}
         <div class="avatar-container">
             <!-- Always render the avatar button: image for logged-in users, default icon otherwise. -->
             <button class="avatar" onclick={toggleDropdown} type="button" aria-label="Open user menu">
