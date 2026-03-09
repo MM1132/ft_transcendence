@@ -1,12 +1,29 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
+    import { getAllRooms } from '../services/roomService.svelte.ts';
+    import RoomCard from './Roomcard.svelte';
     import Button from './Button.svelte';
 
     let isExpanded = $state(false);
+    let allRooms = $state<Room[]>([]);
 
     function togglePanel()
     {
         isExpanded = !isExpanded;
     }
+
+    function refresh()
+    {
+        getAllRooms().then((rooms)=> {allRooms = rooms;})
+    }
+
+    onMount(() => 
+    {
+        refresh();
+        const interval = setInterval(refresh, 5000);
+        return () => clearInterval(interval);
+
+    });
 </script>
 
 <aside class="rooms-drawer" class:expanded={isExpanded}>
@@ -19,11 +36,14 @@
     >
         ROOMS
     </Button>
-
+    
     {#if isExpanded}
-        <form class="rooms-panel">
+        <div class="rooms-panel">
             <h2>Rooms</h2>
-        </form>
+            {#each allRooms as room (room.id)}
+                <RoomCard {room}></RoomCard>
+            {/each}
+        </div>
     {/if}
 </aside>
 
