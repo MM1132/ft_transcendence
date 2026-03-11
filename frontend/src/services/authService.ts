@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/api/v1';
+import { buildApiPath } from "../utils/constants";
 
 export interface AuthResult
 {
@@ -60,7 +60,7 @@ export const authService =
     try
     {
       const response = await fetch(
-        `${API_URL}/login`,
+        buildApiPath('/login'),
         {method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({username, password})
@@ -93,7 +93,7 @@ export const authService =
     try
     {
       const response = await fetch(
-        `${API_URL}/register`,
+        buildApiPath('/register'),
         {method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({username, password, email})
@@ -124,7 +124,7 @@ export const authService =
   {
     try
     {
-      const response = await fetch(`${API_URL}/user/me`,
+      const response = await fetch(buildApiPath('/user/me'),
       {
         method: 'GET',
         headers: {
