@@ -16,12 +16,15 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
   bio?: string | null;
 };
 
+// as to know exactly what type we except when we read from broswer
+type AuthSessionSnapshot = { sessionToken?: string; };
 
 // extra protection.It is fixed already in constants.ts in case avatar URLs from backend can be relative (e.g. /api/v1/static/...)
 // so we don't accidentally prefix /api/v1 twice.
 const API_ORIGIN = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080')
   .replace(/\/+$/, '')
   .replace(/\/api\/v1$/, '');
+const AUTH_SESSION_STORAGE_KEY = 'auth_session'; // to avoid hardcoding the key and keep it consistent
 const SETTINGS_PATH = '/user/me/settings';
 const SETTINGS_API_URL = buildApiPath(SETTINGS_PATH);
 
@@ -128,13 +131,24 @@ async function extractErrorMessage(response: Response): Promise<string>
 
 function buildAuthHeaders(): HeadersInit
 {
-  const sessionToken = localStorage.getItem('sessionToken'); // wenn session token exists, dann nimm den
-  if (sessionToken) {
-    return { 'x-session-token': sessionToken };
+  // authStore writes the current session to sessionStorage under "auth_session".
+  const rawSession = sessionStorage.getItem(AUTH_SESSION_STORAGE_KEY);
+
+  if (!rawSession) {
+    // if no session token available send no auth-header then backend will return 401
+    return {};
   }
 
-  // ansonsten dev token in header
-  return { 'x-dev': '1' };
+  try {
+    const parsed = JSON.parse(rawSession) as AuthSessionSnapshot;
+    if (parsed.sessionToken) {
+      return { 'x-session-token': parsed.sessionToken };
+    }
+  } catch (_error) {
+    // something went wrong, do nothinge value and continue unauthenticated.
+  }
+  // no automatic x-dev fallback in normal frontend requests, our fallback —> just send no token
+  return {};
 }
 
 // covert relative backend path - avoid broken image
