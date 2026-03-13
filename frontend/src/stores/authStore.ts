@@ -23,7 +23,7 @@ const initialState: AuthState =
 };
 
 const { subscribe, update } = writable(initialState);
-const SESSION_STORAGE_KEY = 'auth_session';
+export const SESSION_STORAGE_KEY = 'auth_session';
 
 async function login(username: string, password: string)
 {

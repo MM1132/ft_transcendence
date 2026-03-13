@@ -1,4 +1,5 @@
 import { buildApiPath } from "../utils/constants";
+import { SESSION_STORAGE_KEY } from "../stores/authStore";
 
 export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
@@ -24,7 +25,6 @@ type AuthSessionSnapshot = { sessionToken?: string; };
 const API_ORIGIN = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080')
   .replace(/\/+$/, '')
   .replace(/\/api\/v1$/, '');
-const AUTH_SESSION_STORAGE_KEY = 'auth_session'; // to avoid hardcoding the key and keep it consistent
 const SETTINGS_PATH = '/user/me/settings';
 const SETTINGS_API_URL = buildApiPath(SETTINGS_PATH);
 
@@ -132,7 +132,7 @@ async function extractErrorMessage(response: Response): Promise<string>
 function buildAuthHeaders(): HeadersInit
 {
   // authStore writes the current session to sessionStorage under "auth_session".
-  const rawSession = sessionStorage.getItem(AUTH_SESSION_STORAGE_KEY);
+  const rawSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
 
   if (!rawSession) {
     // if no session token available send no auth-header then backend will return 401
