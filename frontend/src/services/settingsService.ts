@@ -55,7 +55,7 @@ export const settingsService = {
     }
 
     const user = (await response.json()) as UserProfile;
-    return normalizeAvatarUrl(user.avatarUrl ?? null);
+    return (user.avatarUrl ?? null);
   },
 
   async updateUserSettings( // die eingegebenen werte ans backend schicken als 'payload'
@@ -95,7 +95,7 @@ export const settingsService = {
 
     // json is returned i must make it string
     const body = (await response.json()) as { avatarUrl?: string | null };
-    return normalizeAvatarUrl(body.avatarUrl ?? null);
+    return (body.avatarUrl ?? null);
   },
 
   async deleteAvatar(): Promise<void> {
@@ -143,15 +143,4 @@ function buildAuthHeaders(): HeadersInit
   }
   // no automatic x-dev fallback in normal frontend requests, our fallback —> just send no token
   return {};
-}
-
-// covert relative backend path - avoid broken image
-function normalizeAvatarUrl(url: string | null | undefined): string | null {
-  const value = url?.trim();
-  if (!value) return null;
-  if (value.startsWith('http://') || value.startsWith('https://')) return value;
-  if (value.startsWith('http:/')) return value.replace('http:/', 'http://');
-  if (value.startsWith('https:/')) return value.replace('https:/', 'https://');
-  if (value.startsWith('/')) return `${API_ORIGIN}${value}`;
-  return value;
 }
