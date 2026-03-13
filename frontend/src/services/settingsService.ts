@@ -1,5 +1,4 @@
-import { buildApiPath } from "../utils/constants";
-import { SESSION_STORAGE_KEY } from "../stores/authStore";
+import { buildApiPath, SESSION_STORAGE_KEY, API_ORIGIN } from "../utils/constants";
 
 export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
@@ -22,9 +21,6 @@ type AuthSessionSnapshot = { sessionToken?: string; };
 
 // extra protection.It is fixed already in constants.ts in case avatar URLs from backend can be relative (e.g. /api/v1/static/...)
 // so we don't accidentally prefix /api/v1 twice.
-const API_ORIGIN = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080')
-  .replace(/\/+$/, '')
-  .replace(/\/api\/v1$/, '');
 const SETTINGS_PATH = '/user/me/settings';
 const SETTINGS_API_URL = buildApiPath(SETTINGS_PATH);
 

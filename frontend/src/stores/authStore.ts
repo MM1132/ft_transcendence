@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import { authService } from '../services/authService';
 import { navigateTo } from './router';
+import { SESSION_STORAGE_KEY } from '../utils/constants';
 
 type AuthState =
 {
@@ -23,7 +24,6 @@ const initialState: AuthState =
 };
 
 const { subscribe, update } = writable(initialState);
-export const SESSION_STORAGE_KEY = 'auth_session';
 
 async function login(username: string, password: string)
 {
