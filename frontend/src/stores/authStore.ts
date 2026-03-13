@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { authService } from '../services/authService';
 import { navigateTo } from './router';
-import { SESSION_STORAGE_KEY } from '../utils/constants';
+import { SESSION_STORAGE_KEY, type AuthSessionData } from '../utils/constants';
 
 type AuthState =
 {
@@ -174,11 +174,7 @@ function initFromSession()
 
     try
     {
-        const parsed = JSON.parse(raw) as {
-            user?: string;
-            userId?: string;
-            sessionToken?: string;
-        };
+        const parsed = JSON.parse(raw) as AuthSessionData;
 
         if (!parsed.user || !parsed.userId || !parsed.sessionToken)
         {

@@ -9,3 +9,9 @@ export const buildApiPath = (path: string): string => {
 }
 
 export const SESSION_STORAGE_KEY = 'auth_session';
+
+export type AuthSessionData = {
+    user?: string;
+    userId?: string;
+    sessionToken?: string;
+};

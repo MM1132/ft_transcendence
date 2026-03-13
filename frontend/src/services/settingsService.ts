@@ -1,4 +1,4 @@
-import { buildApiPath, SESSION_STORAGE_KEY, API_ORIGIN } from "../utils/constants";
+import { buildApiPath, SESSION_STORAGE_KEY, API_ORIGIN, type AuthSessionData } from "../utils/constants";
 
 export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
@@ -16,8 +16,6 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
   bio?: string | null;
 };
 
-// as to know exactly what type we except when we read from broswer
-type AuthSessionSnapshot = { sessionToken?: string; };
 
 // extra protection.It is fixed already in constants.ts in case avatar URLs from backend can be relative (e.g. /api/v1/static/...)
 // so we don't accidentally prefix /api/v1 twice.
@@ -136,7 +134,7 @@ function buildAuthHeaders(): HeadersInit
   }
 
   try {
-    const parsed = JSON.parse(rawSession) as AuthSessionSnapshot;
+    const parsed = JSON.parse(rawSession) as AuthSessionData;
     if (parsed.sessionToken) {
       return { 'x-session-token': parsed.sessionToken };
     }
