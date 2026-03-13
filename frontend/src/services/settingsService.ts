@@ -1,4 +1,4 @@
-import { buildApiPath, SESSION_STORAGE_KEY, API_ORIGIN, type AuthSessionData } from "../utils/constants";
+import { buildApiPath, SESSION_STORAGE_KEY, type AuthSessionData } from "../utils/constants";
 
 export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
@@ -17,8 +17,6 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
 };
 
 
-// extra protection.It is fixed already in constants.ts in case avatar URLs from backend can be relative (e.g. /api/v1/static/...)
-// so we don't accidentally prefix /api/v1 twice.
 const SETTINGS_PATH = '/user/me/settings';
 const SETTINGS_API_URL = buildApiPath(SETTINGS_PATH);
 
