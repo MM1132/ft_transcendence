@@ -135,7 +135,6 @@
         padding: 0;
         letter-spacing: 1px;
     }
-<<<<<<< HEAD
 
     button.join
     {
@@ -163,6 +162,3 @@
         background: none;
     }
 </style>
-=======
-</style>
->>>>>>> origin/main
