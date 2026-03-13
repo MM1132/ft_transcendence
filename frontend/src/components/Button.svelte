@@ -138,12 +138,12 @@
 
     button.join
     {
-        width: 60px;
+        width: 50px;
         height: 40px;
         float: right;
         font-size: 14px;
         padding: 0;
-        display: flex;
+        /* display: flex; */
         align-items: center;
         justify-content: center;
     }

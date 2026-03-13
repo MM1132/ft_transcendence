@@ -7,12 +7,10 @@
 </script>
 
 <div class="room-card" class:full={isFull}>
-    <h3 class="room-name">{room.name}</h3>
-    <div class="fee-container">
-        <span class="fee">💰 {room.entryFee}</span>
-    </div>
+    <div class="room-name">{room.name}</div>
+    <span class="fee">{room.entryFee} 💰</span>
     <hr class="line" /> 
-
+    
     <div class="room-body">
         <div class="players">
             <div class="player-bar">
@@ -34,10 +32,10 @@
 <style>
     .room-card
     {
-        padding: 1.4rem;
+        padding: 18px;
         border: 1px solid rgba(10, 235, 0, 0.1);
         background: rgba(15, 19, 20, 0.6);
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
 
     .room-card:hover
@@ -51,28 +49,28 @@
         font-size: 20px;
         font-weight: 800;
         text-align: left;
-        margin: 0;
+        margin-bottom: 8px;
+        /* margin-inline-start: 8px; */
+    }
+
+    .fee 
+    {
+        display:block;
+        color: #c8eb00;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: left;
+        /* margin-inline-start: 8px; */
+
     }
 
     .line
     {
         border: none;
         border-top: 1.5px solid #b13bcc77;
-        width: 100%;
+        width:100%;
     }
 
-    .fee-container
-    {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-    }
-    .fee 
-    {
-        color: #c8eb00;
-        font-size: 14px;
-        font-weight: 600;
-    }
     
     .room-body
     {
@@ -89,7 +87,7 @@
 
     .player-bar
     {
-        height: 6px;
+        height: 10px;
         background: rgba(255,255,255,0.08);
         margin-top: 16px;
     }

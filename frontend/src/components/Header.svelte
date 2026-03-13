@@ -1,6 +1,5 @@
 <script>
     import { authStore } from '../stores/authStore';
-    import { navigateTo } from '../stores/router';
     import Logo from './Logo.svelte';
     import { currentPath, navigateTo } from '../stores/router'; //need this one as to know if i render avatar block
     import { settingsService } from '../services/settingsService';
@@ -78,7 +77,9 @@
 <header>
   <div id="header">
     <div class="header-logo">
-      <img src="src/images/c.svg" alt="Logo"/>
+    {#if $authStore.isLoggedIn}
+      <Logo handleLogoClick={goToDashboard}/>
+    {/if}
     </div>
     <div class="header-nav">
     <!-- When route becomes /, that whole block is not rendered. -->
@@ -152,11 +153,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-<<<<<<< HEAD
         cursor:pointer;
-=======
         padding: 0;
->>>>>>> origin/main
     }
 
     .avatar:hover
@@ -215,9 +213,4 @@
     {
         background: #B13BCC;
     }
-<<<<<<< HEAD
-
 </style>
-=======
-</style>
->>>>>>> origin/main

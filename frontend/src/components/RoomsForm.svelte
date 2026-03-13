@@ -5,16 +5,16 @@
     import Button from './Button.svelte';
 
 
-    let isExpanded = $state(false);
+    let isExpanded = $state(true);
     let allRooms = $state<Room[]>([]);
 
     // 1. Add Filter States
     let searchQuery = $state('');
     let sortType = $state<'players' | 'fee'>('players');
 
-    // 2. Create a derived filtered list (Svelte 5 syntax)
+    // 2. Create a derived filtered list
     let filteredRooms = $derived(
-        allRooms
+        [...allRooms] // Copy allRooms for safe sorting/filtering
             .filter(room => room.name.toLowerCase().includes(searchQuery.toLowerCase()))
             .sort((a, b) => {
                 if (sortType === 'fee') return b.entryFee - a.entryFee;
@@ -27,15 +27,15 @@
         isExpanded = !isExpanded;
     }
 
-    async function refresh()
+    async function  fetchRooms()
     {
         allRooms = await getAllRooms();
     }
-
+    
     onMount(() => 
     {
-        refresh();
-        const interval = setInterval(refresh, 5000);
+        fetchRooms();
+        const interval = setInterval( fetchRooms, 5000);
         return () => clearInterval(interval);
 
     });
@@ -57,7 +57,7 @@
     {#if isExpanded}
         <div class="rooms-panel">
             <div class="rooms-header">
-                <!-- <h2>Rooms</h2> -->
+                <h2>Rooms : <span class="room-count">{allRooms.length}</span></h2>
                 <Button variant="create" type="button">+</Button>
             </div>
            <div class="filter-toolbar">
@@ -72,7 +72,6 @@
                     <option value="fee">Entry Fee</option>
                 </select>
             </div>
-            
             {#each filteredRooms as room (room.id)}
                 <RoomCard {room}></RoomCard>
             {:else}
@@ -83,6 +82,18 @@
 </aside>
 
 <style>
+
+    .room-count
+    {
+        /* background: #0ceb00; */
+        /* border: 0.4px solid #B13BCC; */
+        /* color: #fff; */
+        color: #0ceb00;
+        padding: 2px 10px;
+        font-size: 0.9em;
+        margin-left: 8px;
+        font-weight: bold;
+    }
     .rooms-drawer
     {
         position: fixed;
