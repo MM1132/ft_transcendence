@@ -61,7 +61,7 @@ async function extractErrorMessage(response: Response): Promise<string>
 }
 
 
-function buildAuthHeaders(): HeadersInit
+export function buildAuthHeaders(): HeadersInit
 {
   const sessionToken = localStorage.getItem('sessionToken'); // wenn session token exists, dann nimm den
   if (sessionToken) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+
     import { onMount } from 'svelte';
     import Button from './Button.svelte';
     import {
@@ -8,6 +9,8 @@
         type UserSummary,
     } from '../services/friendsService';
     import { buildApiPath } from '../utils/constants';
+    import { buildAuthHeaders } from '../services/settingsService';
+
 
     let isExpanded = $state(true);
     let selectedList = $state<'friends' | 'online'>('friends');
@@ -32,11 +35,11 @@
 
         try
         {
-            const [loadedFriends, loadedOnlineUsers] = await Promise.all([
+            const [loadedFriends, loadedOnlineUsers] = await Promise.all([ //parallel 
                 friendsService.getMyFriends(),
                 friendsService.getOnlineUsers(),
             ]);
-            const [loadedIncomingRequests, loadedOutgoingRequests] = await Promise.all([
+            const [loadedIncomingRequests, loadedOutgoingRequests] = await Promise.all([ // parallel
                 getIncomingRequestsSafe(),
                 getOutgoingRequestsSafe(),
             ]);
@@ -45,7 +48,7 @@
             friends = loadedFriends;
             onlineUsers = currentUserId
                 ? loadedOnlineUsers.filter((user) => user.id !== currentUserId)
-                : loadedOnlineUsers;
+                : loadedOnlineUsers; // mich rausfiltern
             incomingFriendRequests = loadedIncomingRequests;
             outgoingFriendRequests = loadedOutgoingRequests;
         }
@@ -204,26 +207,6 @@
         if (!response.ok)
             throw new Error(`Could not remove friend (${response.status})`);
     }
-
-    function buildAuthHeaders(): HeadersInit
-    {
-        const rawAuthSession = sessionStorage.getItem('auth_session');
-        if (rawAuthSession)
-        {
-            try
-            {
-                const parsed = JSON.parse(rawAuthSession) as { sessionToken?: string };
-                if (parsed.sessionToken)
-                    return { 'x-session-token': parsed.sessionToken };
-            }
-            catch
-            {
-                // Fallback below.
-            }
-        }
-
-        return { 'x-dev': '1' };
-    }
 </script>
 
 <aside class="friends-drawer" class:expanded={isExpanded}>
@@ -265,7 +248,7 @@
                 >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path
-                            d="M12 2a6 6 0 0 0-6 6v3.6L4.3 14a1 1 0 0 0 .7 1.7h14a1 1 0 0 0 .7-1.7L18 11.6V8a6 6 0 0 0-6-6Zm0 20a3 3 0 0 0 2.8-2h-5.6A3 3 0 0 0 12 22Z"
+                            d="M12 2a6 6 0 0 0-6 6v3.6L4.3 14a1 1 0 0 0 .7 1.7h14a1 1 0 0 0 .7-1.7L18 11.6V8a6 6 0 0 0-6-6Zm0 20a3 3 0 0 0 2.8-2h-5.6A3 3 0 0 0 12 22Z" //vektorenbild einer kleinen Glocke
                         />
                     </svg>
                 </button>
@@ -287,7 +270,8 @@
                                 <button type="button" class="profile-btn" aria-label={`Open profile of ${request.userFrom.username}`}>
                                     <svg viewBox="0 0 24 24" aria-hidden="true">
                                         <path
-                                            d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Zm0 2c-4.42 0-8 3.58-8 8h16c0-4.42-3.58-8-8-8Z"
+                                            d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Zm0 2c-4.42 0-8 3.58-8 8h16c0-4.42-3.58-8-8-8Z" // profilbild vektorenbild
+                                        
                                         />
                                     </svg>
                                 </button>

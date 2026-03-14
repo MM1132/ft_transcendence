@@ -1,4 +1,5 @@
 import { buildApiPath } from '../utils/constants';
+import { buildAuthHeaders } from './settingsService';
 
 export interface UserSummary {
   id: string;
@@ -127,20 +128,4 @@ async function extractErrorMessage(response: Response): Promise<string> {
   } catch {
     return `Request failed (${response.status})`;
   }
-}
-
-function buildAuthHeaders(): HeadersInit {
-  const rawAuthSession = sessionStorage.getItem('auth_session');
-  if (rawAuthSession) {
-    try {
-      const parsed = JSON.parse(rawAuthSession) as { sessionToken?: string };
-      if (parsed.sessionToken) {
-        return { 'x-session-token': parsed.sessionToken };
-      }
-    } catch {
-      // Ignore malformed session data and use fallback below.
-    }
-  }
-
-  return { 'x-dev': '1' };
 }
