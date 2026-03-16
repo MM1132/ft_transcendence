@@ -8,8 +8,6 @@
         type OutgoingFriendRequest,
         type UserSummary,
     } from '../services/friendsService';
-    import { buildApiPath } from '../utils/constants';
-    import { buildAuthHeaders } from '../services/settingsService';
     import { authStore } from '../stores/authStore';
 
 
@@ -41,8 +39,8 @@
                 friendsService.getOnlineUsers(),
             ]);
             const [loadedIncomingRequests, loadedOutgoingRequests] = await Promise.all([ // parallel
-                getIncomingRequestsSafe(),
-                getOutgoingRequestsSafe(),
+                friendsService.getIncomingFriendRequests(),
+                friendsService.getOutgoingFriendRequests(),
             ]);
 
             const currentUserId = authStore.getCurrentUserId();
@@ -101,7 +99,7 @@
     {
         try
         {
-            await removeFriendSafe(userId);
+            await friendsService.removeFriend(userId);
             await loadUsers();
         }
         catch (error)
@@ -124,71 +122,6 @@
     onMount(async () => {
         await loadUsers();
     });
-
-    async function getIncomingRequestsSafe(): Promise<IncomingFriendRequest[]>
-    {
-        const serviceWithOptionalMethod = friendsService as {
-            getIncomingFriendRequests?: () => Promise<IncomingFriendRequest[]>;
-        };
-
-        if (typeof serviceWithOptionalMethod.getIncomingFriendRequests !== 'function')
-        {
-            const response = await fetch(`${buildApiPath('/friend-requests')}?direction=in`, {
-                method: 'GET',
-                headers: buildAuthHeaders(),
-            });
-
-            if (!response.ok)
-                throw new Error(`Could not load incoming friend requests (${response.status})`);
-
-            return (await response.json()) as IncomingFriendRequest[];
-        }
-
-        return serviceWithOptionalMethod.getIncomingFriendRequests();
-    }
-
-    async function getOutgoingRequestsSafe(): Promise<OutgoingFriendRequest[]>
-    {
-        const serviceWithOptionalMethod = friendsService as {
-            getOutgoingFriendRequests?: () => Promise<OutgoingFriendRequest[]>;
-        };
-
-        if (typeof serviceWithOptionalMethod.getOutgoingFriendRequests !== 'function')
-        {
-            const response = await fetch(`${buildApiPath('/friend-requests')}?direction=out`, {
-                method: 'GET',
-                headers: buildAuthHeaders(),
-            });
-
-            if (!response.ok)
-                throw new Error(`Could not load outgoing friend requests (${response.status})`);
-
-            return (await response.json()) as OutgoingFriendRequest[];
-        }
-
-        return serviceWithOptionalMethod.getOutgoingFriendRequests();
-    }
-
-    async function removeFriendSafe(userId: string): Promise<void>
-    {
-        const serviceWithOptionalMethod = friendsService as {
-            removeFriend?: (targetUserId: string) => Promise<unknown>;
-        };
-
-        if (typeof serviceWithOptionalMethod.removeFriend === 'function')
-        {
-            await serviceWithOptionalMethod.removeFriend(userId);
-            return;
-        }
-
-        const response = await fetch(`${buildApiPath('/friends')}/${userId}`, {
-            method: 'DELETE',
-            headers: buildAuthHeaders(),
-        });
-
-        if (!response.ok)
-            throw new Error(`Could not remove friend (${response.status})`);
-    }
 </script>
 
 <aside class="friends-drawer" class:expanded={isExpanded}>
