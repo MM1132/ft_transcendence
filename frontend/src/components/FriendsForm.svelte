@@ -10,6 +10,7 @@
     } from '../services/friendsService';
     import { buildApiPath } from '../utils/constants';
     import { buildAuthHeaders } from '../services/settingsService';
+    import { authStore } from '../stores/authStore';
 
 
     let isExpanded = $state(true);
@@ -44,11 +45,9 @@
                 getOutgoingRequestsSafe(),
             ]);
 
-            const currentUserId = getCurrentUserId();
+            const currentUserId = authStore.getCurrentUserId();
             friends = loadedFriends;
-            onlineUsers = currentUserId
-                ? loadedOnlineUsers.filter((user) => user.id !== currentUserId)
-                : loadedOnlineUsers; // mich rausfiltern
+            onlineUsers = loadedOnlineUsers.filter((user) => user.id !== currentUserId); // mich rausfiltern
             incomingFriendRequests = loadedIncomingRequests;
             outgoingFriendRequests = loadedOutgoingRequests;
         }
@@ -125,23 +124,6 @@
     onMount(async () => {
         await loadUsers();
     });
-
-    function getCurrentUserId(): string | null
-    {
-        const rawAuthSession = sessionStorage.getItem('auth_session');
-        if (!rawAuthSession)
-            return null;
-
-        try
-        {
-            const parsed = JSON.parse(rawAuthSession) as { userId?: string };
-            return parsed.userId || null;
-        }
-        catch
-        {
-            return null;
-        }
-    }
 
     async function getIncomingRequestsSafe(): Promise<IncomingFriendRequest[]>
     {

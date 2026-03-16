@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { authService } from '../services/authService';
 import { navigateTo } from './router';
 
@@ -215,4 +215,13 @@ function logout()
     navigateTo('/');
 }
 
-export const authStore = { subscribe, login, signup, logout, initFromSession };
+function getCurrentUserId(): string
+{
+    const { userId } = get({ subscribe });
+    if (!userId)
+        throw new Error('Current user id is not available');
+
+    return userId;
+}
+
+export const authStore = { subscribe, login, signup, logout, initFromSession, getCurrentUserId };
