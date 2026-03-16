@@ -1,4 +1,4 @@
-import { buildApiPath } from "../utils/constants";
+import { buildApiPath, SESSION_STORAGE_KEY, type AuthSessionData } from "../utils/constants";
 
 export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
@@ -17,11 +17,6 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
 };
 
 
-// extra protection.It is fixed already in constants.ts in case avatar URLs from backend can be relative (e.g. /api/v1/static/...)
-// so we don't accidentally prefix /api/v1 twice.
-const API_ORIGIN = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080')
-  .replace(/\/+$/, '')
-  .replace(/\/api\/v1$/, '');
 const SETTINGS_PATH = '/user/me/settings';
 const SETTINGS_API_URL = buildApiPath(SETTINGS_PATH);
 
@@ -58,7 +53,7 @@ export const settingsService = {
     }
 
     const user = (await response.json()) as UserProfile;
-    return normalizeAvatarUrl(user.avatarUrl ?? null);
+    return (user.avatarUrl ?? null);
   },
 
   async updateUserSettings( // die eingegebenen werte ans backend schicken als 'payload'
@@ -98,7 +93,7 @@ export const settingsService = {
 
     // json is returned i must make it string
     const body = (await response.json()) as { avatarUrl?: string | null };
-    return normalizeAvatarUrl(body.avatarUrl ?? null);
+    return (body.avatarUrl ?? null);
   },
 
   async deleteAvatar(): Promise<void> {
@@ -128,22 +123,22 @@ async function extractErrorMessage(response: Response): Promise<string>
 
 function buildAuthHeaders(): HeadersInit
 {
-  const sessionToken = localStorage.getItem('sessionToken'); // wenn session token exists, dann nimm den
-  if (sessionToken) {
-    return { 'x-session-token': sessionToken };
+  // authStore writes the current session to sessionStorage under "auth_session".
+  const rawSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
+
+  if (!rawSession) {
+    // if no session token available send no auth-header then backend will return 401
+    return {};
   }
 
-  // ansonsten dev token in header
-  return { 'x-dev': '1' };
-}
-
-// covert relative backend path - avoid broken image
-function normalizeAvatarUrl(url: string | null | undefined): string | null {
-  const value = url?.trim();
-  if (!value) return null;
-  if (value.startsWith('http://') || value.startsWith('https://')) return value;
-  if (value.startsWith('http:/')) return value.replace('http:/', 'http://');
-  if (value.startsWith('https:/')) return value.replace('https:/', 'https://');
-  if (value.startsWith('/')) return `${API_ORIGIN}${value}`;
-  return value;
+  try {
+    const parsed = JSON.parse(rawSession) as AuthSessionData;
+    if (parsed.sessionToken) {
+      return { 'x-session-token': parsed.sessionToken };
+    }
+  } catch (_error) {
+    // something went wrong, do nothinge value and continue unauthenticated.
+  }
+  // no automatic x-dev fallback in normal frontend requests, our fallback —> just send no token
+  return {};
 }
