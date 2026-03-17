@@ -4,9 +4,8 @@
     import Button from './Button.svelte';
     import FriendListItem from './FriendListItem.svelte';
     import IncomingFriendRequestItem from './IncomingFriendRequestItem.svelte';
-    import UserIcon from './UserIcon.svelte';
+    import OnlineUserListItem from './OnlineUserListItem.svelte';
     import BellIcon from './BellIcon.svelte';
-    import HourglassIcon from './HourglassIcon.svelte';
     import {
         friendsService,
         type IncomingFriendRequest,
@@ -195,34 +194,14 @@
                         {/each}
                     {:else}
                         {#each onlineUsers as user}
-                            <li>
-                                <span class="user-name">{user.username}</span>
-                                <div class="actions">
-                                    <button type="button" class="profile-btn" aria-label={`Open profile of ${user.username}`}>
-                                        <UserIcon />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="add-btn"
-                                        class:pending={hasOutgoingRequestTo(user.id) && !hasIncomingRequestFrom(user.id)}
-                                        onclick={() => handleFriendRequest(user.id)}
-                                        disabled={friends.some((entry) => entry.id === user.id) || hasOutgoingRequestTo(user.id)}
-                                        aria-label={hasIncomingRequestFrom(user.id)
-                                            ? `Accept friend request from ${user.username}`
-                                            : hasOutgoingRequestTo(user.id)
-                                                ? `Friend request to ${user.username} is pending`
-                                                : `Add ${user.username} as friend`}
-                                    >
-                                        {#if hasIncomingRequestFrom(user.id)}
-                                            ✓
-                                        {:else if hasOutgoingRequestTo(user.id)}
-                                            <HourglassIcon />
-                                        {:else}
-                                            +
-                                        {/if}
-                                    </button>
-                                </div>
-                            </li>
+                            <OnlineUserListItem
+                                username={user.username}
+                                isPending={hasOutgoingRequestTo(user.id) && !hasIncomingRequestFrom(user.id)}
+                                hasIncomingRequest={hasIncomingRequestFrom(user.id)}
+                                hasOutgoingRequest={hasOutgoingRequestTo(user.id)}
+                                isDisabled={friends.some((entry) => entry.id === user.id) || hasOutgoingRequestTo(user.id)}
+                                onAction={() => handleFriendRequest(user.id)}
+                            />
                         {/each}
                     {/if}
                 {/if}
@@ -329,12 +308,6 @@
         background: rgba(255, 68, 68, 0.1);
     }
 
-    .actions
-    {
-        display: flex;
-        gap: 6px;
-    }
-
     .header-row
     {
         display: flex;
@@ -342,22 +315,6 @@
         justify-content: space-between;
         gap: 12px;
         margin-bottom: 14px;
-    }
-
-    .user-name
-    {
-        color: #fff;
-    }
-
-    .profile-btn,
-    .add-btn
-    {
-        border: 1px solid rgba(10, 235, 0, 0.4);
-        background: rgba(10, 235, 0, 0.08);
-        color: #d8ffd7;
-        cursor: pointer;
-        font-size: 0.78rem;
-        padding: 4px 8px;
     }
 
     .bell-btn
@@ -377,33 +334,6 @@
     .bell-btn.has-requests
     {
         color: #ff4444;
-    }
-
-    .profile-btn
-    {
-        width: 30px;
-        height: 28px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-    }
-
-    .add-btn
-    {
-        min-width: 28px;
-        font-weight: bold;
-    }
-
-    .add-btn:disabled
-    {
-        opacity: 0.45;
-        cursor: not-allowed;
-    }
-
-    .add-btn.pending:disabled
-    {
-        opacity: 1;
     }
 
 </style>
