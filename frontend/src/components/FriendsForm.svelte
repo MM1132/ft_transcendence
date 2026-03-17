@@ -54,13 +54,14 @@
             else
             {
                 const currentUserId = authStore.getCurrentUserId();
-                const [loadedOnlineUsers, loadedIncomingRequests, loadedOutgoingRequests] = await Promise.all([
+                const [loadedFriends, loadedOnlineUsers, loadedIncomingRequests, loadedOutgoingRequests] = await Promise.all([
+                    friendsService.getMyFriends(),
                     friendsService.getOnlineUsers(),
                     friendsService.getIncomingFriendRequests(),
                     friendsService.getOutgoingFriendRequests(),
                 ]);
 
-                friends = [];
+                friends = loadedFriends;
                 onlineUsers = loadedOnlineUsers.filter((user) => user.id !== currentUserId); // mich rausfiltern
                 incomingFriendRequests = loadedIncomingRequests;
                 outgoingFriendRequests = loadedOutgoingRequests;
