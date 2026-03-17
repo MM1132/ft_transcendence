@@ -3,6 +3,7 @@
     import { onMount } from 'svelte';
     import Button from './Button.svelte';
     import FriendListItem from './FriendListItem.svelte';
+    import IncomingFriendRequestItem from './IncomingFriendRequestItem.svelte';
     import UserIcon from './UserIcon.svelte';
     import BellIcon from './BellIcon.svelte';
     import HourglassIcon from './HourglassIcon.svelte';
@@ -179,22 +180,10 @@
                         <li class="info-row">No friend requests</li>
                     {/if}
                     {#each incomingFriendRequests as request}
-                        <li>
-                            <span class="user-name">{request.userFrom.username}</span>
-                            <div class="actions">
-                                <button type="button" class="profile-btn" aria-label={`Open profile of ${request.userFrom.username}`}>
-                                    <UserIcon />
-                                </button>
-                                <button
-                                    type="button"
-                                    class="add-btn"
-                                    onclick={() => handleFriendRequest(request.userFrom.id)}
-                                    aria-label={`Accept friend request from ${request.userFrom.username}`}
-                                >
-                                    ✓
-                                </button>
-                            </div>
-                        </li>
+                        <IncomingFriendRequestItem
+                            username={request.userFrom.username}
+                            onAccept={() => handleFriendRequest(request.userFrom.id)}
+                        />
                     {/each}
                 {:else}
                     {#if selectedList === 'friends'}
