@@ -1,5 +1,6 @@
 import { buildApiPath } from '../utils/constants';
 import { buildAuthHeaders } from './settingsService';
+import { extractErrorMessage } from './serviceUtils';
 
 export interface UserSummary {
   id: string;
@@ -120,12 +121,3 @@ export const friendsService = {
     return body;
   },
 };
-
-async function extractErrorMessage(response: Response): Promise<string> {
-  try {
-    const body = (await response.json()) as { error?: string; message?: string };
-    return body.error || body.message || `Request failed (${response.status})`;
-  } catch {
-    return `Request failed (${response.status})`;
-  }
-}

@@ -1,4 +1,5 @@
 import { buildApiPath, SESSION_STORAGE_KEY, type AuthSessionData } from "../utils/constants";
+import { extractErrorMessage } from './serviceUtils';
 
 export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
@@ -109,17 +110,6 @@ export const settingsService = {
   }
 
 };
-
-async function extractErrorMessage(response: Response): Promise<string>
-{
-  try {
-    const body = await response.json() as { error?: string };
-    return body.error || `Request failed (${response.status})`;
-  } catch {
-    return `Request failed (${response.status})`;
-  }
-}
-
 
 export function buildAuthHeaders(): HeadersInit
 {
