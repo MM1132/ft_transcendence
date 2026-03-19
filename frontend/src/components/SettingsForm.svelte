@@ -219,12 +219,15 @@
     {
         width: min(1000px, 90vw);
         height: min(80vh, 1100px);
+        display: flex;
+        flex-direction: column;
         border: 1px solid rgba(10, 235, 0, 0.1);
         background: rgba(15, 19, 20, 0.6);
         backdrop-filter: blur(10px);
         transition: all 0.3s;
         box-sizing: border-box;
-  }
+        overflow: hidden;
+    }
 
     #settings-form:hover
     {
@@ -244,10 +247,14 @@
 
     .settings-content
     {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 40px;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
     }
 
     .form-actions
