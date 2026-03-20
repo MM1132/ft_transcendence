@@ -10,6 +10,7 @@
   import SignUpPage from './routes/SignUpPage.svelte'
   import SettingPage from './routes/SettingPage.svelte'
   import GamePage from './routes/GamePage.svelte'
+  import WorkPage from './routes/WorkPage.svelte'
 
   authStore.initFromSession()
 </script>
@@ -29,6 +30,8 @@
         <SettingPage />
       {:else if $currentPath === '/game'}
         <GamePage />
+      {:else if $currentPath === '/work'}
+        <WorkPage />
       {/if}
   {/key}
 </Layout>

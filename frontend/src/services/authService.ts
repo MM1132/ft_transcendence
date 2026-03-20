@@ -13,6 +13,7 @@ export interface AuthResult
 type MyUserResponse = 
 {
   id: string;
+  balance: number;
 };
 
 export const authService =

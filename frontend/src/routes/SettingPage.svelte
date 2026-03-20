@@ -23,10 +23,6 @@
 </script>
 
 
-
-
-
-
 <main>
   <div class="settings-layout">
     <SettingsForm {setStatus} />

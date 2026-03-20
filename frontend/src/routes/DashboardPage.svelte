@@ -23,16 +23,9 @@
 
 <main>
   <div class="dashboard-layout">
-
-    <!-- {#if !roomState.isAuthenticated}
-      <div class="connection-overlay">Connecting to server...
-        {!roomState.isConnected ? 'Connecting...' : 'Authenticating...'}
-      </div>
-    {/if} -->
-
-    <ChatForm />
     <FriendsForm />
     <RoomsForm />
+    <ChatForm />
   </div>
 </main>
 
@@ -40,25 +33,5 @@
 .dashboard-layout {
   position: relative;
   min-height: 100vh;
-}
-
-
-.connection-overlay
-{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.6);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  z-index: 2000;
-  letter-spacing: 1px;
-  font-weight: bold;
-  text-shadow: 0 2px 8px #000;
 }
 </style>

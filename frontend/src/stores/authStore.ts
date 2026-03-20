@@ -1,6 +1,7 @@
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { authService } from '../services/authService';
 import { navigateTo } from './router';
+import { SESSION_STORAGE_KEY, type AuthSessionData } from '../utils/constants';
 
 type AuthState =
 {
@@ -23,7 +24,6 @@ const initialState: AuthState =
 };
 
 const { subscribe, update } = writable(initialState);
-const SESSION_STORAGE_KEY = 'auth_session';
 
 async function login(username: string, password: string)
 {
@@ -174,11 +174,7 @@ function initFromSession()
 
     try
     {
-        const parsed = JSON.parse(raw) as {
-            user?: string;
-            userId?: string;
-            sessionToken?: string;
-        };
+        const parsed = JSON.parse(raw) as AuthSessionData;
 
         if (!parsed.user || !parsed.userId || !parsed.sessionToken)
         {
@@ -215,4 +211,13 @@ function logout()
     navigateTo('/');
 }
 
-export const authStore = { subscribe, login, signup, logout, initFromSession };
+function getCurrentUserId(): string
+{
+    const { userId } = get({ subscribe });
+    if (!userId)
+        throw new Error('Current user id is not available');
+
+    return userId;
+}
+
+export const authStore = { subscribe, login, signup, logout, initFromSession, getCurrentUserId };

@@ -15,14 +15,10 @@ export const buildAvatarUrl = (
   avatarFilename: string | null,
   baseUrl: string
 ): string => {
-  return path.join(
-    baseUrl,
-    '/api/v1/static/avatars',
-    avatarFilename
-      ? path.join('/uploaded', avatarFilename)
-      : 'default_avatar.png'
-  );
+  return baseUrl + '/api/v1/static/avatars/' +
+    (avatarFilename ? 'uploaded/' + avatarFilename : 'default_avatar.png');
 };
+
 
 const buildUserDateNullable = (date: DateTime): string | null => {
   return date ? date.toFormat('yyyy-LL-dd') : null;
