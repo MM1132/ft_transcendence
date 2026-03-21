@@ -77,28 +77,23 @@ export async function handleRoomCreate(
       return;
     }
 
-    // 3. Check if user has enough coins for buy-in
-    if (buy_in_amount > 0) {
-      const userResult = await db.query(
-        'SELECT coins FROM users WHERE id = $1',
-        [userId]
-      );
-      if (
-        userResult.rows.length === 0 ||
-        userResult.rows[0].coins < buy_in_amount
-      ) {
-        connectionManager.send(userId, 'room:error', {
-          error: 'Not enough coins for buy-in',
-        });
-        return;
-      }
-    }
-
-    // 4. Get creator info (before any DB writes to avoid partial state on error)
+    // 3. Get creator info + check balance (before any DB writes)
     const userResult = await db.query(
-      'SELECT id, username, avatar_filename AS avatar_url FROM users WHERE id = $1',
+      'SELECT id, username, avatar_filename AS avatar_url, balance FROM users WHERE id = $1',
       [userId]
     );
+
+    if (userResult.rows.length === 0) {
+      connectionManager.send(userId, 'room:error', { error: 'User not found' });
+      return;
+    }
+
+    if (buy_in_amount > 0 && userResult.rows[0].balance < buy_in_amount) {
+      connectionManager.send(userId, 'room:error', {
+        error: 'Not enough coins for buy-in',
+      });
+      return;
+    }
 
     // 5. Create room in DB
     const roomResult = await db.query(
@@ -117,7 +112,16 @@ export async function handleRoomCreate(
 
     const room = roomResult.rows[0];
 
-    // 6. Auto-join the creator to slot 1
+    // 6. Deduct buy-in from creator balance
+    if (buy_in_amount > 0) {
+      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [buy_in_amount, userId]);
+      await db.query(
+        `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
+        [userId, -buy_in_amount, `Buy-in for room "${name.trim()}"`]
+      );
+    }
+
+    // 7. Auto-join the creator to slot 1
     await db.query(
       `INSERT INTO room_players (room_id, user_id, player_slot, is_ready, joined_at)
        VALUES ($1, $2, 1, false, NOW())`,
@@ -236,6 +240,15 @@ export async function handleRoomJoin(
       return;
     }
 
+    // 5b. Check buy-in balance
+    if (room.buy_in_amount > 0) {
+      const balanceResult = await db.query('SELECT balance FROM users WHERE id = $1', [userId]);
+      if (balanceResult.rows[0].balance < room.buy_in_amount) {
+        connectionManager.send(userId, 'room:error', { error: 'Not enough coins for buy-in' });
+        return;
+      }
+    }
+
     // 6. Find next available slot
     const slotResult = await db.query(
       `SELECT generate_series(1, $1) as slot
@@ -246,14 +259,23 @@ export async function handleRoomJoin(
     );
     const nextSlot = slotResult.rows[0]?.slot || 1;
 
-    // 7. Insert into room_players
+    // 7. Deduct buy-in from joiner balance
+    if (room.buy_in_amount > 0) {
+      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [room.buy_in_amount, userId]);
+      await db.query(
+        `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
+        [userId, -room.buy_in_amount, `Buy-in for room "${room.name}"`]
+      );
+    }
+
+    // 8. Insert into room_players
     await db.query(
       `INSERT INTO room_players (room_id, user_id, player_slot, is_ready, joined_at)
        VALUES ($1, $2, $3, false, NOW())`,
       [room_id, userId, nextSlot]
     );
 
-    // 8. Get all players in room
+    // 9. Get all players in room
     const playersResult = await db.query(
       `SELECT u.id, u.username, u.avatar_filename AS avatar_url, rp.player_slot as slot, rp.is_ready
        FROM room_players rp
@@ -263,10 +285,10 @@ export async function handleRoomJoin(
       [room_id]
     );
 
-    // 9. Join WS room
+    // 10. Join WS room
     connectionManager.joinRoom(userId, roomName);
 
-    // 10. Send confirmation to user
+    // 11. Send confirmation to user
     const joinedPayload: RoomJoinedPayload = {
       room: {
         id: room.id,
@@ -281,7 +303,7 @@ export async function handleRoomJoin(
     };
     connectionManager.send(userId, 'room:joined', joinedPayload);
 
-    // 11. Broadcast to others in room
+    // 12. Broadcast to others in room
     const userResult = await db.query(
       'SELECT id, username, avatar_filename AS avatar_url FROM users WHERE id = $1',
       [userId]

@@ -1,4 +1,4 @@
-import fs, { readFileSync, writeFileSync } from 'node:fs';
+import fs, { readFileSync } from 'node:fs';
 import path from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import { DateTime } from 'luxon';
@@ -45,21 +45,18 @@ export const initDatabase = async (
   await client.query(initSql);
   console.log(`✅ Database: Initialized`);
 
-  // Migrations: get latest migration
-  const latestMigrationFilename = path.join(
-    fastify.baseDir,
-    'src/database/latest_migration.txt'
-  );
+  // Migrations: track applied migrations in DB (not in file)
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+      migration BIGINT PRIMARY KEY,
+      applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
 
-  let latestMigration = 0;
-  if (fs.existsSync(latestMigrationFilename)) {
-    const latestMigrationString = readFileSync(latestMigrationFilename, {
-      encoding: 'utf8',
-      flag: 'r',
-    });
-    if (latestMigrationString)
-      latestMigration = parseInt(latestMigrationString, 10);
-  }
+  const appliedResult = await client.query<{ migration: string }>(
+    'SELECT migration FROM schema_migrations'
+  );
+  const applied = new Set(appliedResult.rows.map((r) => parseInt(r.migration, 10)));
 
   // Apply migrations
   const migrations = fs
@@ -69,7 +66,7 @@ export const initDatabase = async (
     .sort();
 
   for (const migration of migrations) {
-    if (latestMigration < migration) {
+    if (!applied.has(migration)) {
       const fileName = path.join(
         fastify.baseDir,
         'src/database/migrations',
@@ -82,9 +79,8 @@ export const initDatabase = async (
       });
 
       await client.query(migrationSql);
+      await client.query('INSERT INTO schema_migrations (migration) VALUES ($1)', [migration]);
       console.log(`Database: applied migration ${migration}`);
-
-      writeFileSync(latestMigrationFilename, migration.toString());
     }
   }
 
