@@ -3,6 +3,8 @@ import path from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import { DateTime } from 'luxon';
 import { Client, types } from 'pg';
+import { applyMigrations } from './database/applyMigrations.ts';
+import { runSqlFromFile } from './database/initSqlFromFile.ts';
 
 export const initDatabase = async (
   fastify: FastifyInstance
@@ -35,60 +37,17 @@ export const initDatabase = async (
   }
 
   // Execute the initialization SQL
-  const initSql = readFileSync(
-    path.join(fastify.baseDir, '/src/database/init.sql'),
-    {
-      encoding: 'utf8',
-      flag: 'r',
-    }
-  );
-  await client.query(initSql);
-  console.log(`✅ Database: Initialized`);
+  await runSqlFromFile(client, fastify.baseDir, '/src/database/init.sql');
+  console.log(`✅ Database: Executed init.sql`);
 
-  // Migrations: get latest migration
-  const latestMigrationFilename = path.join(
+  await runSqlFromFile(
+    client,
     fastify.baseDir,
-    'src/database/latest_migration.txt'
+    '/src/database/init_migrations.sql'
   );
+  console.log(`✅ Database: Executed init_migrations.sql`);
 
-  let latestMigration = 0;
-  if (fs.existsSync(latestMigrationFilename)) {
-    const latestMigrationString = readFileSync(latestMigrationFilename, {
-      encoding: 'utf8',
-      flag: 'r',
-    });
-    if (latestMigrationString)
-      latestMigration = parseInt(latestMigrationString, 10);
-  }
-
-  // Apply migrations
-  const migrations = fs
-    .readdirSync(path.join(fastify.baseDir, '/src/database/migrations'))
-    .map((v) => parseInt(v, 10))
-    .filter((v) => v)
-    .sort();
-
-  for (const migration of migrations) {
-    if (latestMigration < migration) {
-      const fileName = path.join(
-        fastify.baseDir,
-        'src/database/migrations',
-        `${migration}.sql`
-      );
-
-      const migrationSql = readFileSync(fileName, {
-        encoding: 'utf8',
-        flag: 'r',
-      });
-
-      await client.query(migrationSql);
-      console.log(`Database: applied migration ${migration}`);
-
-      writeFileSync(latestMigrationFilename, migration.toString());
-    }
-  }
-
+  await applyMigrations(client, fastify.baseDir);
   console.log(`✅ Database: Migrations applied`);
-
   return client;
 };

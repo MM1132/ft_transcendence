@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS migrations (
+    id UUID PRIMARY KEY DEFAULT uuidv7 (),
+    filename TEXT NOT NULL,
+    applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
