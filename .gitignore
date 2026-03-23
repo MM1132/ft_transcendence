@@ -1,2 +1,3 @@
 /postgres
 .env
+.DS_Store
