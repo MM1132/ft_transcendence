@@ -1,15 +1,13 @@
 <script lang="ts">
-import { roomState, send } from "../stores/roomStore.svelte";
-import Button from "../components/Button.svelte";
+    import { roomState, send } from "../stores/roomStore.svelte";
+    import Button from "../components/Button.svelte";
 
     export let roomId: string;
 
       // i will delete it later
     function handleLeaveRoom()
     {
-        if (roomState.currentRoomId) {
-        send('room:leave', { room_id: roomState.currentRoomId });
-        }
+        send('room:leave', { room_id: roomId });
     }
 </script>
 
@@ -18,11 +16,11 @@ import Button from "../components/Button.svelte";
     <h1>Room Page</h1>
     <p>Room ID: {roomId}</p>
 
-    {#if roomState.currentRoomId}
+    <!-- {#if roomState.currentRoomId} -->
       <div class="leave-room-container">
         <Button onclick={handleLeaveRoom} class="leave-room-btn">Leave Room</Button>
       </div>
-    {/if}
+    <!-- {/if} -->
 </div>
 </main>
 

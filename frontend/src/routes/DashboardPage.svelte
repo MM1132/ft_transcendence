@@ -2,10 +2,6 @@
   import FriendsForm from "../components/FriendsForm.svelte";
   import RoomsForm from "../components/RoomsForm.svelte";
   import ChatForm from "../components/ChatForm.svelte";
-  // import Button from '../components/Button.svelte';
-
-  // import { send } from '../stores/roomStore.svelte';
-
 
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
@@ -14,8 +10,6 @@
 
   onMount(() => {
     const session = get(authStore);
-    
-    // Connect only if we have a token and aren't already connected
     if (session.sessionToken && !roomState.isConnected)
     {
       connect(session.sessionToken);

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Button from './Button.svelte';
     // import { roomState } from '../stores/roomStore.svelte';
-    import { navigateTo } from '../stores/router';
+    // import { navigateTo } from '../stores/router';
     
 	
    let { onClose, onCreate } = $props<{
@@ -37,19 +37,13 @@
         if (nameError || entryFeeError || maxPlayersError)
             return;
         
-       try {
-        // This now waits for the Promise in RoomsForm to resolve with the ID
-        const newRoomId = await onCreate({ 
-            name, 
-            entryFee: Number(entryFee), 
-            maxPlayers: Number(maxPlayers) 
-        });
-
-        if (newRoomId) {
+        try {
+            onCreate({
+                name,
+                entryFee: Number(entryFee),
+                maxPlayers: Number(maxPlayers)
+            });
             onClose();
-            // Redirect to the new room
-            navigateTo(`/room/${newRoomId}`);
-        }
         } catch (err) {
             console.error("Failed to create room:", err);
         }

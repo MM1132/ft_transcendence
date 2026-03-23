@@ -113,6 +113,25 @@ export async function setupWebSocket(
               })
             );
 
+            // Send the room list after successful authentication
+            const roomsResult = await db.query(
+               `SELECT r.id, r.name, r.creator_id, r.max_players, r.status, r.is_permanent,
+                        COUNT(rp.user_id) AS current_players
+                  FROM rooms r
+              LEFT JOIN room_players rp ON r.id = rp.room_id
+              GROUP BY r.id, r.name, r.creator_id, r.max_players, r.status, r.is_permanent`
+            );
+            const rooms = roomsResult.rows.map(room => ({
+              id: room.id,
+              name: room.name,
+              creator_id: room.creator_id ? String(room.creator_id) : null,
+              max_players: room.max_players,
+              status: room.status,
+              is_permanent: room.is_permanent,
+              current_players: room.current_players
+            }));
+            connectionManager.send(user.id, 'room:list', rooms);
+
             // Notify accepted friends that this user is online
             await notifyFriendsOnline(db, user.id);
 

@@ -1,12 +1,11 @@
-// src/stores/roomStore.ts
-import { navigateTo } from './router';
+import { navigateTo } from "./router";
 
 export interface Room {
     id: string;
     name: string;
     creator_id?: string | null;
     maxPlayers: number;
-    currentPlayers?: number;
+    current_players?: number;
     buy_in_amount?: number;
     time_limit_seconds?: number | null;
     win_condition?: 'BEST_OF' | 'SCORE' | 'TIME';
@@ -22,14 +21,6 @@ export interface RoomState
     isConnected: boolean;
     currentRoomId: string | null;
 }
-
-//new one
-// const initialRoomState: RoomState = {
-//     rooms: [],
-//     isConnected: false,
-//     currentRoomId: null
-// };
-
 
 // Use the interface as a type for $state
 export const roomState = $state<RoomState>({
@@ -64,16 +55,16 @@ export function connect(token: string)
             case 'auth:success':
                 console.log("✅ Authenticated");
                 console.log(roomState.isConnected);
+                // send('room:list', {});
                 break;
 
-            // case 'room:list':
-            //     roomState.rooms = data;
-            //     break;
+            case 'room:list':
+                roomState.rooms = data;
+                console.log(`Loaded ${data.length} rooms`);
+                break;
                 
             case 'room:created':
-                // Add the new room to the list
                 roomState.rooms = [data.room, ...roomState.rooms];
-                window.dispatchEvent(new CustomEvent('room:created', { detail: { room: data.room } }));
                 break;
 
             // case 'room:update':
@@ -82,11 +73,16 @@ export function connect(token: string)
             //     if (idx !== -1) roomState.rooms[idx] = data;
             //     break;
 
-            // case 'room:joined':
-            //     // SERVER CONFIRMED JOIN: Now we navigate
-            //     roomState.currentRoomId = data.room.id;
-            //     navigateTo('/game');
-            //     break;
+            case 'room:joined':
+                roomState.currentRoomId = data.room.id;
+                break;
+            
+            case 'room:left' :
+                roomState.currentRoomId = null;
+                navigateTo('/dashboard');
+                if (data.rooms)
+                    roomState.rooms = data.rooms;
+                break;
 
             case 'error':
                 console.error("Server error event:", data);

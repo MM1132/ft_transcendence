@@ -1,31 +1,46 @@
 <script lang="ts">
-    // import { onMount } from 'svelte';
-    // import { getAllRooms } from '../services/roomService.svelte.ts';
     import { roomState, send } from '../stores/roomStore.svelte';
-    // import { connect } from '../stores/roomStore.svelte';
-    // import { authStore } from '../stores/authStore';
+    import { navigateTo } from '../stores/router';
 
-    
     import RoomCard from './Roomcard.svelte';
     import Button from './Button.svelte';
     import CreateRoomForm from './CreateRoomForm.svelte';
 
+    import { get } from 'svelte/store';
+    import { authStore } from '../stores/authStore';
+
+
 
     let isExpanded = $state(true);
     let showCreateModal = $state(false);
-    // let allRooms = $state<Room[]>([]);
+    let prevRooms: Array<{ id: string }> = [];
+    const { userId } = get(authStore);
 
+    $effect(() => {
+        if (roomState.rooms.length > prevRooms.length)
+        {
+            // Find the specific room that is new
+            const newRoom = roomState.rooms.find(
+                r => !prevRooms.some(pr => pr.id === r.id)
+            );
 
-    // 1. Add Filter States
+            // Is the current user the creator of a new room?
+            if (newRoom && newRoom.creator_id === userId)
+            {
+                navigateTo(`/room/${newRoom.id}`);
+            }
+        }
+        prevRooms = [...roomState.rooms];
+    });
+
     let searchQuery = $state('');
     let sortType = $state<'players' | 'fee'>('players');
 
-    // 2. Create a derived filtered list
     let filteredRooms = $derived(
         roomState.rooms
             .filter(room => room.name.toLowerCase().includes(searchQuery.toLowerCase()))
             .sort((a, b) => {
-                if (sortType === 'players') return b.currentPlayers - a.currentPlayers;
+                if (sortType === 'players') return b.current_players - a.current_players;
                 if (sortType === 'fee') return b.buy_in_amount - a.buy_in_amount;
                 return 0;
             })
@@ -47,20 +62,8 @@
             status: 'WAITING',
             is_permanent: false
         };
-        // Return a promise that resolves with the new room id
-      return new Promise((resolve) => {
-        function onRoomCreated(event: any) {
-            // Access through event.detail
-            const room = event.detail?.room;
-            if (room && room.id) {
-                window.removeEventListener('room:created', onRoomCreated);
-                showCreateModal = false; // Close modal here
-                resolve(room.id);
-            }
-        }
-            window.addEventListener('room:created', onRoomCreated);
-            send('room:create', backendRoomData);
-        });
+        send('room:create', backendRoomData);
+        showCreateModal = false;
     }
 
     function togglePanel()

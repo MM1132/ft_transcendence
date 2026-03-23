@@ -25,6 +25,7 @@ export type ServerEvent =
   | 'auth:success'
   | 'auth:error'
   | 'error'
+  | 'room:list'
   | 'room:joined'
   | 'room:created'
   | 'room:left'
@@ -189,6 +190,7 @@ export interface RoomData {
   status: 'WAITING' | 'IN_GAME';
   is_permanent: boolean;
   creator_id: string | null;
+  current_players: number;
 }
 
 export interface GameState {

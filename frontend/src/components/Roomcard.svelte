@@ -3,12 +3,11 @@
     import Button from "./Button.svelte";
     let {room, onJoin } = $props();
 
-    const isFull = $derived(room.currentPlayers === room.maxPlayers);
-    const fillPercent = $derived((room.currentPlayers / room.maxPlayers) * 100);
+    const isFull = $derived(room.current_players === room.max_players);
+    const fillPercent = $derived((room.current_players / room.max_players) * 100);
 
 
 </script>
-
 <div class="room-card" class:full={isFull}>
     <div class="room-header">
         <div class="room-name">{room.name}</div>
@@ -24,7 +23,7 @@
                 {#if isFull}
                 FULL
                 {:else}
-                {room.currentPlayers} / {room.maxPlayers} Players
+                {room.current_players} / {room.max_players} Players
                 {/if}
             </span>
         </div>
