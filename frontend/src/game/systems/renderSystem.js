@@ -90,10 +90,12 @@ function drawDebugInfo(ctx, state) {
   ctx.fillStyle = COLORS.debugText;
   ctx.font = '14px Arial';
   ctx.textAlign = 'left';
+
   ctx.fillText(`Frames: ${state.debug.frameCount}`, 40, 110);
+  ctx.fillText(`FPS: ${state.debug.fps}`, 40, 130);
 
   if (state.debug.lastInput) {
-    ctx.fillText(`Last input: ${state.debug.lastInput}`, 40, 130);
+    ctx.fillText(`Last input: ${state.debug.lastInput}`, 40, 150);
   }
 }
 

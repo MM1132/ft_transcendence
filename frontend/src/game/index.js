@@ -2,6 +2,8 @@
 
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './core/constants.js';
 import { createInitialGameState } from './core/gameState.js';
+import { createGameLoop } from './core/loop.js';
+import { attachInputListeners } from './systems/inputSystem.js';
 import { renderGame } from './systems/renderSystem.js';
 
 export function initGame(canvas, options = {}) {
@@ -21,15 +23,28 @@ export function initGame(canvas, options = {}) {
   const state = createInitialGameState();
 
   if (options.debug) {
-    state.status = 'ready';
+    state.status = 'running';
   }
 
-  state.debug.frameCount += 1;
-  renderGame(ctx, state);
+  const detachInputListeners = attachInputListeners(state);
+
+  const loop = createGameLoop({
+    update(deltaTime) {
+      state.debug.frameCount += 1;
+
+      if (deltaTime > 0) {
+        state.debug.fps = Math.round(1000 / deltaTime);
+      }
+    },
+    render() {
+      renderGame(ctx, state);
+    }
+  });
+
+  loop.start();
 
   return function cleanup() {
-    // TODO 
-    // nothing to clean up yet.
-    // Later this will stop loops, remove listeners, close sockets, etc.
+    loop.stop();
+    detachInputListeners();
   };
 }
