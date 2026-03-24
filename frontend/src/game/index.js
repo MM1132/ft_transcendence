@@ -39,8 +39,13 @@ export function initGame(canvas, options = {}) {
 
       if (deltaTime > 0) {
         state.debug.fps = Math.round(1000 / deltaTime);
-        state.runtime.accumulator += deltaTime;
       }
+
+      if (state.status !== 'running') {
+        return;
+      }
+      
+      state.runtime.accumulator += deltaTime;
 
       while (state.runtime.accumulator >= SNAKE_MOVE_INTERVAL) {
         moveSnakeOneStep(state);

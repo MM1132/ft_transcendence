@@ -128,6 +128,33 @@ function drawGameOverOverlay(ctx, state) {
   ctx.fillText('Press R to restart', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
 }
 
+function drawCenteredText(ctx, text, y, size = 24, color = '#fff') {
+  ctx.fillStyle = color;
+  ctx.font = `bold ${size}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, CANVAS_WIDTH / 2, y);
+}
+
+function drawStartOverlay(ctx, state) {
+  if (state.status !== 'idle') return;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  drawCenteredText(ctx, 'Online Snake', CANVAS_HEIGHT / 2 - 40, 42);
+  drawCenteredText(ctx, 'Press ENTER to start', CANVAS_HEIGHT / 2 + 10, 20);
+}
+
+function drawPauseOverlay(ctx, state) {
+  if (state.status !== 'paused') return;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  drawCenteredText(ctx, 'Paused', CANVAS_HEIGHT / 2, 36);
+  drawCenteredText(ctx, 'Press P to resume', CANVAS_HEIGHT / 2 + 40, 18);
+}
+
 export function renderGame(ctx, state) {
   clearCanvas(ctx);
   drawBoard(ctx, state.board);
@@ -139,7 +166,10 @@ export function renderGame(ctx, state) {
     drawSnake(ctx, state.board, snake);
   });
 
-  drawDebugInfo(ctx, state);
   drawScore(ctx, state);
+  drawDebugInfo(ctx, state);
+
+  drawStartOverlay(ctx, state);
+  drawPauseOverlay(ctx, state);
   drawGameOverOverlay(ctx, state);
 }
