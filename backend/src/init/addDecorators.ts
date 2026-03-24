@@ -22,7 +22,8 @@ export const addDecorators = async (fastify: FastifyInstance) => {
   );
 
   fastify.decorate(
-    'frontendOrigin', process.env.FRONTEND_ORIGIN ?? 'http://localhost:8080'
+    'frontendOrigin',
+    process.env.FRONTEND_ORIGIN ?? 'http://localhost:8080'
   );
 
   try {

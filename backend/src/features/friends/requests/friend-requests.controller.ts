@@ -66,7 +66,10 @@ export const friendRequestsController = {
 
       if (outcome === 'OTHER') throw new Error('Internal server error');
 
-      return res.status(outcome === 'CREATED' ? 200 : 400).send({
+      const isSuccessOutcome =
+        outcome === 'CREATED' || outcome === 'INSTANT_FRIENDS';
+
+      return res.status(isSuccessOutcome ? 200 : 400).send({
         status: outcome,
         message: mapMakeFriendRequestStatus(outcome),
       });

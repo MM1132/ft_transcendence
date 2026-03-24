@@ -1,5 +1,5 @@
 import { buildApiPath, SESSION_STORAGE_KEY, type AuthSessionData } from "../utils/constants";
-import { extractErrorMessage } from './serviceUtils';
+import { extractErrorMessage, fetchWithSessionHandling } from './serviceUtils';
 
 export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
@@ -27,7 +27,7 @@ function api(path: string): string {
 
 export const settingsService = {
   async getUserSettings(): Promise<UserSettings> {
-    const response = await fetch(SETTINGS_API_URL, { //fetch request an backend
+    const response = await fetchWithSessionHandling(SETTINGS_API_URL, { //fetch request an backend
       method: 'GET',
       headers: buildAuthHeaders(), // send session token
     });
@@ -42,7 +42,7 @@ export const settingsService = {
 
   // fallback when upload response has no URL
   async getMyAvatarUrl(): Promise<string | null> {
-    const response = await fetch(api('/user/me'), {
+    const response = await fetchWithSessionHandling(api('/user/me'), {
       method: 'GET',
       headers: buildAuthHeaders(),
       cache: 'no-store',
@@ -60,7 +60,7 @@ export const settingsService = {
   async updateUserSettings( // die eingegebenen werte ans backend schicken als 'payload'
     payload: UpdateUserSettingsPayload
   ): Promise<UserSettings> {
-    const response = await fetch(SETTINGS_API_URL, {
+    const response = await fetchWithSessionHandling(SETTINGS_API_URL, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json', // damit backend weiss, dass es json ist
@@ -81,7 +81,7 @@ export const settingsService = {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    const response = await fetch(api(`${SETTINGS_PATH}/avatar`), {
+    const response = await fetchWithSessionHandling(api(`${SETTINGS_PATH}/avatar`), {
       method: 'PUT',
       headers: buildAuthHeaders(),
       body: formData,
@@ -98,7 +98,7 @@ export const settingsService = {
   },
 
   async deleteAvatar(): Promise<void> {
-    const response = await fetch(api(`${SETTINGS_PATH}/avatar`), {
+    const response = await fetchWithSessionHandling(api(`${SETTINGS_PATH}/avatar`), {
       method: 'DELETE',
       headers: buildAuthHeaders(),
     });

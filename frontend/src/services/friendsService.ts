@@ -1,6 +1,6 @@
 import { buildApiPath } from '../utils/constants';
 import { buildAuthHeaders } from './settingsService';
-import { extractErrorMessage } from './serviceUtils';
+import { extractErrorMessage, fetchWithSessionHandling } from './serviceUtils';
 
 export interface UserSummary {
   id: string;
@@ -38,7 +38,7 @@ const FRIEND_REQUESTS_API_URL = buildApiPath('/friend-requests');
 
 export const friendsService = {
   async getMyFriends(): Promise<UserSummary[]> {
-    const response = await fetch(FRIENDS_API_URL, {
+    const response = await fetchWithSessionHandling(FRIENDS_API_URL, {
       method: 'GET',
       headers: buildAuthHeaders(),
     });
@@ -51,7 +51,7 @@ export const friendsService = {
   },
 
   async getOnlineUsers(): Promise<UserSummary[]> {
-    const response = await fetch(ONLINE_USERS_API_URL, {
+    const response = await fetchWithSessionHandling(ONLINE_USERS_API_URL, {
       method: 'GET',
       headers: buildAuthHeaders(),
     });
@@ -64,7 +64,7 @@ export const friendsService = {
   },
 
   async sendFriendRequest(userId: string): Promise<SendFriendRequestResponse> {
-    const response = await fetch(FRIEND_REQUESTS_API_URL, {
+    const response = await fetchWithSessionHandling(FRIEND_REQUESTS_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export const friendsService = {
   },
 
   async getIncomingFriendRequests(): Promise<IncomingFriendRequest[]> {
-    const response = await fetch(`${FRIEND_REQUESTS_API_URL}?direction=in`, {
+    const response = await fetchWithSessionHandling(`${FRIEND_REQUESTS_API_URL}?direction=in`, {
       method: 'GET',
       headers: buildAuthHeaders(),
     });
@@ -95,7 +95,7 @@ export const friendsService = {
   },
 
   async getOutgoingFriendRequests(): Promise<OutgoingFriendRequest[]> {
-    const response = await fetch(`${FRIEND_REQUESTS_API_URL}?direction=out`, {
+    const response = await fetchWithSessionHandling(`${FRIEND_REQUESTS_API_URL}?direction=out`, {
       method: 'GET',
       headers: buildAuthHeaders(),
     });
@@ -108,7 +108,7 @@ export const friendsService = {
   },
 
   async removeFriend(userId: string): Promise<RemoveFriendResponse> {
-    const response = await fetch(`${FRIENDS_API_URL}/${userId}`, {
+    const response = await fetchWithSessionHandling(`${FRIENDS_API_URL}/${userId}`, {
       method: 'DELETE',
       headers: buildAuthHeaders(),
     });

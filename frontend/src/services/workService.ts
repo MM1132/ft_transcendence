@@ -1,6 +1,6 @@
 import { buildApiPath } from '../utils/constants';
 import { buildAuthHeaders } from './settingsService';
-import { extractErrorMessage } from './serviceUtils';
+import { extractErrorMessage, fetchWithSessionHandling } from './serviceUtils';
 
 export type WorkResponse = {
   message: string;
@@ -12,7 +12,7 @@ const WORK_API_URL = buildApiPath('/skills/work');
 
 export const workService = {
   async work(): Promise<WorkResponse> {
-    const response = await fetch(WORK_API_URL, {
+    const response = await fetchWithSessionHandling(WORK_API_URL, {
       method: 'POST',
       headers: buildAuthHeaders(),
     });
