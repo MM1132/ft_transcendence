@@ -23,7 +23,13 @@ export function attachInputListeners(state) {
     }
 
     event.preventDefault();
+
     state.debug.lastInput = direction;
+
+    const snake = state.snakes[0];
+    if (snake) {
+      snake.pendingDirection = direction;
+    }
   }
 
   window.addEventListener('keydown', handleKeyDown);

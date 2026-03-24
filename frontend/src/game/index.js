@@ -1,9 +1,14 @@
 // entry point - wire together :get canvas - initialize game - attach input - start loop
 
-import { CANVAS_WIDTH, CANVAS_HEIGHT } from './core/constants.js';
+import {
+  CANVAS_WIDTH,
+  CANVAS_HEIGHT,
+  SNAKE_MOVE_INTERVAL
+} from './core/constants.js';
 import { createInitialGameState } from './core/gameState.js';
 import { createGameLoop } from './core/loop.js';
 import { attachInputListeners } from './systems/inputSystem.js';
+import { moveSnakeOneStep } from './systems/movementSystem.js';
 import { renderGame } from './systems/renderSystem.js';
 
 export function initGame(canvas, options = {}) {
@@ -34,6 +39,12 @@ export function initGame(canvas, options = {}) {
 
       if (deltaTime > 0) {
         state.debug.fps = Math.round(1000 / deltaTime);
+        state.runtime.accumulator += deltaTime;
+      }
+
+      while (state.runtime.accumulator >= SNAKE_MOVE_INTERVAL) {
+        moveSnakeOneStep(state);
+        state.runtime.accumulator -= SNAKE_MOVE_INTERVAL;
       }
     },
     render() {

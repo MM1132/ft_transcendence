@@ -9,6 +9,7 @@ export const BOARD_OFFSET_X = 120;
 export const BOARD_OFFSET_Y = 30;
 
 export const GAME_TITLE = 'Online Snake';
+export const SNAKE_MOVE_INTERVAL = 120;
 
 export const COLORS = {
   canvasBackground: '#0f172a',

@@ -93,9 +93,10 @@ function drawDebugInfo(ctx, state) {
 
   ctx.fillText(`Frames: ${state.debug.frameCount}`, 40, 110);
   ctx.fillText(`FPS: ${state.debug.fps}`, 40, 130);
+  ctx.fillText(`Accumulator: ${Math.floor(state.runtime.accumulator)} ms`, 40, 150);
 
   if (state.debug.lastInput) {
-    ctx.fillText(`Last input: ${state.debug.lastInput}`, 40, 150);
+    ctx.fillText(`Last input: ${state.debug.lastInput}`, 40, 170);
   }
 }
 

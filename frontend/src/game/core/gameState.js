@@ -41,6 +41,9 @@ export function createInitialGameState() {
     scores: {
       'local-player': 0
     },
+    runtime: {
+      accumulator: 0
+    },
     debug: {
       fps: 0,
       frameCount: 0,
