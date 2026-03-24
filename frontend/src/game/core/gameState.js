@@ -51,3 +51,14 @@ export function createInitialGameState() {
     }
   };
 }
+
+// reference stays the same, but the content is brand new
+export function resetGameState(state) {
+  const freshState = createInitialGameState();
+
+  Object.keys(state).forEach((key) => {
+    delete state[key];
+  });
+
+  Object.assign(state, freshState);
+}

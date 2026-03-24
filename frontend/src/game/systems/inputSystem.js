@@ -1,4 +1,7 @@
 // handle keyboard input and turns it into game actions
+
+import { resetGameState } from '../core/gameState.js';
+
 const KEY_TO_DIRECTION = {
   ArrowUp: 'up',
   ArrowDown: 'down',
@@ -16,6 +19,14 @@ const KEY_TO_DIRECTION = {
 
 export function attachInputListeners(state) {
   function handleKeyDown(event) {
+    if (event.key === 'r' || event.key === 'R') {
+      if (state.status === 'game_over') {
+        event.preventDefault();
+        resetGameState(state);
+      }
+      return;
+    }
+
     const direction = KEY_TO_DIRECTION[event.key];
 
     if (!direction) {
@@ -27,7 +38,7 @@ export function attachInputListeners(state) {
     state.debug.lastInput = direction;
 
     const snake = state.snakes[0];
-    if (snake) {
+    if (snake && state.status !== 'game_over') {
       snake.pendingDirection = direction;
     }
   }
