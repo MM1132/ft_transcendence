@@ -13,7 +13,9 @@
             | 'expand-trigger-bottom'
             | 'join'
             | 'create'
-            | 'cancel';
+            | 'cancel'
+            | 'ready'
+            | 'noready';
         onclick?: (event: MouseEvent) => void;
         ariaExpanded?: boolean;
         ariaLabel?: string;
@@ -51,6 +53,8 @@
     class:join={variant === 'join'}
     class:create={variant === 'create'}
     class:cancel={variant === 'cancel'}
+    class:ready={variant === 'ready'}
+    class:noready={variant === 'noready'}
 >
     {@render children()}
 </button>
@@ -171,9 +175,29 @@
         border: 1px solid #ff4444;
     }
 
-     button.cancel:hover
+    button.cancel:hover
     {
         background: #ff4444;
         color: #fff;
+    }
+
+    button.noready
+    {
+        width: auto;
+        min-width: 120px;
+        background: rgba(177, 59, 204, 0.15);
+        color: #ffffff;
+        border: 1px solid rgb(177, 59, 204);
+
+    }
+
+     button.ready
+    {
+        width: auto;
+        min-width: 120px;
+        background: #0AEB00;
+        color:  #ffffff;
+        border: 1px solid rgba(177, 59, 204, 0);
+
     }
 </style>

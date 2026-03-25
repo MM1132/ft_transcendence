@@ -6,15 +6,15 @@
     import Button from './Button.svelte';
     import CreateRoomForm from './CreateRoomForm.svelte';
 
-    import { get } from 'svelte/store';
-    import { authStore } from '../stores/authStore';
+    // import { get } from 'svelte/store';
+    // import { authStore } from '../stores/authStore';
 
 
 
     let isExpanded = $state(true);
     let showCreateModal = $state(false);
-    let prevRooms: Array<{ id: string }> = [];
-    const { userId } = get(authStore);
+    // let prevRooms: Array<{ id: string }> = [];
+    // const { userId } = get(authStore);
 
     let searchQuery = $state('');
     let sortType = $state<'players' | 'fee'>('players');
@@ -40,10 +40,10 @@
             name: roomData.name,
             max_players: roomData.maxPlayers,
             buy_in_amount: roomData.entryFee,
-            time_limit_seconds: null,
-            win_condition: 'SCORE',
-            status: 'WAITING',
-            is_permanent: false
+            time_limit_seconds: null, // <---------- i need to fix this not hardcoded
+            win_condition: 'SCORE', // <---------- i need to fix this not hardcoded
+            status: 'WAITING', // <---------- i need to fix this not hardcoded
+            is_permanent: false // <---------- i need to fix this not hardcoded
         };
         send('room:create', backendRoomData);
         showCreateModal = false;

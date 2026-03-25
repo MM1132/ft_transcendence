@@ -1,10 +1,11 @@
 import { navigateTo } from "./router";
 
-export interface Room {
+export interface Room
+{
     id: string;
     name: string;
     creator_id?: string | null;
-    maxPlayers: number;
+    max_players: number;
     current_players?: number;
     buy_in_amount?: number;
     time_limit_seconds?: number | null;
@@ -14,22 +15,32 @@ export interface Room {
     created_at?: string;
 }
 
-// Define the interface for your state
-export interface RoomState {
+export interface RoomState
+{
     rooms: Room[];
     isConnected: boolean;
     currentRoomId: string | null;
     currentRoom?: Room | null;
-    currentRoomPlayers?: any[];
+    currentRoomPlayers?: Player[];
+    currentUserId?: string | null;
 }
 
-// Use the interface as a type for $state
+export interface Player
+{
+    id: string;
+    username: string;
+    avatar_url: string | null;
+    slot: number;
+    is_ready: boolean;
+}
+
 export const roomState = $state<RoomState>({
     rooms: [],
     isConnected: false,
     currentRoomId: null,
     currentRoom: null,
-    currentRoomPlayers: []
+    currentRoomPlayers: [],
+    currentUserId: null 
 });
 
 let socket: WebSocket | null = null;
@@ -58,6 +69,7 @@ export function connect(token: string)
             case 'auth:success':
                 console.log("✅ Authenticated");
                 console.log(roomState.isConnected);
+                roomState.currentUserId = data.userId; // we set the user ID from backend
                 break;
 
             case 'room:list':
@@ -68,21 +80,13 @@ export function connect(token: string)
             case 'room:created':
                 roomState.rooms = [data.room, ...roomState.rooms];
                 
-                // 2. Set this as the current room for the creator
                 roomState.currentRoomId = data.room.id;
                 roomState.currentRoom = data.room;
                 roomState.currentRoomPlayers = data.players || [];
                 
-                // 3. Trigger the navigation
                 console.log("Room created! Redirecting to:", data.room.id);
                 navigateTo(`/room/${data.room.id}`);
                 break;
-
-            // case 'room:update':
-            //     // Update players count or status in real-time
-            //     const idx = roomState.rooms.findIndex(r => r.id === data.id);
-            //     if (idx !== -1) roomState.rooms[idx] = data;
-            //     break;
 
             case 'room:joined':
                 roomState.currentRoomId = data.room.id;
@@ -96,6 +100,28 @@ export function connect(token: string)
                 navigateTo('/dashboard');
                 if (data.rooms)
                     roomState.rooms = data.rooms;
+                break;
+
+            case 'room:player_joined':
+                if(data.user)
+                {
+                    const newPlayer = {...data.user, slot: data.slot, is_ready: false};
+                    roomState.currentRoomPlayers = [...roomState.currentRoomPlayers, newPlayer];
+                }
+                break;
+
+            case 'room:player_left':
+                roomState.currentRoomPlayers = roomState.currentRoomPlayers.filter( p => p.id !== data.user_id);
+                break;
+
+            case 'room:player_ready':
+                roomState.currentRoomPlayers = roomState.currentRoomPlayers.map(p => {
+                    if (p.id === data.user_id)
+                    {
+                        return { ...p, is_ready: data.is_ready };
+                    }
+                    return p;
+                });
                 break;
 
             case 'error':
