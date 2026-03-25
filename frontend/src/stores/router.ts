@@ -23,16 +23,16 @@ window.addEventListener('beforeunload', (event) => {
     const path = window.location.pathname;
     if (isPathProtected(path)) {
         event.preventDefault();
+        
         // maybe we need it for other browsers to show the prompt
         // event.returnValue = ''; 
     }
 });
 
-// Handle internal Back/Forward buttons
+// Sync app state with URL when user navigates via browser back/forward buttons
 window.addEventListener('popstate', () => {
     const newPath = window.location.pathname;
     
-    // Instead of forcing 'history.go(1)', we simply update our app state.
     // If the user goes 'Back' from /room to /login, the UI updates instantly.
     currentPath.set(newPath);
 });
