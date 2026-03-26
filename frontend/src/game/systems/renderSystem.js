@@ -98,6 +98,8 @@ function drawDebugInfo(ctx, state) {
   if (state.debug.lastInput) {
     ctx.fillText(`Last input: ${state.debug.lastInput}`, 40, 170);
   }
+
+  ctx.fillText(`Server tick: ${state.debug.lastServerTick}`, 40, 190);
 }
 
 function drawScore(ctx, state) {

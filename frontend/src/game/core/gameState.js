@@ -41,13 +41,15 @@ export function createInitialGameState() {
     scores: {
       'local-player': 0
     },
+    winnerId: null,
     runtime: {
       accumulator: 0
     },
     debug: {
       fps: 0,
       frameCount: 0,
-      lastInput: null
+      lastInput: null,
+      lastServerTick: 0
     }
   };
 }
