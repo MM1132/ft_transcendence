@@ -5,15 +5,24 @@
 <!-- bridge between Svelte and the JS engine -->
 
 <script>
+
   import { onMount } from 'svelte';
   import { initGame } from '../../game/index.js';
+
+  export let mode = 'local';
+  export let wsUrl = '';
+  export let token = '';
+  export let roomId = null;
 
   let canvas;
   let cleanup = null;
 
   onMount(() => {
     cleanup = initGame(canvas, {
-      debug: true
+      mode,
+      wsUrl,
+      token,
+      roomId
     });
 
     return () => {
