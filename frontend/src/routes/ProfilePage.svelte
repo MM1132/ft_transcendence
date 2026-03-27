@@ -12,12 +12,24 @@
   let isLoading = $state(true);
   let errorMessage = $state('');
 
-  function getUserIdFromPath(path: string): string | null {
+  function getProfileSlugFromPath(path: string): string | null {
     const prefix = '/profile/';
     if (!path.startsWith(prefix)) return null;
 
-    const userId = path.slice(prefix.length).trim();
-    return userId || null;
+    const slug = decodeURIComponent(path.slice(prefix.length).trim());
+    return slug || null;
+  }
+
+  async function resolveProfileUserId(): Promise<string | null> {
+    if ($selectedProfileUserId) return $selectedProfileUserId;
+
+    const slug = getProfileSlugFromPath($currentPath);
+    if (!slug) return null;
+
+    const allUsers = await userService.getAllUsers();
+    const matchedUser = allUsers.find((user) => user.username === slug);
+
+    return matchedUser?.id ?? null;
   }
 
   function formatDate(value: string | null): string {
@@ -43,7 +55,7 @@
     errorMessage = '';
 
     try {
-      const routeUserId = $selectedProfileUserId || getUserIdFromPath($currentPath);
+      const routeUserId = await resolveProfileUserId();
       const isOwnProfile = !routeUserId || routeUserId === $authStore.userId;
 
       if (isOwnProfile) {
@@ -147,9 +159,6 @@
   .profile-page {
     min-height: 100vh;
     padding: 110px 24px 56px;
-    background:
-      radial-gradient(circle at top left, rgba(10, 235, 0, 0.14), transparent 30%),
-      radial-gradient(circle at top right, rgba(177, 59, 204, 0.14), transparent 28%);
   }
 
   .profile-hero,

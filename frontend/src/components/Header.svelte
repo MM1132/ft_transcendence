@@ -3,6 +3,7 @@
     import { currentPath, navigateTo, selectedProfileUserId } from '../stores/router'; //need this one as to know if i render avatar block
     import { settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
+    import logoUrl from '../images/c.svg';
     
     let showDropdown = $state(false);
     
@@ -80,9 +81,9 @@
 
 
 <header>
-  <div id="header">
+    <div id="header">
     <div class="header-logo">
-      <img src="src/images/c.svg" alt="Logo"/>
+      <img src={logoUrl} alt="Logo"/>
     </div>
     <div class="header-nav">
     <!-- When route becomes /, that whole block is not rendered. -->
