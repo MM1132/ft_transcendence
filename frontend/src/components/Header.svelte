@@ -26,6 +26,12 @@
         navigateTo('/setting');
     }
 
+    function goToProfile()
+    {
+        showDropdown = false;
+        navigateTo('/profile');
+    }
+
     function goToWork()
     {
         showDropdown = false;
@@ -94,6 +100,7 @@
             </button>
             {#if $authStore.isLoggedIn && showDropdown}
                 <div class="dropdown">
+                    <button onclick={goToProfile}>Profile</button>
                     <button onclick={goToSettings}>Settings</button>
                     <button onclick={goToWork}>Go to Work</button>
                     <button onclick={handleLogout}>Logout</button>

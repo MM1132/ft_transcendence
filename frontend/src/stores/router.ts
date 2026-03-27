@@ -2,7 +2,7 @@ import { writable } from 'svelte/store'
 
 export const currentPath = writable<string>(window.location.pathname)
 
-const protectedRoutes = ['/dashboard']
+const protectedRoutes = ['/dashboard', '/setting', '/work', '/profile']
 let isProtected = protectedRoutes.includes(window.location.pathname)
 let protectedPath = isProtected ? window.location.pathname : ''
 
