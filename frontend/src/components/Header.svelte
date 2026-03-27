@@ -1,6 +1,6 @@
 <script>
     import { authStore } from '../stores/authStore';
-    import { currentPath, navigateTo } from '../stores/router'; //need this one as to know if i render avatar block
+    import { currentPath, navigateTo, selectedProfileUserId } from '../stores/router'; //need this one as to know if i render avatar block
     import { settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
     
@@ -29,6 +29,7 @@
     function goToProfile()
     {
         showDropdown = false;
+        selectedProfileUserId.set(null);
         navigateTo('/profile');
     }
 
