@@ -1,19 +1,26 @@
 <script lang="ts">
     import UserIcon from './UserIcon.svelte';
     import HourglassIcon from './HourglassIcon.svelte';
+    import { navigateTo, selectedProfileUserId } from '../stores/router';
 
+    export let userId: string;
     export let username: string;
     export let isPending = false;
     export let hasIncomingRequest = false;
     export let hasOutgoingRequest = false;
     export let isDisabled = false;
     export let onAction: ((event: MouseEvent) => void) | undefined = undefined;
+    function openProfile()
+    {
+        selectedProfileUserId.set(userId);
+        navigateTo('/profile');
+    }
 </script>
 
 <li class="online-user-list-item">
     <span class="user-name">{username}</span>
     <div class="actions">
-        <button type="button" class="profile-btn" aria-label={`Open profile of ${username}`}>
+        <button type="button" class="profile-btn" aria-label={`Open profile of ${username}`} onclick={openProfile}>
             <UserIcon />
         </button>
         <button

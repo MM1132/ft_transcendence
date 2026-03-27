@@ -1,14 +1,22 @@
 <script lang="ts">
     import UserIcon from './UserIcon.svelte';
+    import { navigateTo, selectedProfileUserId } from '../stores/router';
 
+    export let userId: string;
     export let username: string;
     export let onRemove: ((event: MouseEvent) => void) | undefined = undefined;
+
+    function openProfile()
+    {
+        selectedProfileUserId.set(userId);
+        navigateTo('/profile');
+    }
 </script>
 
 <li class="friend-list-item">
     <span class="user-name">{username}</span>
     <div class="actions">
-        <button type="button" class="profile-btn" aria-label={`Open profile of ${username}`}>
+        <button type="button" class="profile-btn" aria-label={`Open profile of ${username}`} onclick={openProfile}>
             <UserIcon />
         </button>
         <button

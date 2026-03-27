@@ -181,6 +181,7 @@
                     {/if}
                     {#each incomingFriendRequests as request}
                         <IncomingFriendRequestItem
+                            userId={request.userFrom.id}
                             username={request.userFrom.username}
                             onAccept={() => handleFriendRequest(request.userFrom.id)}
                         />
@@ -189,6 +190,7 @@
                     {#if selectedList === 'friends'}
                         {#each friends as user}
                             <FriendListItem
+                                userId={user.id}
                                 username={user.username}
                                 onRemove={() => removeFriend(user.id)}
                             />
@@ -196,6 +198,7 @@
                     {:else}
                         {#each onlineUsers as user}
                             <OnlineUserListItem
+                                userId={user.id}
                                 username={user.username}
                                 isPending={hasOutgoingRequestTo(user.id) && !hasIncomingRequestFrom(user.id)}
                                 hasIncomingRequest={hasIncomingRequestFrom(user.id)}
