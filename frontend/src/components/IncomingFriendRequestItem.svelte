@@ -9,7 +9,7 @@
     function openProfile()
     {
         selectedProfileUserId.set(userId);
-        navigateTo('/profile');
+        navigateTo(`/profile/${encodeURIComponent(username)}`);
     }
 </script>
 

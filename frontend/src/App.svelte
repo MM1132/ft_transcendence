@@ -30,7 +30,7 @@
         <SettingPage />
       {:else if $currentPath === '/work'}
         <WorkPage />
-      {:else if $currentPath === '/profile'}
+      {:else if $currentPath === '/profile' || $currentPath.startsWith('/profile/')}
         <ProfilePage />
       {/if}
   {/key}

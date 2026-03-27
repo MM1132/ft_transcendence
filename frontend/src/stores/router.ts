@@ -23,6 +23,7 @@ export function navigateTo(path: string): void
     {
         isProtected = false
         protectedPath = ''
+        window.history.pushState(null, '', path)
     }
     currentPath.set(path)
 }
