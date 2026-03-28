@@ -477,11 +477,12 @@ async function startGame(
     // 4. Start the Snake game loop
     const players = playersResult.rows.map(
       (row: { user_id: string; player_slot: number }) => ({
-        oderId: row.user_id,
+        userId: row.user_id,
         slot: row.player_slot,
       })
     );
 
+    console.log('🚀 startGame called', { roomId, gameId, players });
     startGameLoop(db, Number(roomId), Number(gameId), players);
   } catch (err) {
     console.error('❌ startGame error:', err);

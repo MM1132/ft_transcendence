@@ -1,5 +1,6 @@
 import type { Client } from 'pg';
 import { connectionManager } from '../connectionManager.ts';
+import type { GameInputPayload } from '../types.ts';
 
 // ============================================
 // Snake Game Types
@@ -34,13 +35,14 @@ interface SnakeGameState {
   apple: Point;
   gameOver: boolean;
   winnerId: string | null;
+  tick: number;
 }
 
 interface ActiveSnakeGame {
   gameId: number;
   roomId: number;
   state: SnakeGameState;
-  players: Map<string, number>; // oderId (userId) -> slot
+  players: Map<string, number>; // userId (userId) -> slot
   intervalId?: ReturnType<typeof setInterval>;
   db: Client;
 }
@@ -59,7 +61,7 @@ const TICK_RATE = 150; // ms between updates (slower = easier)
 export async function handleGameInput(
   _db: Client,
   userId: string,
-  data: { direction: 'left' | 'right' }
+  data: GameInputPayload
 ): Promise<void> {
   const conn = connectionManager.getConnection(userId);
   if (!conn?.currentRoomId) return;
@@ -117,8 +119,9 @@ export function startGameLoop(
   db: Client,
   roomId: number,
   gameId: number,
-  players: { oderId: string; slot: number }[]
+  players: { userId: string; slot: number }[]
 ): void {
+  console.log('🐍🐍🐍 startGameLoop players =', players);
   // Initialize game state
   const state: SnakeGameState = {
     gridWidth: GRID_WIDTH,
@@ -127,6 +130,7 @@ export function startGameLoop(
     apple: { x: 0, y: 0 },
     gameOver: false,
     winnerId: null,
+    tick: 0,
   };
 
   // Create snakes for each player
@@ -167,7 +171,7 @@ export function startGameLoop(
       score: 0,
       alive: true,
     };
-    playerMap.set(p.oderId, p.slot);
+    playerMap.set(p.userId, p.slot);
   });
 
   // Place first apple
@@ -186,14 +190,33 @@ export function startGameLoop(
   console.log(`🐍 Snake game started: Room ${roomId}, Game ${gameId}`);
 
   // Send game:start event with initial state to all players
+  // the "contract" shape
   const roomName = `room_${roomId}`;
+  console.log('📤 broadcasting game:start', {
+    roomId: game.roomId,
+    gameId: game.gameId,
+    winnerId: state.winnerId,
+  });
   connectionManager.broadcast(roomName, 'game:start', {
     game_id: gameId,
-    initial_state: {
-      gridWidth: state.gridWidth,
-      gridHeight: state.gridHeight,
-      snakes: state.snakes,
+    state: {
+      box_width: state.gridWidth,
+      box_height: state.gridHeight,
       apple: state.apple,
+      snakes: Object.fromEntries(
+        Object.entries(state.snakes).map(([slot, snake]) => [
+          Number(slot),
+          {
+            body: snake.body,
+            direction: snake.direction,
+            score: snake.score,
+            alive: snake.alive,
+          },
+        ])
+      ),
+      tick: 0,
+      game_over: state.gameOver,
+      winner_id: state.winnerId,
     },
   });
 
@@ -273,6 +296,8 @@ function updateGame(game: ActiveSnakeGame): void {
       // Remove tail
       snake.body.pop();
     }
+
+    state.tick += 1;
   }
 
   // Check win condition
@@ -282,13 +307,13 @@ function updateGame(game: ActiveSnakeGame): void {
     state.gameOver = true;
 
     if (aliveSnakes.length === 1) {
-      // Find winner's oderId
+      // Find winner's userId
       const winner = aliveSnakes[0];
       if (winner) {
         const winnerSlot = parseInt(winner[0], 10);
-        for (const [oderId, slot] of game.players) {
+        for (const [userId, slot] of game.players) {
           if (slot === winnerSlot) {
-            state.winnerId = oderId;
+            state.winnerId = userId;
             break;
           }
         }
@@ -351,10 +376,25 @@ function spawnApple(state: SnakeGameState): Point {
 function broadcastGameState(game: ActiveSnakeGame): void {
   const roomName = `room_${game.roomId}`;
   connectionManager.broadcast(roomName, 'game:state', {
-    gridWidth: game.state.gridWidth,
-    gridHeight: game.state.gridHeight,
-    snakes: game.state.snakes,
-    apple: game.state.apple,
+    state: {
+      box_width: game.state.gridWidth,
+      box_height: game.state.gridHeight,
+      apple: game.state.apple,
+      snakes: Object.fromEntries(
+        Object.entries(game.state.snakes).map(([slot, snake]) => [
+          Number(slot),
+          {
+            body: snake.body,
+            direction: snake.direction,
+            score: snake.score,
+            alive: snake.alive,
+          },
+        ])
+      ),
+      tick: game.state.tick,
+      game_over: game.state.gameOver,
+      winner_id: game.state.winnerId,
+    },
   });
 }
 
@@ -362,7 +402,7 @@ function broadcastGameState(game: ActiveSnakeGame): void {
 // End Game
 // ============================================
 
-async function endGame(game: ActiveSnakeGame): Promise<void> {
+/* async function endGame(game: ActiveSnakeGame): Promise<void> {
   // Stop loop
   if (game.intervalId) {
     clearInterval(game.intervalId);
@@ -381,11 +421,11 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
     const buyIn = 50; // Could come from room settings
     const coinsChange: Record<string, number> = {};
 
-    for (const [oderId, slot] of game.players) {
+    for (const [userId, slot] of game.players) {
       const snake = state.snakes[slot];
       if (!snake) continue;
 
-      const isWinner = oderId === state.winnerId;
+      const isWinner = userId === state.winnerId;
       const score = snake.score;
 
       // Save result
@@ -394,7 +434,7 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
          VALUES ($1, $2, $3, $4, $5)`,
         [
           game.gameId,
-          oderId,
+          userId,
           score,
           isWinner ? 1 : 2,
           isWinner ? buyIn : -buyIn,
@@ -406,16 +446,16 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
         await db.query(
           `UPDATE users SET total_wins = total_wins + 1, coins = coins + $2, total_score = total_score + $3
            WHERE id = $1`,
-          [oderId, buyIn, score]
+          [userId, buyIn, score]
         );
-        coinsChange[oderId] = buyIn;
+        coinsChange[userId] = buyIn;
       } else {
         await db.query(
           `UPDATE users SET total_losses = total_losses + 1, coins = coins - $2, total_score = total_score + $3
            WHERE id = $1`,
-          [oderId, buyIn, score]
+          [userId, buyIn, score]
         );
-        coinsChange[oderId] = -buyIn;
+        coinsChange[userId] = -buyIn;
       }
     }
 
@@ -447,17 +487,107 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
   } finally {
     activeGames.delete(game.roomId);
   }
+} */
+// simplified version for now (testing)
+async function endGame(game: ActiveSnakeGame): Promise<void> {
+  if (game.intervalId) {
+    clearInterval(game.intervalId);
+  }
+
+  const { state, db } = game;
+
+  try {
+    // Mark game finished
+    await db.query(
+      `UPDATE games
+       SET status = 'FINISHED', ended_at = NOW()
+       WHERE id = $1`,
+      [game.gameId]
+    );
+
+    // Reset room back to waiting
+    await db.query(
+      `UPDATE rooms
+       SET status = 'WAITING'
+       WHERE id = $1`,
+      [game.roomId]
+    );
+
+    // Reset ready flags
+    await db.query(
+      `UPDATE room_players
+       SET is_ready = false
+       WHERE room_id = $1`,
+      [game.roomId]
+    );
+
+    // Build final scores by slot
+    const scores: Record<number, number> = {};
+    const finalSnakes = Object.entries(state.snakes) as [string, SnakeState][];
+
+    for (const [slot, snake] of finalSnakes) {
+      scores[parseInt(slot, 10)] = snake.score;
+    }
+
+    // MVP: no DB rewards/stats yet
+    const coinsChange: Record<string, number> = {};
+
+    // Broadcast game end to everyone in the room
+    connectionManager.broadcast(`room_${game.roomId}`, 'game:end', {
+      winner_id: state.winnerId,
+      scores,
+      coins_change: coinsChange,
+    });
+
+    console.log(`🐍🛑Game ${game.gameId} ended. Winner: ${state.winnerId}`);
+  } catch (err) {
+    console.error('❌ endGame error:', err);
+
+    // Even if DB cleanup fails, still try to notify clients
+    try {
+      const scores: Record<number, number> = {};
+      const finalSnakes = Object.entries(state.snakes) as [
+        string,
+        SnakeState,
+      ][];
+
+      for (const [slot, snake] of finalSnakes) {
+        scores[parseInt(slot, 10)] = snake.score;
+      }
+
+      console.log('📤 broadcasting game:end', {
+        roomId: game.roomId,
+        winnerId: state.winnerId,
+      });
+      connectionManager.broadcast(`room_${game.roomId}`, 'game:end', {
+        winner_id: state.winnerId,
+        scores,
+        coins_change: {},
+      });
+
+      console.log(
+        `⚠️ game:end broadcasted despite DB error. Winner: ${state.winnerId}`
+      );
+    } catch (broadcastErr) {
+      console.error(
+        '❌ Failed to broadcast game:end after DB error:',
+        broadcastErr
+      );
+    }
+  } finally {
+    activeGames.delete(game.roomId);
+  }
 }
 
 // ============================================
 // Disconnect Handler
 // ============================================
 
-export function handleGameDisconnect(roomId: number, oderId: string): void {
+export function handleGameDisconnect(roomId: number, userId: string): void {
   const game = activeGames.get(roomId);
   if (!game) return;
 
-  const slot = game.players.get(oderId);
+  const slot = game.players.get(userId);
   if (slot === undefined) return;
 
   // Kill the disconnected player's snake

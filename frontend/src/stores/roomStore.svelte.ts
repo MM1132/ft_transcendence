@@ -6,6 +6,30 @@ game:start
 game:state
 game:end */
 
+export type Direction = 'up' | 'down' | 'left' | 'right';
+
+export interface SnakePoint {
+  x: number;
+  y: number;
+}
+
+export interface SnakeSnapshot {
+  body: SnakePoint[];
+  direction: Direction;
+  score: number;
+  alive: boolean;
+}
+
+export interface MultiplayerSnakeState {
+  box_width: number;
+  box_height: number;
+  apple: SnakePoint;
+  snakes: Record<number, SnakeSnapshot>;
+  tick: number;
+  game_over: boolean;
+  winner_id: string | null;
+}
+
 export interface Room
 {
     id: string;
@@ -29,6 +53,8 @@ export interface RoomState
     currentRoom?: Room | null;
     currentRoomPlayers?: Player[];
     currentUserId?: string | null;
+    gameState?: MultiplayerSnakeState | null;
+    gameStatus?: 'idle' | 'starting' | 'running' | 'ended';
 }
 
 export interface Player
@@ -46,7 +72,9 @@ export const roomState = $state<RoomState>({
     currentRoomId: null,
     currentRoom: null,
     currentRoomPlayers: [],
-    currentUserId: null 
+    currentUserId: null,
+    gameState: null,
+    gameStatus: 'idle'
 });
 
 let socket: WebSocket | null = null;
@@ -65,6 +93,8 @@ export function connect(token: string)
 
     socket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
+        console.log('%c[WS <-]', 'color: cyan; font-weight: bold;', msg);
+
         const { event: type, data } = msg;
 
         switch (type) {
@@ -103,6 +133,10 @@ export function connect(token: string)
             
             case 'room:left' :
                 roomState.currentRoomId = null;
+                roomState.currentRoom = null;
+                roomState.currentRoomPlayers = [];
+                roomState.gameState = null;
+                roomState.gameStatus = 'idle';
                 navigateTo('/dashboard');
                 if (data.rooms)
                     roomState.rooms = data.rooms;
@@ -134,12 +168,34 @@ export function connect(token: string)
                     roomState.currentRoomId = null;
                     roomState.currentRoom = null;
                     roomState.currentRoomPlayers = [];
+                    roomState.gameState = null;
+                    roomState.gameStatus = 'idle';
                     console.log("%c[SYSTEM] You have been kicked.", "color: orange;");
                     navigateTo('/dashboard');
                 break;
 
+            case 'game:start':
+                    roomState.gameState = data.state;
+                    roomState.gameStatus = 'running';
+                    console.log('🎮 game:start', data);
+                    console.log('roomState.gameState =', roomState.gameState);
+                    console.log('roomState.gameStatus =', roomState.gameStatus);
+                break;
+
+            case 'game:state':
+                    roomState.gameState = data.state;
+                    console.log('📡 game:state', data);
+                    console.log('roomState.gameState =', roomState.gameState);
+                    console.log('roomState.gameStatus =', roomState.gameStatus);
+                break;
+
+            case 'game:end':
+                    roomState.gameStatus = 'ended';
+                    console.log('🏁 Game ended', data);
+                break;
+
             case 'error':
-                console.error("Server error event:", data);
+                    console.error("Server error event:", data);
                 break;
         }
     };
@@ -149,6 +205,11 @@ export function connect(token: string)
             roomState.isConnected = false;
             roomState.rooms = [];
             roomState.currentRoomId = null;
+            roomState.currentRoom = null;
+            roomState.currentRoomPlayers = [];
+            roomState.currentUserId = null;
+            roomState.gameState = null;
+            roomState.gameStatus = 'idle';
             socket = null;
     };
 }
