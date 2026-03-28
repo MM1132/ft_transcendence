@@ -25,6 +25,12 @@
         showDropdown = false;
         navigateTo('/setting');
     }
+
+    function goToWork()
+    {
+        showDropdown = false;
+        navigateTo('/work');
+    }
 // as the browser to treat as a new URL, so it reloads the latest avatar/ no old cached image
     function withAvatarVersion(url)
     {
@@ -89,6 +95,7 @@
             {#if $authStore.isLoggedIn && showDropdown}
                 <div class="dropdown">
                     <button onclick={goToSettings}>Settings</button>
+                    <button onclick={goToWork}>Go to Work</button>
                     <button onclick={handleLogout}>Logout</button>
                 </div>
             {/if}

@@ -1,4 +1,5 @@
-import { buildApiPath } from "../utils/constants";
+import { buildApiPath, SESSION_STORAGE_KEY, type AuthSessionData } from "../utils/constants";
+import { extractErrorMessage, fetchWithSessionHandling } from './serviceUtils';
 
 export type UserSettings = { // was ich vom Backend bekomme, kann auch null sein
   birthday: string | null;
@@ -17,8 +18,6 @@ export type UpdateUserSettingsPayload = { // was ich zum Backend schicken, optio
 };
 
 
-// Avatar URLs from backend may be relative (e.g. /api/v1/static/...) — strip origin before prefixing
-const API_ORIGIN = '';
 const SETTINGS_PATH = '/user/me/settings';
 const SETTINGS_API_URL = buildApiPath(SETTINGS_PATH);
 
@@ -28,7 +27,7 @@ function api(path: string): string {
 
 export const settingsService = {
   async getUserSettings(): Promise<UserSettings> {
-    const response = await fetch(SETTINGS_API_URL, { //fetch request an backend
+    const response = await fetchWithSessionHandling(SETTINGS_API_URL, { //fetch request an backend
       method: 'GET',
       headers: buildAuthHeaders(), // send session token
     });
@@ -43,7 +42,7 @@ export const settingsService = {
 
   // fallback when upload response has no URL
   async getMyAvatarUrl(): Promise<string | null> {
-    const response = await fetch(api('/user/me'), {
+    const response = await fetchWithSessionHandling(api('/user/me'), {
       method: 'GET',
       headers: buildAuthHeaders(),
       cache: 'no-store',
@@ -55,13 +54,13 @@ export const settingsService = {
     }
 
     const user = (await response.json()) as UserProfile;
-    return normalizeAvatarUrl(user.avatarUrl ?? null);
+    return (user.avatarUrl ?? null);
   },
 
   async updateUserSettings( // die eingegebenen werte ans backend schicken als 'payload'
     payload: UpdateUserSettingsPayload
   ): Promise<UserSettings> {
-    const response = await fetch(SETTINGS_API_URL, {
+    const response = await fetchWithSessionHandling(SETTINGS_API_URL, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json', // damit backend weiss, dass es json ist
@@ -82,7 +81,7 @@ export const settingsService = {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    const response = await fetch(api(`${SETTINGS_PATH}/avatar`), {
+    const response = await fetchWithSessionHandling(api(`${SETTINGS_PATH}/avatar`), {
       method: 'PUT',
       headers: buildAuthHeaders(),
       body: formData,
@@ -95,11 +94,11 @@ export const settingsService = {
 
     // json is returned i must make it string
     const body = (await response.json()) as { avatarUrl?: string | null };
-    return normalizeAvatarUrl(body.avatarUrl ?? null);
+    return (body.avatarUrl ?? null);
   },
 
   async deleteAvatar(): Promise<void> {
-    const response = await fetch(api(`${SETTINGS_PATH}/avatar`), {
+    const response = await fetchWithSessionHandling(api(`${SETTINGS_PATH}/avatar`), {
       method: 'DELETE',
       headers: buildAuthHeaders(),
     });
@@ -112,35 +111,24 @@ export const settingsService = {
 
 };
 
-async function extractErrorMessage(response: Response): Promise<string>
+export function buildAuthHeaders(): HeadersInit
 {
+  // authStore writes the current session to sessionStorage under "auth_session".
+  const rawSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
+
+  if (!rawSession) {
+    // if no session token available send no auth-header then backend will return 401
+    return {};
+  }
+
   try {
-    const body = await response.json() as { error?: string };
-    return body.error || `Request failed (${response.status})`;
-  } catch {
-    return `Request failed (${response.status})`;
+    const parsed = JSON.parse(rawSession) as AuthSessionData;
+    if (parsed.sessionToken) {
+      return { 'x-session-token': parsed.sessionToken };
+    }
+  } catch (_error) {
+    // something went wrong, do nothinge value and continue unauthenticated.
   }
-}
-
-
-function buildAuthHeaders(): HeadersInit
-{
-  const sessionToken = localStorage.getItem('sessionToken'); // wenn session token exists, dann nimm den
-  if (sessionToken) {
-    return { 'x-session-token': sessionToken };
-  }
-
-  // ansonsten dev token in header
-  return { 'x-dev': '1' };
-}
-
-// covert relative backend path - avoid broken image
-function normalizeAvatarUrl(url: string | null | undefined): string | null {
-  const value = url?.trim();
-  if (!value) return null;
-  if (value.startsWith('http://') || value.startsWith('https://')) return value;
-  if (value.startsWith('http:/')) return value.replace('http:/', 'http://');
-  if (value.startsWith('https:/')) return value.replace('https:/', 'https://');
-  if (value.startsWith('/')) return `${API_ORIGIN}${value}`;
-  return value;
+  // no automatic x-dev fallback in normal frontend requests, our fallback —> just send no token
+  return {};
 }

@@ -3,6 +3,8 @@ import path from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import { DateTime } from 'luxon';
 import { Client, types } from 'pg';
+import { applyMigrations } from './database/applyMigrations.ts';
+import { runSqlFromFile } from './database/initSqlFromFile.ts';
 
 export const initDatabase = async (
   fastify: FastifyInstance
@@ -35,56 +37,17 @@ export const initDatabase = async (
   }
 
   // Execute the initialization SQL
-  const initSql = readFileSync(
-    path.join(fastify.baseDir, '/src/database/init.sql'),
-    {
-      encoding: 'utf8',
-      flag: 'r',
-    }
+  await runSqlFromFile(client, fastify.baseDir, '/src/database/init.sql');
+  console.log(`✅ Database: Executed init.sql`);
+
+  await runSqlFromFile(
+    client,
+    fastify.baseDir,
+    '/src/database/init_migrations.sql'
   );
-  await client.query(initSql);
-  console.log(`✅ Database: Initialized`);
+  console.log(`✅ Database: Executed init_migrations.sql`);
 
-  // Migrations: track applied migrations in DB (not in file)
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS schema_migrations (
-      migration BIGINT PRIMARY KEY,
-      applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `);
-
-  const appliedResult = await client.query<{ migration: string }>(
-    'SELECT migration FROM schema_migrations'
-  );
-  const applied = new Set(appliedResult.rows.map((r) => parseInt(r.migration, 10)));
-
-  // Apply migrations
-  const migrations = fs
-    .readdirSync(path.join(fastify.baseDir, '/src/database/migrations'))
-    .map((v) => parseInt(v, 10))
-    .filter((v) => v)
-    .sort();
-
-  for (const migration of migrations) {
-    if (!applied.has(migration)) {
-      const fileName = path.join(
-        fastify.baseDir,
-        'src/database/migrations',
-        `${migration}.sql`
-      );
-
-      const migrationSql = readFileSync(fileName, {
-        encoding: 'utf8',
-        flag: 'r',
-      });
-
-      await client.query(migrationSql);
-      await client.query('INSERT INTO schema_migrations (migration) VALUES ($1)', [migration]);
-      console.log(`Database: applied migration ${migration}`);
-    }
-  }
-
+  await applyMigrations(client, fastify.baseDir);
   console.log(`✅ Database: Migrations applied`);
-
   return client;
 };

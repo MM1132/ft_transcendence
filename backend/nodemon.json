@@ -2,5 +2,5 @@
   "watch": ["src"],
   "ignore": ["build"],
   "ext": "ts",
-  "exec": "npm run build && npm run start"
+  "exec": "biome check --write --reporter=summary --diagnostic-level=error --linter-enabled=false && npm run build && npm run start"
 }
