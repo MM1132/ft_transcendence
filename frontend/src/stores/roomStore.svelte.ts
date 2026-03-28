@@ -54,7 +54,7 @@ export interface RoomState
     currentRoomPlayers?: Player[];
     currentUserId?: string | null;
     gameState?: MultiplayerSnakeState | null;
-    gameStatus?: 'idle' | 'starting' | 'running' | 'ended';
+    gameStatus?: 'idle' | 'running' | 'ended';
 }
 
 export interface Player
@@ -174,20 +174,28 @@ export function connect(token: string)
                     navigateTo('/dashboard');
                 break;
 
-            case 'game:start':
-                    roomState.gameState = data.state;
-                    roomState.gameStatus = 'running';
-                    console.log('🎮 game:start', data);
-                    console.log('roomState.gameState =', roomState.gameState);
-                    console.log('roomState.gameStatus =', roomState.gameStatus);
-                break;
+            case 'game:start': {
+                const normalized = normalizeIncomingGameState(
+                    data.state ?? data.initial_state ?? data
+                );
 
-            case 'game:state':
-                    roomState.gameState = data.state;
-                    console.log('📡 game:state', data);
-                    console.log('roomState.gameState =', roomState.gameState);
-                    console.log('roomState.gameStatus =', roomState.gameStatus);
+                    roomState.gameState = normalized;
+                    roomState.gameStatus = 'running';
+
+                    console.log('🎮 game:start', normalized);
                 break;
+            }
+
+            case 'game:state': {
+                const normalized = normalizeIncomingGameState(
+                    data.state ?? data
+                );
+
+                roomState.gameState = normalized;
+
+                console.log('📡 game:state', normalized);
+                break;
+            }
 
             case 'game:end':
                     roomState.gameStatus = 'ended';
@@ -287,4 +295,47 @@ export async function disconnectRoomSocket(): Promise<void> {
 
     resetRoomState();
     await closePromise;
+}
+
+// Helper normalizer for incoming payloads as if backend shape changed slightly, frontend  wont explode
+function normalizeIncomingGameState(raw: any): MultiplayerSnakeState | null {
+    if (!raw) return null;
+
+    // Already in the new shape
+    if (
+        typeof raw.box_width === 'number' &&
+        typeof raw.box_height === 'number' &&
+        raw.apple &&
+        raw.snakes
+    ) {
+        return {
+            box_width: raw.box_width,
+            box_height: raw.box_height,
+            apple: raw.apple,
+            snakes: raw.snakes,
+            tick: raw.tick ?? 0,
+            game_over: raw.game_over ?? false,
+            winner_id: raw.winner_id ?? null
+        };
+    }
+
+    // Backward-compatible fallback for older payloads
+    if (
+        typeof raw.gridWidth === 'number' &&
+        typeof raw.gridHeight === 'number' &&
+        raw.apple &&
+        raw.snakes
+    ) {
+        return {
+            box_width: raw.gridWidth,
+            box_height: raw.gridHeight,
+            apple: raw.apple,
+            snakes: raw.snakes,
+            tick: raw.tick ?? 0,
+            game_over: raw.gameOver ?? false,
+            winner_id: raw.winnerId ?? null
+        };
+    }
+
+    return null;
 }

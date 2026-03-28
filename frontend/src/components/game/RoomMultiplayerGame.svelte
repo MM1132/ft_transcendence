@@ -1,49 +1,50 @@
 <script lang="ts">
   import { roomState } from '../../stores/roomStore.svelte';
+  import MultiplayerSnakeBoard from './MultiplayerSnakeBoard.svelte';
 
-  const hasGameState = $derived(!!roomState.gameState);
+  const gameState = $derived(roomState.gameState);
   const players = $derived(roomState.currentRoomPlayers ?? []);
-  const gameStatus = $derived(roomState.gameStatus ?? 'idle');
+
+  const slotEntries = $derived.by(() => {
+    if (!gameState) return [];
+
+    return Object.entries(gameState.snakes)
+      .map(([slot, snake]) => ({
+        slot: Number(slot),
+        snake,
+        player: players.find((p) => p.slot === Number(slot)) ?? null
+      }))
+      .sort((a, b) => a.slot - b.slot);
+  });
 </script>
 
 <div class="room-game-shell">
   <div class="room-game-header">
     <h2>Room Match</h2>
-    <p>Status: <strong>{gameStatus}</strong></p>
+    <p>Status: <strong>{roomState.gameStatus ?? 'idle'}</strong></p>
   </div>
 
   {#if !roomState.currentRoom}
     <div class="room-game-empty">
       <p>No active room selected.</p>
     </div>
+  {:else if !gameState}
+    <div class="room-game-empty">
+      <p>Waiting for match snapshots...</p>
+      <p>Join, ready up, and start the game.</p>
+    </div>
   {:else}
-    <div class="room-game-layout">
-      <aside class="room-game-sidebar">
-        <h3>Players</h3>
-        <ul>
-          {#each players as player}
-            <li>
-              <span>{player.username}</span>
-              <span>slot {player.slot}</span>
-              <span>{player.is_ready ? 'ready' : 'not ready'}</span>
-            </li>
-          {/each}
-        </ul>
-      </aside>
-
-      <section class="room-game-stage">
-        {#if hasGameState}
-          <div class="room-game-placeholder">
-            <p>Backend multiplayer state is connected ✅</p>
-            <p>TODO: Render </p>
-          </div>
-        {:else}
-          <div class="room-game-placeholder">
-            <p>Waiting for game state...</p>
-            <p>Join, ready up, and start the match.</p>
-          </div>
-        {/if}
-      </section>
+    <div class="boards-grid">
+      {#each slotEntries as entry (entry.slot)}
+        <MultiplayerSnakeBoard
+          width={gameState.box_width}
+          height={gameState.box_height}
+          snake={entry.snake}
+          apple={gameState.apple}
+          title={entry.player ? `${entry.player.username} (slot ${entry.slot})` : `slot ${entry.slot}`}
+          isCurrentPlayer={entry.player?.id === roomState.currentUserId}
+        />
+      {/each}
     </div>
   {/if}
 </div>
@@ -62,6 +63,7 @@
     padding: 24px;
     box-sizing: border-box;
     gap: 16px;
+    overflow: auto;
   }
 
   .room-game-header h2,
@@ -69,39 +71,19 @@
     margin: 0;
   }
 
-  .room-game-layout {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 20px;
-    min-height: 0;
+  .room-game-empty {
     flex: 1;
-  }
-
-  .room-game-sidebar {
-    border: 1px solid rgba(10, 235, 0, 0.1);
-    padding: 16px;
-    overflow: auto;
-  }
-
-  .room-game-sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-  }
-
-  .room-game-stage {
-    border: 1px solid rgba(10, 235, 0, 0.1);
-    display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 0;
+    opacity: 0.85;
+    text-align: center;
   }
 
-  .room-game-placeholder {
-    text-align: center;
-    opacity: 0.9;
+  .boards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
   }
 </style>
