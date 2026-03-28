@@ -88,14 +88,15 @@
 <header>
   <div id="header">
     <div class="header-logo">
-    {#if $authStore.isLoggedIn}
-    <Logo handleLogoClick={goToDashboard}/>
-    {/if}
-</div>
-<div class="header-nav">
-{#if $authStore.isLoggedIn}
-    <div class="user-info">
-        <span class="user-name">{roomState.currentUserName}</span>
+        {#if $authStore.isLoggedIn}
+        <Logo handleLogoClick={goToDashboard}/>
+        {/if}
+    </div>
+    <div class="header-nav">
+        {#if $authStore.isLoggedIn}
+        <div class="user-info">
+            <span class="user-name">{roomState.currentUserName}</span>
+            <!-- <h1>What is this {roomState.currentUserName}</h1> -->
         <!-- <span class="user-balance">💰 {roomState.balance}</span> -->
     </div>
 {/if}
