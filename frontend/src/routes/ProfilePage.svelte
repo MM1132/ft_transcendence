@@ -38,7 +38,7 @@
     const parsedDate = new Date(value);
     if (Number.isNaN(parsedDate.getTime())) return value;
 
-    return parsedDate.toLocaleDateString('de-DE', {
+    return parsedDate.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
