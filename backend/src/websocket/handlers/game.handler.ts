@@ -1,6 +1,6 @@
 import type { Client } from 'pg';
 import { connectionManager } from '../connectionManager.ts';
-import type { GameInputPayload } from '../types.ts';
+import type { Direction, GameInputPayload } from '../types.ts';
 
 // ============================================
 // Snake Game Types
@@ -17,8 +17,6 @@ interface Point {
   x: number;
   y: number;
 }
-
-type Direction = 'up' | 'down' | 'left' | 'right';
 
 interface SnakeState {
   body: Point[]; // Head is body[0]
@@ -52,7 +50,9 @@ const activeGames: Map<number, ActiveSnakeGame> = new Map();
 // Grid settings
 const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
-const TICK_RATE = 150; // ms between updates (slower = easier)
+// const TICK_RATE = 150; // ms between updates (slower = easier)
+//
+const TICK_RATE = 500; // ms between updates (slower = easier)
 
 // ============================================
 // Game Input Handler
@@ -75,40 +75,38 @@ export async function handleGameInput(
   const snake = game.state.snakes[slot];
   if (!snake || !snake.alive) return;
 
-  // Turn left or right relative to current direction
-  const currentDir = snake.direction;
+  const requestedDirection = data.direction;
 
-  if (data.direction === 'left') {
-    snake.nextDirection = turnLeft(currentDir);
-  } else if (data.direction === 'right') {
-    snake.nextDirection = turnRight(currentDir);
-  }
+  // Ignore same-direction change
+  if (requestedDirection === snake.direction) return;
+
+  // Prevent 180-degree reversal
+  if (isOppositeDirection(requestedDirection, snake.direction)) return;
+
+  console.log('🎮 game input', {
+    userId,
+    requestedDirection,
+    currentDirection: snake.direction,
+    nextDirectionBefore: snake.nextDirection,
+  });
+
+  snake.nextDirection = requestedDirection;
+
+  console.log('🎮 game input', {
+    userId,
+    requestedDirection,
+    currentDirection: snake.direction,
+    nextDirectionBefore: snake.nextDirection,
+  });
 }
 
-function turnLeft(dir: Direction): Direction {
-  switch (dir) {
-    case 'up':
-      return 'left';
-    case 'left':
-      return 'down';
-    case 'down':
-      return 'right';
-    case 'right':
-      return 'up';
-  }
-}
-
-function turnRight(dir: Direction): Direction {
-  switch (dir) {
-    case 'up':
-      return 'right';
-    case 'right':
-      return 'down';
-    case 'down':
-      return 'left';
-    case 'left':
-      return 'up';
-  }
+function isOppositeDirection(next: Direction, current: Direction): boolean {
+  return (
+    (next === 'up' && current === 'down') ||
+    (next === 'down' && current === 'up') ||
+    (next === 'left' && current === 'right') ||
+    (next === 'right' && current === 'left')
+  );
 }
 
 // ============================================

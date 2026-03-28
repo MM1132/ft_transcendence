@@ -225,3 +225,5 @@ export function send(event: string, data: any)
         console.error("WebSocket is not connected.Event:", event, "Data:", data);
     }
 }
+// TODO: for debug
+(window as any).wsSend = send;
