@@ -5,10 +5,10 @@ import type {
   PlayerLeftPayload,
   PlayerReadyPayload,
   RoomCreatePayload,
+  RoomInvitePayload,
   RoomJoinedPayload,
   RoomJoinPayload,
   RoomKickPayload,
-  RoomInvitePayload,
   RoomLeavePayload,
   RoomReadyPayload,
 } from '../types.ts';
@@ -114,7 +114,10 @@ export async function handleRoomCreate(
 
     // 6. Deduct buy-in from creator balance
     if (buy_in_amount > 0) {
-      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [buy_in_amount, userId]);
+      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [
+        buy_in_amount,
+        userId,
+      ]);
       await db.query(
         `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
         [userId, -buy_in_amount, `Buy-in for room "${name.trim()}"`]
@@ -242,9 +245,14 @@ export async function handleRoomJoin(
 
     // 5b. Check buy-in balance
     if (room.buy_in_amount > 0) {
-      const balanceResult = await db.query('SELECT balance FROM users WHERE id = $1', [userId]);
+      const balanceResult = await db.query(
+        'SELECT balance FROM users WHERE id = $1',
+        [userId]
+      );
       if (balanceResult.rows[0].balance < room.buy_in_amount) {
-        connectionManager.send(userId, 'room:error', { error: 'Not enough coins for buy-in' });
+        connectionManager.send(userId, 'room:error', {
+          error: 'Not enough coins for buy-in',
+        });
         return;
       }
     }
@@ -261,7 +269,10 @@ export async function handleRoomJoin(
 
     // 7. Deduct buy-in from joiner balance
     if (room.buy_in_amount > 0) {
-      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [room.buy_in_amount, userId]);
+      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [
+        room.buy_in_amount,
+        userId,
+      ]);
       await db.query(
         `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
         [userId, -room.buy_in_amount, `Buy-in for room "${room.name}"`]
@@ -567,11 +578,15 @@ export async function handleRoomKick(
       return;
     }
     if (String(roomResult.rows[0].creator_id) !== userId) {
-      connectionManager.send(userId, 'room:error', { error: 'Only the room creator can kick players' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'Only the room creator can kick players',
+      });
       return;
     }
     if (target_user_id === userId) {
-      connectionManager.send(userId, 'room:error', { error: 'Cannot kick yourself' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'Cannot kick yourself',
+      });
       return;
     }
 
@@ -581,7 +596,9 @@ export async function handleRoomKick(
       [room_id, target_user_id]
     );
     if (playerResult.rows.length === 0) {
-      connectionManager.send(userId, 'room:error', { error: 'Player not in room' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'Player not in room',
+      });
       return;
     }
     const slot = playerResult.rows[0].player_slot;
@@ -596,15 +613,25 @@ export async function handleRoomKick(
     connectionManager.leaveRoom(target_user_id, roomName);
 
     // Notify kicked user
-    connectionManager.send(target_user_id, 'room:kicked', { room_id, reason: 'Kicked by room creator' });
+    connectionManager.send(target_user_id, 'room:kicked', {
+      room_id,
+      reason: 'Kicked by room creator',
+    });
 
     // Broadcast player_left to room
-    connectionManager.broadcast(roomName, 'room:player_left', { user_id: target_user_id, slot });
+    connectionManager.broadcast(roomName, 'room:player_left', {
+      user_id: target_user_id,
+      slot,
+    });
 
-    console.log(`🎮 Room ${room_id}: User ${target_user_id} kicked by creator ${userId}`);
+    console.log(
+      `🎮 Room ${room_id}: User ${target_user_id} kicked by creator ${userId}`
+    );
   } catch (err) {
     console.error('❌ handleRoomKick error:', err);
-    connectionManager.send(userId, 'room:error', { error: 'Failed to kick player' });
+    connectionManager.send(userId, 'room:error', {
+      error: 'Failed to kick player',
+    });
   }
 }
 
@@ -626,7 +653,9 @@ export async function handleRoomInvite(
       [room_id, userId]
     );
     if (memberCheck.rows.length === 0) {
-      connectionManager.send(userId, 'room:error', { error: 'You are not in this room' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'You are not in this room',
+      });
       return;
     }
 
@@ -642,7 +671,9 @@ export async function handleRoomInvite(
     const room = roomResult.rows[0];
 
     if (room.status !== 'WAITING') {
-      connectionManager.send(userId, 'room:error', { error: 'Room is already in a game' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'Room is already in a game',
+      });
       return;
     }
 
@@ -664,6 +695,8 @@ export async function handleRoomInvite(
     console.log(`📨 Room ${room_id}: User ${userId} invited ${target_user_id}`);
   } catch (err) {
     console.error('❌ handleRoomInvite error:', err);
-    connectionManager.send(userId, 'room:error', { error: 'Failed to send invite' });
+    connectionManager.send(userId, 'room:error', {
+      error: 'Failed to send invite',
+    });
   }
 }
