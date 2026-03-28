@@ -8,6 +8,7 @@ type AuthState =
     user: string | null;
     userId: string | null;
     sessionToken: string | null;
+    balance: number | null;
     isLoggedIn: boolean;
     isLoading: boolean;
     errorMessage: string;
@@ -18,6 +19,7 @@ const initialState: AuthState =
     user: null,
     userId: null,
     sessionToken: null,
+    balance: null,
     isLoggedIn: false,
     isLoading: false,
     errorMessage: ""
@@ -59,12 +61,14 @@ async function login(username: string, password: string)
         if (result.success)
         {
             sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ user: username, userId: result.userId, sessionToken: result.sessionToken }));
+            const myUser = result.sessionToken ? await authService.getMyUser(result.sessionToken) : null;
             update((state) => ({
                 ...state,
                 isLoggedIn: true,
                 user: username,
                 userId: result.userId,
                 sessionToken: result.sessionToken,
+                balance: myUser?.balance ?? null,
                 isLoading: false
             }));
         }
@@ -74,6 +78,7 @@ async function login(username: string, password: string)
                 ...state,
                 isLoggedIn: false,
                 user: null,
+                balance: null,
                 errorMessage: result.message,
                 isLoading: false
             }));
@@ -83,6 +88,7 @@ async function login(username: string, password: string)
     {
         update((state) => ({
             ...state,
+            balance: null,
             errorMessage: "Connection failed. Is the server running?",
             isLoading: false
         }));
@@ -134,12 +140,14 @@ async   function signup(username: string, password: string, email: string)
         if(result.success)
         {
             sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ user: username, userId: result.userId, sessionToken: result.sessionToken }));
+            const myUser = result.sessionToken ? await authService.getMyUser(result.sessionToken) : null;
             update((state) => ({
                 ...state,
                 isLoggedIn: true,
                 user: username,
                 userId: result.userId,
                 sessionToken: result.sessionToken,
+                balance: myUser?.balance ?? null,
                 isLoading: false
             }));
         }
@@ -151,6 +159,7 @@ async   function signup(username: string, password: string, email: string)
                 user: null,
                 userId: null,
                 sessionToken: null,
+                balance: null,
                 errorMessage: result.message,
                 isLoading: false
             }));
@@ -160,6 +169,7 @@ async   function signup(username: string, password: string, email: string)
     {
         update((state) => ({
             ...state,
+            balance: null,
             errorMessage: "Connection failed. Is the server running?",
             isLoading: false
         }));
@@ -188,6 +198,7 @@ function initFromSession()
             userId: parsed.userId,
             sessionToken: parsed.sessionToken,
             isLoggedIn: true,
+            balance: null,
             errorMessage: ""
         }));
 
@@ -195,7 +206,13 @@ function initFromSession()
             if (!user || user.id !== parsed.userId)
             {
                 logout();
+                return;
             }
+
+            update((state) => ({
+                ...state,
+                balance: user.balance
+            }));
         });
     }
     catch (_error)
@@ -211,6 +228,14 @@ function logout()
     navigateTo('/');
 }
 
+function setBalance(balance: number | null)
+{
+    update((state) => ({
+        ...state,
+        balance
+    }));
+}
+
 function getCurrentUserId(): string
 {
     const { userId } = get({ subscribe });
@@ -220,4 +245,4 @@ function getCurrentUserId(): string
     return userId;
 }
 
-export const authStore = { subscribe, login, signup, logout, initFromSession, getCurrentUserId };
+export const authStore = { subscribe, login, signup, logout, initFromSession, getCurrentUserId, setBalance };

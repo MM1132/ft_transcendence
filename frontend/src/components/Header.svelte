@@ -78,6 +78,12 @@
       <img src="src/images/c.svg" alt="Logo"/>
     </div>
     <div class="header-nav">
+        {#if $authStore.isLoggedIn}
+        <div class="user-info">
+            <span class="user-name">{$authStore.user}</span>
+            <span class="user-balance">Balance: {$authStore.balance ?? 0}</span>
+        </div>
+        {/if}
     <!-- When route becomes /, that whole block is not rendered. -->
         {#if $currentPath !== '/' && $currentPath !== '/login' && $currentPath !== '/signup'}
         <div class="avatar-container">
@@ -178,5 +184,33 @@
     .dropdown button:hover
     {
         background: #B13BCC;
+    }
+    
+    .user-info
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 2px;
+    }
+    
+    .user-name
+    {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.08rem;
+        letter-spacing: 1px;
+        line-height: 1.1;
+    }
+
+    .user-balance
+    {
+        color: #0AEB00;
+        font-weight: 500;
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        opacity: 0.9;
     }
 </style>
