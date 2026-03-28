@@ -101,6 +101,23 @@ export async function setupWebSocket(
               );
             }
 
+            /*If: backend restarted or room websocket was lost or DB still has old room row
+              then on next auth: clean that ghost row now.” */
+            const staleRoomResult = await db.query(
+              'SELECT room_id FROM room_players WHERE user_id = $1',
+              [user.id]
+            );
+
+            if (staleRoomResult.rows.length > 0 && !oldConn?.currentRoomId) {
+              const staleRoomId = Number(staleRoomResult.rows[0].room_id);
+
+              console.log(
+                `🧹 Cleaning stale room membership for user ${user.id} in room ${staleRoomId}`
+              );
+
+              await handlePlayerDisconnect(db, user.id, staleRoomId);
+            }
+
             // Update user online status in DB
             // await db.query('UPDATE users SET is_online = true WHERE id = $1', [
             //   user.id,

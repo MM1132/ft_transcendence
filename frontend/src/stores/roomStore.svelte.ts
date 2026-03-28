@@ -227,3 +227,64 @@ export function send(event: string, data: any)
 }
 // TODO: for debug
 (window as any).wsSend = send;
+
+function resetRoomState() {
+    roomState.isConnected = false;
+    roomState.currentRoomId = null;
+    roomState.currentRoom = null;
+    roomState.currentRoomPlayers = [];
+    roomState.currentUserId = null;
+    roomState.gameState = null;
+    roomState.gameStatus = 'idle';
+}
+
+// TODO: call it at logout button / logout action:
+// disconnect helper as to release rooms when players are out
+export async function disconnectRoomSocket(): Promise<void> {
+    const roomId = roomState.currentRoomId
+        ? Number(roomState.currentRoomId)
+        : null;
+
+    if (!socket) {
+        resetRoomState();
+        return;
+    }
+
+    const activeSocket = socket;
+    socket = null;
+
+    const closePromise = new Promise<void>((resolve) => {
+        if (activeSocket.readyState === WebSocket.CLOSED) {
+            resolve();
+            return;
+        }
+
+        activeSocket.addEventListener(
+            'close',
+            () => resolve(),
+            { once: true }
+        );
+
+        // fallback in case close event does not arrive in time
+        setTimeout(() => resolve(), 250);
+    });
+
+    if (activeSocket.readyState === WebSocket.OPEN && roomId) {
+        activeSocket.send(
+            JSON.stringify({
+                event: 'room:leave',
+                data: { room_id: roomId }
+            })
+        );
+    }
+
+    if (
+        activeSocket.readyState === WebSocket.OPEN ||
+        activeSocket.readyState === WebSocket.CONNECTING
+    ) {
+        activeSocket.close();
+    }
+
+    resetRoomState();
+    await closePromise;
+}

@@ -2,6 +2,7 @@ import { get, writable } from 'svelte/store';
 import { authService } from '../services/authService';
 import { navigateTo } from './router';
 import { SESSION_STORAGE_KEY, type AuthSessionData } from '../utils/constants';
+import { disconnectRoomSocket } from './roomStore.svelte';
 
 type AuthState =
 {
@@ -204,8 +205,9 @@ function initFromSession()
     }
 }
 
-function logout()
+async function logout()
 {
+    await disconnectRoomSocket();
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
     update(() => ({ ...initialState }));
     navigateTo('/');
