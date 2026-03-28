@@ -52,7 +52,7 @@ const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
 // const TICK_RATE = 150; // ms between updates (slower = easier)
 // TODO return to previous too slow now for debug
-const TICK_RATE = 500; // ms between updates (slower = easier)
+const TICK_RATE = 250; // ms between updates (slower = easier)
 
 // ============================================
 // Game Input Handler
@@ -92,11 +92,9 @@ export async function handleGameInput(
 
   snake.nextDirection = requestedDirection;
 
-  console.log('🎮 game input', {
+  console.log('✅ nextDirection updated', {
     userId,
-    requestedDirection,
-    currentDirection: snake.direction,
-    nextDirectionBefore: snake.nextDirection,
+    nextDirectionAfter: snake.nextDirection,
   });
 }
 
@@ -131,26 +129,17 @@ export function startGameLoop(
     tick: 0,
   };
 
-  // Create snakes for each player
-  const startPositions = [
-    { x: 3, y: Math.floor(GRID_HEIGHT / 2), dir: 'right' as Direction },
-    {
-      x: GRID_WIDTH - 4,
-      y: Math.floor(GRID_HEIGHT / 2),
-      dir: 'left' as Direction,
-    },
-    { x: Math.floor(GRID_WIDTH / 2), y: 3, dir: 'down' as Direction },
-    {
-      x: Math.floor(GRID_WIDTH / 2),
-      y: GRID_HEIGHT - 4,
-      dir: 'up' as Direction,
-    },
-  ];
+  // all snake spawn(start) from same origin
+  const startPosition = {
+    x: 3,
+    y: Math.floor(GRID_HEIGHT / 2),
+    dir: 'right' as Direction,
+  };
 
   const playerMap = new Map<string, number>();
 
-  players.forEach((p, idx) => {
-    const pos = startPositions[idx % startPositions.length];
+  players.forEach((p) => {
+    const pos = startPosition;
     if (!pos) return;
     state.snakes[p.slot] = {
       body: [
@@ -233,6 +222,8 @@ function updateGame(game: ActiveSnakeGame): void {
 
   const { state } = game;
 
+  state.tick += 1;
+
   // Update each snake
   const snakeEntries = Object.entries(state.snakes) as [string, SnakeState][];
   for (const [slot, snake] of snakeEntries) {
@@ -265,20 +256,6 @@ function updateGame(game: ActiveSnakeGame): void {
       continue;
     }
 
-    // Check collision with other snakes
-    for (const [otherSlot, otherSnake] of snakeEntries) {
-      if (otherSlot === slot || !otherSnake.alive) continue;
-      if (
-        otherSnake.body.some(
-          (p: Point) => p.x === newHead.x && p.y === newHead.y
-        )
-      ) {
-        snake.alive = false;
-        console.log(`🐍 Snake ${slot} hit snake ${otherSlot}`);
-        break;
-      }
-    }
-
     if (!snake.alive) continue;
 
     // Move snake
@@ -294,8 +271,6 @@ function updateGame(game: ActiveSnakeGame): void {
       // Remove tail
       snake.body.pop();
     }
-
-    state.tick += 1;
   }
 
   // Check win condition

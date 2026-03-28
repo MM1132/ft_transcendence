@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { roomState } from '../../stores/roomStore.svelte';
+  import { onMount } from 'svelte';
+  import { roomState, send, type Direction } from '../../stores/roomStore.svelte';
   import MultiplayerSnakeBoard from './MultiplayerSnakeBoard.svelte';
 
   const gameState = $derived(roomState.gameState);
@@ -15,6 +16,50 @@
         player: players.find((p) => p.slot === Number(slot)) ?? null
       }))
       .sort((a, b) => a.slot - b.slot);
+  });
+
+  onMount(() => {
+    function handleKeydown(event: KeyboardEvent) {
+      if (!roomState.gameState) return;
+      if (roomState.gameStatus !== 'running') return;
+      if (event.repeat) return;
+
+      let direction: Direction | null = null;
+
+      switch (event.key) {
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+          direction = 'up';
+          break;
+        case 'ArrowDown':
+        case 's':
+        case 'S':
+          direction = 'down';
+          break;
+        case 'ArrowLeft':
+        case 'a':
+        case 'A':
+          direction = 'left';
+          break;
+        case 'ArrowRight':
+        case 'd':
+        case 'D':
+          direction = 'right';
+          break;
+      }
+
+      if (!direction) return;
+
+      event.preventDefault();
+      send('game:input', { direction });
+    }
+
+    window.addEventListener('keydown', handleKeydown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeydown);
+    };
   });
 </script>
 
