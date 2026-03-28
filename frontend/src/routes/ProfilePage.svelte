@@ -5,6 +5,7 @@
   import { navigateTo } from '../stores/router';
   import { settingsService, type UserSettings } from '../services/settingsService';
   import { userService, type UserDetails } from '../services/userService';
+  import { SESSION_STORAGE_KEY } from '../utils/constants';
 
   type ProfileData = UserDetails & UserSettings;
 
@@ -47,6 +48,10 @@
 
   async function loadProfile(): Promise<void> {
     if (!$authStore.isLoggedIn) {
+      // If a session is already persisted, wait for auth store sync instead of redirecting early.
+      if (sessionStorage.getItem(SESSION_STORAGE_KEY)) return;
+
+      isLoading = false;
       navigateTo('/login');
       return;
     }
