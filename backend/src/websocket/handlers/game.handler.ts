@@ -558,16 +558,38 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
 
 export function handleGameDisconnect(roomId: number, userId: string): void {
   const game = activeGames.get(roomId);
-  if (!game) return;
+  if (!game || game.state.gameOver) return;
 
   const slot = game.players.get(userId);
   if (slot === undefined) return;
 
-  // Kill the disconnected player's snake
   const snake = game.state.snakes[slot];
-  if (snake) {
+  if (snake && snake.alive) {
     snake.alive = false;
     console.log(`🐍 Snake ${slot} died (player disconnected)`);
+  }
+
+  const aliveSnakes = Object.entries(game.state.snakes).filter(
+    ([, snake]) => snake.alive
+  );
+
+  if (aliveSnakes.length <= 1) {
+    game.state.gameOver = true;
+
+    if (aliveSnakes.length === 1) {
+      const firstAlive = aliveSnakes[0];
+      if (firstAlive) {
+        const winnerSlot = Number(firstAlive[0]);
+        for (const [otherUserId, otherSlot] of game.players) {
+          if (otherSlot === winnerSlot) {
+            game.state.winnerId = otherUserId;
+            break;
+          }
+        }
+      }
+    }
+
+    void endGame(game);
   }
 }
 

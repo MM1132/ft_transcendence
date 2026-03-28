@@ -55,6 +55,7 @@ export interface RoomState
     currentUserId?: string | null;
     gameState?: MultiplayerSnakeState | null;
     gameStatus?: 'idle' | 'running' | 'ended';
+    lastGameResult?: LastGameResult | null;
 }
 
 export interface Player
@@ -74,8 +75,15 @@ export const roomState = $state<RoomState>({
     currentRoomPlayers: [],
     currentUserId: null,
     gameState: null,
-    gameStatus: 'idle'
+    gameStatus: 'idle',
+    lastGameResult: null,
 });
+
+export interface LastGameResult {
+    winner_id: string | null;
+    scores: Record<number, number>;
+    coins_change: Record<string, number>;
+}
 
 let socket: WebSocket | null = null;
 
@@ -181,6 +189,7 @@ export function connect(token: string)
 
                     roomState.gameState = normalized;
                     roomState.gameStatus = 'running';
+                    roomState.lastGameResult = null; // reset last game result on new game start
 
                     console.log('🎮 game:start', normalized);
                 break;
@@ -199,6 +208,7 @@ export function connect(token: string)
 
             case 'game:end':
                     roomState.gameStatus = 'ended';
+                    roomState.lastGameResult = data;
                     console.log('🏁 Game ended', data);
                 break;
 

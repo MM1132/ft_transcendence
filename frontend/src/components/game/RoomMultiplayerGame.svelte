@@ -6,6 +6,14 @@
   const gameState = $derived(roomState.gameState);
   const players = $derived(roomState.currentRoomPlayers ?? []);
 
+  const lastGameResult = $derived(roomState.lastGameResult ?? null);
+
+  const winnerName = $derived.by(() => {
+    if (!lastGameResult?.winner_id) return null;
+    const winner = players.find((p) => p.id === lastGameResult.winner_id);
+    return winner?.username ?? lastGameResult.winner_id;
+  });
+
   const slotEntries = $derived.by(() => {
     if (!gameState) return [];
 
@@ -69,6 +77,28 @@
     <p>Status: <strong>{roomState.gameStatus ?? 'idle'}</strong></p>
   </div>
 
+  Then add a result banner above the boards
+
+Inside the markup, after the header:
+
+  {#if roomState.gameStatus === 'ended' && lastGameResult}
+    <div class="result-banner">
+      <h3>Game Over</h3>
+      <p>
+        Winner:
+        <strong>{winnerName ?? 'No winner'}</strong>
+      </p>
+
+      <ul>
+        {#each Object.entries(lastGameResult.scores) as [slot, score]}
+          <li>slot {slot}: {score}</li>
+        {/each}
+      </ul>
+
+      <p>Ready up again to start a new round.</p>
+    </div>
+  {/if}
+
   {#if !roomState.currentRoom}
     <div class="room-game-empty">
       <p>No active room selected.</p>
@@ -130,5 +160,23 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
+  }
+
+  .result-banner {
+    border: 1px solid rgba(10, 235, 0, 0.25);
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .result-banner h3,
+  .result-banner p,
+  .result-banner ul {
+    margin: 0 0 8px 0;
+  }
+
+  .result-banner ul {
+    list-style: none;
+    padding: 0;
   }
 </style>

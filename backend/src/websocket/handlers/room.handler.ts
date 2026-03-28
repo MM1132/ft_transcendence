@@ -12,7 +12,7 @@ import type {
   RoomLeavePayload,
   RoomReadyPayload,
 } from '../types.ts';
-import { startGameLoop } from './game.handler.ts';
+import { handleGameDisconnect, startGameLoop } from './game.handler.ts';
 
 // ============================================
 // Room Create
