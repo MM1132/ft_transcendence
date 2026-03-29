@@ -230,7 +230,7 @@
 
     .friends-drawer.expanded
     {
-        width: max(320px, 33.333vw);
+        width: max(320px, 20vw);
         /* 1/3 vom bildschirm (33%) und mingroese von 320px fuer kleine bildschirme */
     }
 

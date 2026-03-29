@@ -127,7 +127,7 @@
 
     .rooms-drawer.expanded {
         /* width: max(320px, calc(33.333vw/1.5)); */
-        width: 400px;
+        width: max(320px, 20vw);
     }
 
     .rooms-panel {
