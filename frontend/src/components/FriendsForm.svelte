@@ -14,6 +14,7 @@
     } from '../services/friendsService';
     import { authStore } from '../stores/authStore';
 
+    let { chatExpanded = false } = $props();
 
     let isExpanded = $state(true);
     let selectedList = $state<'friends' | 'online'>('friends');
@@ -129,7 +130,7 @@
     });
 </script>
 
-<aside class="friends-drawer" class:expanded={isExpanded}>
+<aside class="friends-drawer" class:expanded={isExpanded} class:chat-open={chatExpanded}>
     <Button
         type="button"
         variant="expand-trigger-left"
@@ -230,7 +231,7 @@
 
     .friends-drawer.expanded
     {
-        width: max(320px, 20vw);
+        width: clamp(320px, 24vw, 420px);
         /* 1/3 vom bildschirm (33%) und mingroese von 320px fuer kleine bildschirme */
     }
 
@@ -338,6 +339,24 @@
     .bell-btn.has-requests
     {
         color: #ff4444;
+    }
+
+    @media (max-width: 1180px)
+    {
+        .friends-drawer.expanded
+        {
+            width: min(360px, calc(50vw - 34px));
+        }
+
+        .friends-drawer
+        {
+            bottom: 109px;
+        }
+
+        .friends-drawer.chat-open
+        {
+            bottom: calc(53px + max(240px, 45vh) + 12px);
+        }
     }
 
 </style>

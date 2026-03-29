@@ -4,6 +4,8 @@
     import Button from "./Button.svelte";
     import CreateRoomForm from "./CreateRoomForm.svelte";
 
+    let { chatExpanded = false } = $props();
+
     let isExpanded = $state(true);
     let showCreateModal = $state(false);
 
@@ -55,7 +57,7 @@
     }
 </script>
 
-<aside class="rooms-drawer" class:expanded={isExpanded}>
+<aside class="rooms-drawer" class:expanded={isExpanded} class:chat-open={chatExpanded}>
     <Button
         type="button"
         variant="expand-trigger-right"
@@ -127,7 +129,7 @@
 
     .rooms-drawer.expanded {
         /* width: max(320px, calc(33.333vw/1.5)); */
-        width: max(320px, 20vw);
+        width: clamp(320px, 24vw, 420px);
     }
 
     .rooms-panel {
@@ -206,5 +208,19 @@
         font-style: italic;
         text-align: center;
         margin-top: 20px;
+    }
+
+    @media (max-width: 1180px) {
+        .rooms-drawer.expanded {
+            width: min(360px, calc(50vw - 34px));
+        }
+
+        .rooms-drawer {
+            bottom: 109px;
+        }
+
+        .rooms-drawer.chat-open {
+            bottom: calc(53px + max(240px, 45vh) + 12px);
+        }
     }
 </style>

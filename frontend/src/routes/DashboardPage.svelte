@@ -8,6 +8,8 @@
   import { authStore } from "../stores/authStore";
   import { connect, roomState } from "../stores/roomStore.svelte";
 
+  let isChatExpanded = $state(false);
+
   onMount(() => {
     const session = get(authStore);
     if (session.sessionToken && !roomState.isConnected)
@@ -20,9 +22,9 @@
 
 <main>
   <div class="dashboard-layout">
-    <FriendsForm />
-    <RoomsForm />
-    <ChatForm />
+    <FriendsForm chatExpanded={isChatExpanded} />
+    <RoomsForm chatExpanded={isChatExpanded} />
+    <ChatForm bind:isExpanded={isChatExpanded} />
   </div>
 </main>
 
