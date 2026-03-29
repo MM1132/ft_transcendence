@@ -60,6 +60,7 @@
     width: 100%;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 20px;
     align-items: stretch;
   }
@@ -67,6 +68,7 @@
   .settings-actions
   {
     width: 180px;
+    flex: 0 0 180px;
     align-self: stretch;
     display: flex;
   }
@@ -126,6 +128,21 @@
     {
       transform: translateX(0);
       opacity: 1;
+    }
+  }
+
+  @media (max-width: 1180px)
+  {
+    .settings-actions
+    {
+      width: 100%;
+      flex-basis: 100%;
+      align-self: auto;
+    }
+
+    .settings-actions :global(.side-save-btn)
+    {
+      min-height: 56px;
     }
   }
 </style>

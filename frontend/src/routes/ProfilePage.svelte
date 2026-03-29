@@ -163,13 +163,19 @@
 <style>
   .profile-page {
     min-height: 100vh;
+    width: 100vw;
+    max-width: 100%;
     padding: 110px 24px 56px;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .profile-hero,
   .profile-grid {
+    width: min(1100px, 100%);
     max-width: 1100px;
     margin: 0 auto;
+    box-sizing: border-box;
   }
 
   .profile-grid {
@@ -185,6 +191,8 @@
     color: white;
     backdrop-filter: blur(10px);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .hero-card {
@@ -193,6 +201,8 @@
     gap: 28px;
     margin-bottom: 18px;
     align-items: center;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .avatar-wrap {
@@ -226,12 +236,14 @@
     margin: 10px 0 8px;
     font-size: clamp(2rem, 4vw, 3.5rem);
     line-height: 1;
+    overflow-wrap: anywhere;
   }
 
   .username {
     margin: 0 0 16px;
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.85rem;
+    overflow-wrap: anywhere;
   }
 
   .bio,
@@ -239,6 +251,8 @@
   .card-value {
     margin: 0;
     line-height: 1.6;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .status-row {
@@ -279,12 +293,27 @@
 
   @media (max-width: 760px) {
     .profile-page {
-      padding-inline: 16px;
+      padding: 96px 16px 88px;
+    }
+
+    .profile-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .profile-card {
+      padding: 18px;
     }
 
     .hero-card {
       grid-template-columns: 1fr;
       text-align: center;
+      gap: 18px;
+    }
+
+    .profile-avatar {
+      width: 140px;
+      height: 140px;
     }
 
     .status-row {
