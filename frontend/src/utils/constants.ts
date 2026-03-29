@@ -7,8 +7,10 @@ export const buildApiPath = (path: string): string => {
 }
 
 export const buildWsPath = (): string => {
-    const wsPath = `ws://${API_ORIGIN.split("//")[1]}/ws`
-    return `${wsPath}`
+    const url = new URL(API_ORIGIN);
+    const wsProtocol = url.protocol === "https:" ? "wss:" : "ws:";
+    
+    return `${wsProtocol}//${url.host}/ws`;
 }
 
 export const SESSION_STORAGE_KEY = 'auth_session';
