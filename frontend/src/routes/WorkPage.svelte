@@ -4,6 +4,7 @@
     import { authService } from '../services/authService';
     import { workService } from '../services/workService';
 
+
     let balance = $state(null);
     let isWorking = $state(false);
     let showTarget = $state(true);

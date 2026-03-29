@@ -11,6 +11,7 @@
   import SignUpPage from './routes/SignUpPage.svelte'
   import SettingPage from './routes/SettingPage.svelte'
   import WorkPage from './routes/WorkPage.svelte'
+  import RoomPage from './routes/RoomPage.svelte'
 
   authStore.initFromSession()
 
@@ -37,7 +38,9 @@
       {:else if $currentPath === '/setting'}
         <SettingPage />
       {:else if $currentPath === '/work'}
-        <WorkPage />
+      <WorkPage />
+      {:else if $currentPath.startsWith ('/room/')}
+      <RoomPage roomId={$currentPath.split('/')[2]}/>
       {/if}
   {/key}
 </Layout>

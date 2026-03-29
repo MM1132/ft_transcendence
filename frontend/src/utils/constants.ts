@@ -6,6 +6,11 @@ export const buildApiPath = (path: string): string => {
     return `${API_ORIGIN}/api/v1${path}`;
 }
 
+export const buildWsPath = (): string => {
+    const wsPath = `ws://${API_ORIGIN.split("//")[1]}/ws`
+    return `${wsPath}`
+}
+
 export const SESSION_STORAGE_KEY = 'auth_session';
 
 export type AuthSessionData = {
