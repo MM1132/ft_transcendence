@@ -8,6 +8,12 @@
     import { roomState, send } from '../stores/roomStore.svelte';
 
     let showDropdown = $state(false);
+    const authPagePaths = ['/', '/login', '/signup'];
+
+    function shouldShowUserNavigation(path)
+    {
+        return !authPagePaths.includes(path);
+    }
     
     function toggleDropdown()
     {
@@ -96,19 +102,18 @@
 <header>
     <div id="header">
     <div class="header-logo">
-        {#if $authStore.isLoggedIn}
+        {#if $authStore.isLoggedIn && shouldShowUserNavigation($currentPath)}
             <Logo handleLogoClick={goToDashboard}/>
         {/if}
     </div>
     <div class="header-nav">
-        {#if $authStore.isLoggedIn}
+        {#if $authStore.isLoggedIn && shouldShowUserNavigation($currentPath)}
         <div class="user-info">
             <span class="user-name">{$authStore.user}</span>
             <span class="user-balance">Balance: {$authStore.balance ?? 0}</span>
         </div>
         {/if}
-    <!-- When route becomes /, that whole block is not rendered. -->
-    {#if $currentPath !== '/' && $currentPath !== '/login' && $currentPath !== '/signup'}
+    {#if shouldShowUserNavigation($currentPath)}
         <div class="avatar-container">
             <!-- Always render the avatar button: image for logged-in users, default icon otherwise. -->
             <button class="avatar" onclick={toggleDropdown} type="button" aria-label="Open user menu">

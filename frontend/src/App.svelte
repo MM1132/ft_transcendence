@@ -1,5 +1,5 @@
 <script>
-  import { currentPath } from './stores/router'
+  import { currentPath, navigateTo } from './stores/router'
   import { authStore } from './stores/authStore'
   import Layout from './components/Layout.svelte'
   import LoginPage from './routes/LoginPage.svelte'
@@ -11,8 +11,16 @@
   import ProfilePage from './routes/ProfilePage.svelte'
   import RoomPage from './routes/RoomPage.svelte'
   import GamePage from './routes/GamePage.svelte'
+  import PrivacyPolicyPage from './routes/PrivacyPolicyPage.svelte'
+  import TermsPage from './routes/TermsPage.svelte'
+
+  const publicAuthPaths = ['/', '/login', '/signup']
 
   authStore.initFromSession()
+
+  $: if ($authStore.isLoggedIn && publicAuthPaths.includes($currentPath)) {
+    navigateTo('/dashboard')
+  }
 </script>
 
 <Layout>
@@ -31,6 +39,10 @@
         <WorkPage />
       {:else if $currentPath === '/game'}
         <GamePage />
+      {:else if $currentPath === '/privacy-policy'}
+        <PrivacyPolicyPage />
+      {:else if $currentPath === '/terms-of-service'}
+        <TermsPage />
       {:else if $currentPath.startsWith ('/room/')}
         <RoomPage roomId={$currentPath.split('/')[2]}/>
       {:else if $currentPath === '/profile' || $currentPath.startsWith('/profile/')}
