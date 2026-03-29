@@ -52,6 +52,16 @@
         showDropdown = false;
         navigateTo('/work');
     }
+
+    function goToPractice()
+    {
+        showDropdown = false;
+        if (roomState.currentRoomId)
+        {
+            send('room:leave', { room_id: Number(roomState.currentRoomId) });
+        }
+        navigateTo('/game');
+    }
 // as the browser to treat as a new URL, so it reloads the latest avatar/ no old cached image
     function withAvatarVersion(url)
     {
@@ -126,6 +136,7 @@
                     <button onclick={goToProfile}>Profile</button>
                     <button onclick={goToSettings}>Settings</button>
                     <button onclick={goToWork}>Go to Work</button>
+                    <button onclick={goToPractice}>Practice</button>
                     <button onclick={handleLogout}>Logout</button>
                 </div>
             {/if}
