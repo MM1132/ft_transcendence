@@ -69,10 +69,10 @@ export async function handleFriendRequest(
     // They sent us a request - auto-accept it
     await db.query('DELETE FROM friend_requests WHERE id = $1', [existingId]);
     const [u1, u2] = [userId, target_user_id].sort();
-    await db.query(
-      'INSERT INTO friends (user1_id, user2_id) VALUES ($1, $2)',
-      [u1, u2]
-    );
+    await db.query('INSERT INTO friends (user1_id, user2_id) VALUES ($1, $2)', [
+      u1,
+      u2,
+    ]);
 
     const ourInfo = await db.query(
       'SELECT id, username, avatar_filename AS avatar_url FROM users WHERE id = $1',
@@ -147,10 +147,10 @@ export async function handleFriendAccept(
 
   await db.query('DELETE FROM friend_requests WHERE id = $1', [request_id]);
   const [u1, u2] = [userId, String(user_from_id)].sort();
-  await db.query(
-    'INSERT INTO friends (user1_id, user2_id) VALUES ($1, $2)',
-    [u1, u2]
-  );
+  await db.query('INSERT INTO friends (user1_id, user2_id) VALUES ($1, $2)', [
+    u1,
+    u2,
+  ]);
 
   const acceptorInfo = await db.query(
     'SELECT id, username, avatar_filename AS avatar_url FROM users WHERE id = $1',

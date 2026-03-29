@@ -114,7 +114,10 @@ export async function handleRoomCreate(
 
     // 6. Deduct buy-in from creator balance
     if (buy_in_amount > 0) {
-      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [buy_in_amount, userId]);
+      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [
+        buy_in_amount,
+        userId,
+      ]);
       await db.query(
         `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
         [userId, -buy_in_amount, `Buy-in for room "${name.trim()}"`]
@@ -255,7 +258,10 @@ export async function handleRoomJoin(
 
     // 7. Deduct buy-in from joiner balance
     if (room.buy_in_amount > 0) {
-      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [room.buy_in_amount, userId]);
+      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [
+        room.buy_in_amount,
+        userId,
+      ]);
       await db.query(
         `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
         [userId, -room.buy_in_amount, `Buy-in for room "${room.name}"`]
@@ -566,11 +572,15 @@ export async function handleRoomKick(
       return;
     }
     if (String(roomResult.rows[0].creator_id) !== userId) {
-      connectionManager.send(userId, 'room:error', { error: 'Only the room creator can kick players' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'Only the room creator can kick players',
+      });
       return;
     }
     if (target_user_id === userId) {
-      connectionManager.send(userId, 'room:error', { error: 'Cannot kick yourself' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'Cannot kick yourself',
+      });
       return;
     }
 
@@ -580,7 +590,9 @@ export async function handleRoomKick(
       [room_id, target_user_id]
     );
     if (playerResult.rows.length === 0) {
-      connectionManager.send(userId, 'room:error', { error: 'Player not in room' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'Player not in room',
+      });
       return;
     }
     const slot = playerResult.rows[0].player_slot;
@@ -636,7 +648,9 @@ export async function handleRoomInvite(
       [room_id, userId]
     );
     if (memberCheck.rows.length === 0) {
-      connectionManager.send(userId, 'room:error', { error: 'You are not in this room' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'You are not in this room',
+      });
       return;
     }
 
@@ -652,7 +666,9 @@ export async function handleRoomInvite(
     const room = roomResult.rows[0];
 
     if (room.status !== 'WAITING') {
-      connectionManager.send(userId, 'room:error', { error: 'Room is already in a game' });
+      connectionManager.send(userId, 'room:error', {
+        error: 'Room is already in a game',
+      });
       return;
     }
 
