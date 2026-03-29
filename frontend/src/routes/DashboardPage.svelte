@@ -6,10 +6,12 @@
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
   import { authStore } from "../stores/authStore";
-  import { avatarStore } from "../stores/avatarStore";
   import { connect, roomState } from "../stores/roomStore.svelte";
 
   let isChatExpanded = $state(true);
+  const activePlayersCount = $derived(
+    roomState.rooms.reduce((total, room) => total + (room.current_players ?? 0), 0)
+  );
 
   onMount(() => {
     const session = get(authStore);
@@ -27,23 +29,12 @@
     <RoomsForm chatExpanded={isChatExpanded} />
     <ChatForm bind:isExpanded={isChatExpanded} />
 
-    <section class="dashboard-center-card" aria-label="Profile summary">
-      <div class="center-avatar-wrap">
-        {#if $avatarStore}
-          <img class="center-avatar" src={$avatarStore} alt="User avatar" />
-        {:else}
-          <div class="center-avatar center-avatar-placeholder" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </div>
-        {/if}
-      </div>
-      <div class="center-balance-card">
-        <p class="center-label">Balance</p>
-        <p class="center-balance">{$authStore.balance ?? 0}</p>
-      </div>
+    <section class="dashboard-center-card" aria-label="Live player count">
+      <p class="center-eyebrow">Live Now</p>
+      <p class="center-count">{activePlayersCount}</p>
+      <p class="center-copy">
+        {activePlayersCount === 1 ? 'player is playing right now' : 'players are playing right now'}
+      </p>
     </section>
   </div>
 </main>
@@ -56,53 +47,11 @@
 
 .dashboard-center-card {
   position: fixed;
-  top: 240px;
+  top: 280px;
   left: 50%;
   transform: translateX(-50%);
-  width: 280px;
-  padding: 0;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  z-index: 900;
-}
-
-.center-avatar-wrap {
-  display: flex;
-  justify-content: center;
-}
-
-.center-avatar {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #0AEB00;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.center-avatar-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(10, 235, 0, 0.7);
-}
-
-.center-avatar-placeholder svg {
-  width: 72px;
-  height: 72px;
-}
-
-.center-label,
-.center-balance {
-  margin: 0;
-}
-
-.center-balance-card {
-  min-width: 220px;
-  padding: 18px 22px;
+  width: 320px;
+  padding: 26px 24px;
   box-sizing: border-box;
   border: 1px solid rgba(10, 235, 0, 0.16);
   background: rgba(15, 19, 20, 0.82);
@@ -111,20 +60,35 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  z-index: 900;
 }
 
-.center-label {
+.center-eyebrow,
+.center-count,
+.center-copy {
+  margin: 0;
+}
+
+.center-eyebrow {
   color: rgba(255, 255, 255, 0.65);
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.9rem;
 }
 
-.center-balance {
+.center-count {
   color: #0AEB00;
-  font-size: 2.8rem;
+  font-size: 4rem;
   font-weight: 800;
   line-height: 1;
+}
+
+.center-copy {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 220px;
 }
 
 @media (max-width: 1480px) {
