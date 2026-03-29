@@ -13,6 +13,10 @@
     roomState.rooms.reduce((total, room) => total + (room.current_players ?? 0), 0)
   );
 
+  function formatPlayerCount(value) {
+    return String(Number(value) || 0);
+  }
+
   onMount(() => {
     const session = get(authStore);
     if (session.sessionToken && !roomState.isConnected)
@@ -31,7 +35,7 @@
 
     <section class="dashboard-center-card" aria-label="Live player count">
       <p class="center-eyebrow">Live Now</p>
-      <p class="center-count">{activePlayersCount}</p>
+      <p class="center-count">{formatPlayerCount(activePlayersCount)}</p>
       <p class="center-copy">
         {activePlayersCount === 1 ? 'player is playing right now' : 'players are playing right now'}
       </p>
@@ -81,6 +85,8 @@
   font-size: 4rem;
   font-weight: 800;
   line-height: 1;
+  letter-spacing: -0.08em;
+  font-variant-numeric: tabular-nums;
 }
 
 .center-copy {
