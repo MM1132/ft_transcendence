@@ -57,12 +57,14 @@
 <style>
   .settings-layout
   {
-    width: 100%;
+    width: fit-content;
+    max-width: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 20px;
     align-items: stretch;
+    margin: 0 auto;
   }
 
   .settings-actions
@@ -82,6 +84,10 @@
   main
   {
     padding: 110px 24px 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
   }
 
   .loading-overlay,
@@ -133,10 +139,15 @@
 
   @media (max-width: 1180px)
   {
+    .settings-layout
+    {
+      width: min(1000px, 90vw);
+    }
+
     .settings-actions
     {
       width: 100%;
-      flex-basis: 100%;
+      flex: 0 0 100%;
       align-self: auto;
     }
 

@@ -173,10 +173,10 @@
     .header-nav
     {
         display: flex;
-        gap: 60px;
+        gap: 20px;
         flex: 1;
         justify-content: flex-end;
-        margin-right: 45px;
+        margin-right: 12px;
     }
 
     .avatar-container
@@ -225,8 +225,8 @@
     .dropdown
     {
         position: absolute;
-        top: 80px;
-        right: 0;
+        top: 68px;
+        right: -10px;
         border: 1px solid rgba(10, 235, 0, 0.1);
         background: rgba(15, 19, 20, 0.9);
         backdrop-filter: blur(10px);
