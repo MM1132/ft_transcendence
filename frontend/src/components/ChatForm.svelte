@@ -1,7 +1,7 @@
 <script lang="ts">
     import Button from './Button.svelte';
 
-    let { isExpanded = $bindable(false) } = $props();
+    let { isExpanded = $bindable(true) } = $props();
 
     function togglePanel()
     {
