@@ -297,8 +297,6 @@
 
         #signup-form
         {
-            width: 100%;
-            max-width: none;
             padding: 2rem 1.25rem 2.5rem;
         }
 
@@ -315,25 +313,6 @@
         .login
         {
             margin-top: 2rem;
-        }
-    }
-
-    @media (max-height: 900px)
-    {
-        .signup-container
-        {
-            top: 54%;
-        }
-
-        #signup-form
-        {
-            padding-top: 2rem;
-            padding-bottom: 2.5rem;
-        }
-
-        .input-group
-        {
-            margin-bottom: 1.75rem;
         }
     }
 
