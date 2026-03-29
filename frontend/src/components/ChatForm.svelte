@@ -33,6 +33,19 @@
         input = "";
     }
 
+    function sendHistory(e: Event)
+    {
+        e.preventDefault();
+        const content = input.trim();
+        send('chat:history', {
+            content,
+            room_id: roomState.currentRoomId
+
+        });
+        input = "";
+    }
+
+
     function isMyMessage(msg) {
         return msg.sender.id === roomState.currentUserId;
     }
@@ -40,6 +53,12 @@
 
     function togglePanel() {
         isExpanded = !isExpanded;
+        // we send the history for the new user when login
+        if (isExpanded && roomState.isConnected) {
+        send('chat:history', {
+            room_id: roomState.currentRoomId
+        });
+    }
     }
 </script>
 
@@ -59,7 +78,7 @@
             <div class="chat-messages">
                 {#each activeMessages as msg}
         <div class="chat-message {isMyMessage(msg) ? "me": ''}">
-            <span class="sender">{msg.sender.username}</span>
+            <span class="sender">{isMyMessage(msg) ? "Me" : msg.sender.username} :</span>
             <span class="content">{msg.content}</span>
             <span class="timestamp">{new Date(msg.created_at).toLocaleTimeString([], { timeStyle: 'short' })}</span>
         </div>
