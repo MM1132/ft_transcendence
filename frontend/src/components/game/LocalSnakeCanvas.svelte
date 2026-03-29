@@ -28,6 +28,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    flex: 1;
   }
 
   .game-canvas {
@@ -37,5 +38,6 @@
     background: #111827;
     max-width: 100%;
     height: auto;
+    width: min(100%, 1080px);
   }
 </style>
