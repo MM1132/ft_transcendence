@@ -3,7 +3,7 @@
   import { authStore } from './stores/authStore'
 
   import Layout from './components/Layout.svelte'
-  
+
   import LoginPage from './routes/LoginPage.svelte'
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
@@ -14,6 +14,7 @@
   import GamePage from './routes/GamePage.svelte'
 
   authStore.initFromSession()
+
 </script>
 
 

@@ -34,6 +34,27 @@ export const registerRoutes = (fastify: FastifyInstance) => {
     return result.rows;
   });
 
+  // Public: leaderboard
+  fastify.get('/api/v1/leaderboard', async () => {
+    const result = await fastify.db.query(`
+      SELECT
+        u.id,
+        u.username,
+        u.avatar_filename AS avatar_url,
+        u.balance,
+        COUNT(gr.id) AS games_played,
+        COUNT(gr.id) FILTER (WHERE gr.placement = 1) AS wins,
+        COALESCE(SUM(gr.score), 0) AS total_score,
+        COALESCE(SUM(gr.coins_won), 0) AS total_coins_won
+      FROM users u
+      LEFT JOIN game_results gr ON gr.user_id = u.id
+      GROUP BY u.id, u.username, u.avatar_filename, u.balance
+      ORDER BY wins DESC, total_score DESC
+      LIMIT 50
+    `);
+    return result.rows;
+  });
+
   // Encapsulation to make sure routes like
   // `/static` can be accessed without session token
   fastify.register(async (authRoutes: FastifyInstance) => {

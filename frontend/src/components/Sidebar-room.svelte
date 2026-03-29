@@ -4,6 +4,7 @@
 
     let isActiveReady = $state(false);
     let kickedPlayerId = $state(null);
+    let { isExpanded = $bindable(true) } = $props();
 
     function handleLeaveRoom()
     {
@@ -34,8 +35,6 @@
         console.log(`Kicking player ${id} from room ${roomState.currentRoomId}`);
         send('room:kick', { room_id: Number(roomState.currentRoomId), target_user_id: id });
     }
-
-    let isExpanded = $state(true);
 
     function togglePanel()
     {
@@ -104,6 +103,14 @@
         bottom: 60px;
         width: 50px;
         transition: width 0.3s ease;
+    }
+    
+    
+    
+    .rooms-drawer.expanded
+    {
+        /* width: max(460px, calc(33.333vw)); */
+        width: 460px;
     }
 
     .rooms-panel
@@ -183,11 +190,6 @@
         background: #121617;
     }
 
-    .rooms-drawer.expanded
-    {
-        /* width: max(320px, calc(33.333vw/1.5)); */
-        width: 460px;
-    }
 
 
     .player-list

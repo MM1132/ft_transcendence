@@ -1,3 +1,4 @@
+import { buildWsPath, buildWsPath } from "../utils/constants";
 import { navigateTo } from "./router";
 
 /* TODO for missing handlers:
@@ -45,8 +46,7 @@ export interface Room
     created_at?: string;
 }
 
-export interface RoomState
-{
+export interface RoomState {
     rooms: Room[];
     isConnected: boolean;
     currentRoomId: string | null;
@@ -58,13 +58,13 @@ export interface RoomState
     lastGameResult?: LastGameResult | null;
 }
 
-export interface Player
-{
+export interface Player {
     id: string;
     username: string;
     avatar_url: string | null;
     slot: number;
     is_ready: boolean;
+
 }
 
 export const roomState = $state<RoomState>({
@@ -87,16 +87,16 @@ export interface LastGameResult {
 
 let socket: WebSocket | null = null;
 
-export function connect(token: string)
-{
+export function connect(token: string) {
     if (socket) return; // Prevent multiple connections
 
-    socket = new WebSocket('ws://localhost:8080/ws');
+    const wsPath = buildWsPath();
+    socket = new WebSocket(wsPath);
 
     socket.onopen = () => {
         roomState.isConnected = true;
         send('auth', { token });
-        console.log("%c[WebSocket] Connected to ws://localhost:8080/ws", "color: green; font-weight: bold;");
+        console.log(`%c[WebSocket] Connected to ${wsPath}", "color: green; font-weight: bold;`);
     };
 
     socket.onmessage = (event) => {
@@ -105,8 +105,11 @@ export function connect(token: string)
 
         const { event: type, data } = msg;
 
+        console.log("socket.onmessage was called!")
+        console.log(`Username: ${data}`);
+
         switch (type) {
-             default:
+            default:
                 console.warn("Unhandled WebSocket message type:", type, "Data:", data);
                 break;
 
@@ -114,20 +117,20 @@ export function connect(token: string)
                 console.log("✅ Authenticated");
                 console.log(roomState.isConnected);
                 roomState.currentUserId = data.userId; // we set the user ID from backend
+                roomState.currentUserName = data.username;
                 break;
 
             case 'room:list':
                 roomState.rooms = data;
                 console.log(`Loaded ${data.length} rooms`);
                 break;
-                
+
             case 'room:created':
                 roomState.rooms = [data.room, ...roomState.rooms];
-                
                 roomState.currentRoomId = data.room.id;
                 roomState.currentRoom = data.room;
                 roomState.currentRoomPlayers = data.players || [];
-                
+
                 console.log("Room created! Redirecting to:", data.room.id);
                 navigateTo(`/room/${data.room.id}`);
                 break;
@@ -138,8 +141,8 @@ export function connect(token: string)
                 roomState.currentRoomPlayers = data.players || [];
                 navigateTo(`/room/${data.room.id}`);
                 break;
-            
-            case 'room:left' :
+
+            case 'room:left':
                 roomState.currentRoomId = null;
                 roomState.currentRoom = null;
                 roomState.currentRoomPlayers = [];
@@ -151,21 +154,19 @@ export function connect(token: string)
                 break;
 
             case 'room:player_joined':
-                if(data.user)
-                {
-                    const newPlayer = {...data.user, slot: data.slot, is_ready: false};
+                if (data.user) {
+                    const newPlayer = { ...data.user, slot: data.slot, is_ready: false };
                     roomState.currentRoomPlayers = [...roomState.currentRoomPlayers, newPlayer];
                 }
                 break;
 
             case 'room:player_left':
-                roomState.currentRoomPlayers = roomState.currentRoomPlayers.filter( p => p.id !== data.user_id);
+                roomState.currentRoomPlayers = roomState.currentRoomPlayers.filter(p => p.id !== data.user_id);
                 break;
 
             case 'room:player_ready':
                 roomState.currentRoomPlayers = roomState.currentRoomPlayers.map(p => {
-                    if (p.id === data.user_id)
-                    {
+                    if (p.id === data.user_id) {
                         return { ...p, is_ready: data.is_ready };
                     }
                     return p;
@@ -232,14 +233,12 @@ export function connect(token: string)
     };
 }
 
-export function send(event: string, data: any)
-{
-     console.log("Sending to WS:", { event, data });
+export function send(event: string, data: any) {
+    console.log("Sending to WS:", { event, data });
     if (socket?.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({event,data}));
-    } 
-    else
-    {
+        socket.send(JSON.stringify({ event, data }));
+    }
+    else {
         console.error("WebSocket is not connected.Event:", event, "Data:", data);
     }
 }

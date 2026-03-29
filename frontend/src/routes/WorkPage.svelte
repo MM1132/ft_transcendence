@@ -1,7 +1,9 @@
 <script>
+    import { onMount } from 'svelte';
     import { authStore } from '../stores/authStore';
     import { authService } from '../services/authService';
     import { workService } from '../services/workService';
+
 
     let balance = $state(null);
     let isWorking = $state(false);
@@ -60,11 +62,13 @@
         if (!$authStore.isLoggedIn || !$authStore.sessionToken)
         {
             balance = null;
+            authStore.setBalance(null);
             return;
         }
 
         const user = await authService.getMyUser($authStore.sessionToken);
         balance = user?.balance ?? null;
+        authStore.setBalance(balance);
     }
 
     async function handleWork()
@@ -80,6 +84,7 @@
         {
             const result = await workService.work();
             balance = result.balance;
+            authStore.setBalance(result.balance);
             feedback = result.message;
             feedbackType = 'success';
             sleepClickCount = 0;
@@ -119,7 +124,7 @@
         }
     }
 
-    $effect(() => {
+    onMount(() => {
         if (!$authStore.isLoggedIn || !$authStore.sessionToken)
         {
             balance = null;

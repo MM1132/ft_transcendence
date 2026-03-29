@@ -1,5 +1,5 @@
 <script lang="ts">
-
+export let sidebarExpanded: boolean = true;
 </script>
 
 <!-- TODO this component will become:
@@ -28,5 +28,10 @@ not the local game engine -->
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.game-container.collapsed
+{
+    width: calc(100vw - 70px);
 }
 </style>

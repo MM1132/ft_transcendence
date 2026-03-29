@@ -1,4 +1,4 @@
-import fs, { readFileSync, writeFileSync } from 'node:fs';
+import fs, { readFileSync } from 'node:fs';
 import path from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import { DateTime } from 'luxon';
