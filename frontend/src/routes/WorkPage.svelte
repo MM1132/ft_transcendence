@@ -22,6 +22,7 @@
     const JOB_OFFER_TOP = 100;
     const JOB_OFFER_WIDTH = 320;
     const JOB_OFFER_HEIGHT = 76;
+    const STATUS_SAFE_HEIGHT = 80;
 
     function overlapsJobOffer(x, y)
     {
@@ -37,7 +38,7 @@
     {
         const horizontalPadding = 24;
         const topPadding = HEADER_HEIGHT + 24;
-        const bottomPadding = FOOTER_HEIGHT + 24;
+        const bottomPadding = FOOTER_HEIGHT + STATUS_SAFE_HEIGHT;
 
         const maxX = Math.max(horizontalPadding, window.innerWidth - TARGET_WIDTH - horizontalPadding);
         const maxY = Math.max(topPadding, window.innerHeight - TARGET_HEIGHT - bottomPadding);
@@ -51,6 +52,28 @@
 
             if (!overlapsJobOffer(nextX, nextY))
                 break;
+        }
+
+        targetX = nextX;
+        targetY = nextY;
+    }
+
+    function keepTargetVisible()
+    {
+        const horizontalPadding = 24;
+        const topPadding = HEADER_HEIGHT + 24;
+        const bottomPadding = FOOTER_HEIGHT + STATUS_SAFE_HEIGHT;
+
+        const maxX = Math.max(horizontalPadding, window.innerWidth - TARGET_WIDTH - horizontalPadding);
+        const maxY = Math.max(topPadding, window.innerHeight - TARGET_HEIGHT - bottomPadding);
+
+        const nextX = Math.min(Math.max(targetX, horizontalPadding), maxX);
+        const nextY = Math.min(Math.max(targetY, topPadding), maxY);
+
+        if (nextX !== targetX || nextY !== targetY || overlapsJobOffer(nextX, nextY))
+        {
+            moveTarget();
+            return;
         }
 
         targetX = nextX;
@@ -134,6 +157,16 @@
 
         void loadBalance();
         moveTarget();
+
+        const resizeHandler = () => {
+            keepTargetVisible();
+        };
+
+        window.addEventListener('resize', resizeHandler);
+
+        return () => {
+            window.removeEventListener('resize', resizeHandler);
+        };
     });
 
     $effect(() => {

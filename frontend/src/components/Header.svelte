@@ -162,7 +162,7 @@
         top: 0;
         left: 0;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
+        z-index: 1100;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -233,6 +233,7 @@
         border-radius: 0px;
         transition: all 0.3s;
         min-width: 150px;
+        z-index: 1101;
     }
 
     .dropdown:hover
