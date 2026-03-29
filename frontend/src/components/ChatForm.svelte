@@ -3,6 +3,7 @@
     import { roomState, send } from '../stores/roomStore.svelte';
     import { tick } from 'svelte';
 
+
     let isExpanded = $state(false);
     let input = $state("");
 
@@ -10,16 +11,7 @@
         roomState.currentRoomId ? roomState.messages : roomState.globalMessages
     );
 
-    // Automatically scroll when messages change
-    $effect(() => {
-        activeMessages;
-
-        tick().then(() => {
-            const panel = document.querySelector('.chat-messages');
-            if (panel) panel.scrollTop = panel.scrollHeight;
-        });
-    });
-
+  
     function sendMessage(e: Event) {
         e.preventDefault();
         const content = input.trim();
@@ -27,24 +19,11 @@
 
         send('chat:send', {
             content,
-            room_id: roomState.currentRoomId // null if on dashboard
+            room_id: null
         });
 
         input = "";
     }
-
-    function sendHistory(e: Event)
-    {
-        e.preventDefault();
-        const content = input.trim();
-        send('chat:history', {
-            content,
-            room_id: roomState.currentRoomId
-
-        });
-        input = "";
-    }
-
 
     function isMyMessage(msg) {
         return msg.sender.id === roomState.currentUserId;
@@ -56,7 +35,7 @@
         // we send the history for the new user when login
         if (isExpanded && roomState.isConnected) {
         send('chat:history', {
-            room_id: roomState.currentRoomId
+            room_id: null
         });
     }
     }

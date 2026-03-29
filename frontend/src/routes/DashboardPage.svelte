@@ -21,8 +21,8 @@
 <main>
   <div class="dashboard-layout">
     <FriendsForm />
-    <RoomsForm />
     <ChatForm />
+    <RoomsForm />
   </div>
 </main>
 
