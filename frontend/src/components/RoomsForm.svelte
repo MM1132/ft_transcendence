@@ -57,7 +57,7 @@
     }
 </script>
 
-<aside class="rooms-drawer" class:expanded={isExpanded} class:chat-open={chatExpanded}>
+<aside class="rooms-drawer" class:expanded={isExpanded} class:chat-open={chatExpanded} class:modal-open={showCreateModal}>
     <Button
         type="button"
         variant="expand-trigger-right"
@@ -125,6 +125,11 @@
         width: 50px;
         overflow: hidden;
         transition: width 0.3s ease;
+    }
+
+    .rooms-drawer.modal-open {
+        overflow: visible;
+        z-index: 2500;
     }
 
     .rooms-drawer.expanded {
