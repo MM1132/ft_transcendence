@@ -118,9 +118,11 @@
     #login-form
     {
         width: auto;
+        max-width: min(460px, calc(100vw - 32px));
         margin: 0 auto;
         padding: 6rem;
         padding-top: 2rem;
+        box-sizing: border-box;
         border: 1px solid rgba(10, 235, 0, 0.1);
         background: rgba(15, 19, 20, 0.6);
         backdrop-filter: blur(10px);
@@ -137,12 +139,14 @@
     input
     {
         width: 300px;
+        max-width: 100%;
         height: 50px;
         padding: 10px;
         font-size: 16px;
         border: 1px solid #0AEB00;
         background-color: #1a1a1a;
         color: white;
+        box-sizing: border-box;
     }
 
       input:focus
@@ -217,6 +221,56 @@
     {
         text-decoration: underline;
         /* color: #B13BCC; */
+    }
+
+    @media (max-width: 640px)
+    {
+        .login-container
+        {
+            width: calc(100vw - 24px);
+        }
+
+        #login-form
+        {
+            width: 100%;
+            max-width: none;
+            padding: 2rem 1.25rem;
+        }
+
+        .input-group
+        {
+            margin-bottom: 2rem;
+        }
+
+        .login-title
+        {
+            padding: 1rem 0 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup
+        {
+            margin-top: 2rem;
+        }
+    }
+
+    @media (max-height: 760px)
+    {
+        .login-container
+        {
+            top: 56%;
+        }
+
+        #login-form
+        {
+            padding-top: 1.5rem;
+            padding-bottom: 2rem;
+        }
+
+        .input-group
+        {
+            margin-bottom: 1.75rem;
+        }
     }
     
 </style>
