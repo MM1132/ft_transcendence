@@ -1,9 +1,7 @@
 <script>
   import { currentPath } from './stores/router'
   import { authStore } from './stores/authStore'
-
   import Layout from './components/Layout.svelte'
-  
   import LoginPage from './routes/LoginPage.svelte'
   import HomePage from './routes/HomePage.svelte'
   import DashboardPage from './routes/DashboardPage.svelte'
@@ -11,10 +9,11 @@
   import SettingPage from './routes/SettingPage.svelte'
   import WorkPage from './routes/WorkPage.svelte'
   import ProfilePage from './routes/ProfilePage.svelte'
+  import RoomPage from './routes/RoomPage.svelte'
+  import GamePage from './routes/GamePage.svelte'
 
   authStore.initFromSession()
 </script>
-
 
 <Layout>
   {#key $currentPath}
@@ -30,6 +29,10 @@
         <SettingPage />
       {:else if $currentPath === '/work'}
         <WorkPage />
+      {:else if $currentPath === '/game'}
+        <GamePage />
+      {:else if $currentPath.startsWith ('/room/')}
+        <RoomPage roomId={$currentPath.split('/')[2]}/>
       {:else if $currentPath === '/profile' || $currentPath.startsWith('/profile/')}
         <ProfilePage />
       {/if}

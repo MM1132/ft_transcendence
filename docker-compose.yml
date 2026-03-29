@@ -7,6 +7,9 @@ services:
     container_name: transcendence_frontend
     volumes:
       - ./frontend:/app
+    depends_on:
+      backend:
+        condition: service_started
     networks:
       - trans_network
     environment:
@@ -31,7 +34,7 @@ services:
     environment:
       # Backend API needs to know its own directory (for file saving)
       - BACKEND_ROOT_PATH=/app
-      
+
       # Backend auto-defaults this to 3000 anyways, so you don't need to set this
       # - BACKEND_PORT=${BACKEND_PORT:-3000}
 
@@ -71,7 +74,7 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
-  
+
   nginx:
     build:
       context: ./nginx
@@ -80,8 +83,10 @@ services:
     ports:
       - "${NGINX_PORT}:8080"
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_started
+      frontend:
+        condition: service_started
     networks:
       - trans_network
     restart: unless-stopped

@@ -10,7 +10,13 @@
             | 'reset'
             | 'expand-trigger-left'
             | 'expand-trigger-right'
-            | 'expand-trigger-bottom';
+            | 'expand-trigger-bottom'
+            | 'join'
+            | 'create'
+            | 'cancel'
+            | 'ready'
+            | 'noready'
+            | 'kick';
         onclick?: (event: MouseEvent) => void;
         ariaExpanded?: boolean;
         ariaLabel?: string;
@@ -45,10 +51,16 @@
     class:expand-trigger-left={variant === 'expand-trigger-left'}
     class:expand-trigger-right={variant === 'expand-trigger-right'}
     class:expand-trigger-bottom={variant === 'expand-trigger-bottom'}
-    {...rest}
+    class:join={variant === 'join'}
+    class:create={variant === 'create'}
+    class:cancel={variant === 'cancel'}
+    class:ready={variant === 'ready'}
+    class:noready={variant === 'noready'}
+    class:kick={variant === 'kick'}
 >
     {@render children()}
 </button>
+   
 
 <style>
     button
@@ -56,8 +68,10 @@
         width: 90%;
         padding: 1.7rem;
         background: #0AEB00;
+        /* background: #0ec904; */
         color: #fff;
         border: none;
+        /* border-left: 2px solid #ffffff; */
         border-radius: 0px;
         font-weight: bold;
         cursor: pointer;
@@ -71,6 +85,7 @@
 
     button:disabled
     {
+        /* background: #ffffff38; */
         opacity: 0.6;
         cursor: not-allowed;
     }
@@ -131,4 +146,89 @@
         padding: 0;
         letter-spacing: 1px;
     }
+
+    button.join
+    {
+        width: 50px;
+        height: 40px;
+        float: right;
+        font-size: 14px;
+        padding: 0;
+        /* display: flex; */
+        align-items: center;
+        justify-content: center;
+    }
+
+    button.create
+    {
+        width: 40px;
+        height: 40px;
+        /* float: right; */
+        font-size: 14px;
+        padding: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #B13BCC;
+        background: none;
+    }
+
+    button.cancel
+    {
+        background: transparent;
+        color: #ff4444;
+        border: 1px solid #ff4444;
+    }
+
+    button.cancel:hover
+    {
+        background: #ff4444;
+        color: #fff;
+    }
+
+    button.noready
+    {
+        width: auto;
+        min-width: 120px;
+        background: rgba(177, 59, 204, 0.15);
+        color: #ffffff;
+        border: 1px solid rgb(177, 59, 204);
+
+    }
+
+    button.ready
+    {
+        width: auto;
+        min-width: 120px;
+        background: #B13BCC;
+        color:  #ffffff;
+        border: 1px solid rgba(177, 59, 204, 0);
+
+    }
+
+    button.ready.active
+    {
+        background: #0AEB00;
+        color:  #ffffff;
+    }
+
+    button.kick
+    {
+        width: auto;
+        min-width: 60px;
+        padding: 8px 8px;
+        border: 1px solid #ff4444;
+        background: transparent;
+        color: #ff6b6b;
+    }
+
+    button.kick:hover, 
+    button.kick.active
+    { 
+        background: #ff4444;
+        color: #fff;
+    }
+    
+
 </style>
+

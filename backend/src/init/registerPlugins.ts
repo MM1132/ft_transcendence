@@ -39,7 +39,8 @@ export const registerPlugins = (fastify: FastifyInstance) => {
 
   fastify.register(fastifySchedule);
 
-  fastify.ready().then(() => {
+  //// Schedule cleanup job on startup and remove it on shutdown
+  fastify.addHook('onReady', async () => {
     fastify.scheduler.addSimpleIntervalJob(job);
   });
 };

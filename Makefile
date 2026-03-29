@@ -17,8 +17,8 @@ help:
 	@echo "  make rebuild-frontend - Rebuild frontend image only"
 	@echo ""
 	@echo "  SINGLE SERVICE"
-	@echo "  make backend          - Start only db + backend"
-	@echo "  make frontend         - Start only frontend (needs backend running)"
+	@echo "  make backend          - db + backend + nginx only (uses .env.example as fallback)"
+	@echo "  make frontend         - db + backend + frontend + nginx (full stack for UI dev)"
 	@echo "  make restart          - Restart all services (no rebuild)"
 	@echo ""
 	@echo "  LOGS"
@@ -91,8 +91,8 @@ backend:
 	@echo "DB + backend running. API at http://localhost:8080/api/v1"
 
 frontend:
-	docker compose up -d frontend nginx
-	@echo "Frontend running at http://localhost:8080"
+	docker compose up -d db backend frontend nginx
+	@echo "Full stack running at http://localhost:8080"
 
 # --- Logs ---
 

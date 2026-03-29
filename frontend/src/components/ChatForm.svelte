@@ -33,7 +33,7 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 40px;
+        bottom: 53px;
         width: max(320px, 33.333vw);
         height: 56px;
         overflow: hidden;

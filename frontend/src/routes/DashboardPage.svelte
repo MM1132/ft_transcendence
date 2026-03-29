@@ -2,7 +2,20 @@
   import FriendsForm from "../components/FriendsForm.svelte";
   import RoomsForm from "../components/RoomsForm.svelte";
   import ChatForm from "../components/ChatForm.svelte";
-  // Removed Header/Footer coz are provided by Layout, so dashboard only renders page content.
+
+  import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
+  import { authStore } from "../stores/authStore";
+  import { connect, roomState } from "../stores/roomStore.svelte";
+
+  onMount(() => {
+    const session = get(authStore);
+    if (session.sessionToken && !roomState.isConnected)
+    {
+      connect(session.sessionToken);
+      console.log("Connecting with token:", session.sessionToken);
+    }
+  });
 </script>
 
 <main>
@@ -18,4 +31,6 @@
   position: relative;
   min-height: 100vh;
 }
+
+
 </style>
