@@ -81,7 +81,11 @@
 
     .chat-drawer.expanded
     {
+<<<<<<< HEAD
         height: max(340px, 88vh);
+=======
+        height: max(240px, 45vh);
+>>>>>>> origin/main
     }
 
     .chat-panel
@@ -92,6 +96,7 @@
         margin-left: 8px;
         margin-right: 8px;
         box-sizing: border-box;
+<<<<<<< HEAD
         border: 1px solid rgba(10, 235, 0, 0.6);
         background: rgba(15, 19, 20);
         backdrop-filter: blur(100px);
@@ -200,4 +205,26 @@
         padding: 0 10px;
         font-size: 14px;
     } */
+=======
+        border: 1px solid rgba(10, 235, 0, 0.1);
+        background: rgba(15, 19, 20, 0.6);
+        backdrop-filter: blur(10px);
+        padding: 24px 28px;
+    }
+
+    .chat-panel:hover
+    {
+        border-color: #0AEB00;
+        background: rgba(10, 235, 0, 0.02);
+    }
+
+    h2
+    {
+        margin: 0 0 14px;
+        color: #0AEB00;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: left;
+    }
+>>>>>>> origin/main
 </style>

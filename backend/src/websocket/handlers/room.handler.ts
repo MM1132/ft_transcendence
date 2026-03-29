@@ -12,11 +12,7 @@ import type {
   RoomLeavePayload,
   RoomReadyPayload,
 } from '../types.ts';
-import { startGameLoop } from './game.handler.ts';
-
-// ============================================
-// Room Handlers
-// ============================================
+import { handleGameDisconnect, startGameLoop } from './game.handler.ts';
 
 // ============================================
 // Room Create
@@ -244,6 +240,20 @@ export async function handleRoomJoin(
         error: 'Already in this room',
       });
       return;
+    }
+
+    // 5b. Check buy-in balance
+    if (room.buy_in_amount > 0) {
+      const balanceResult = await db.query(
+        'SELECT balance FROM users WHERE id = $1',
+        [userId]
+      );
+      if (balanceResult.rows[0].balance < room.buy_in_amount) {
+        connectionManager.send(userId, 'room:error', {
+          error: 'Not enough coins for buy-in',
+        });
+        return;
+      }
     }
 
     // 6. Find next available slot
@@ -491,11 +501,12 @@ async function startGame(
     // 4. Start the Snake game loop
     const players = playersResult.rows.map(
       (row: { user_id: string; player_slot: number }) => ({
-        oderId: row.user_id,
+        userId: row.user_id,
         slot: row.player_slot,
       })
     );
 
+    console.log('🚀 startGame called', { roomId, gameId, players });
     startGameLoop(db, Number(roomId), Number(gameId), players);
   } catch (err) {
     console.error('❌ startGame error:', err);
@@ -523,6 +534,20 @@ export async function handlePlayerDisconnect(
     if (playerResult.rows.length === 0) return;
 
     const slot = playerResult.rows[0].player_slot;
+
+    // handle player disconnection during an active game :
+    // mark that player's snake dead before the room membership vanishes
+    // and  disconnected player's snake dies immediately and the game continues for others
+    const roomStatusResult = await db.query(
+      'SELECT status FROM rooms WHERE id = $1',
+      [currentRoomId]
+    );
+    // extract the status
+    const roomStatus = roomStatusResult.rows[0]?.status;
+
+    if (roomStatus === 'IN_GAME') {
+      handleGameDisconnect(currentRoomId, userId);
+    }
 
     // Remove from room_players
     await db.query(
@@ -617,7 +642,6 @@ export async function handleRoomKick(
       user_id: target_user_id,
       slot,
     });
-    await broadcastRoomList(db);
 
     console.log(
       `🎮 Room ${room_id}: User ${target_user_id} kicked by creator ${userId}`

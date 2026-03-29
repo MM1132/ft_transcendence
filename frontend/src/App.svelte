@@ -11,6 +11,7 @@
   import SettingPage from './routes/SettingPage.svelte'
   import WorkPage from './routes/WorkPage.svelte'
   import RoomPage from './routes/RoomPage.svelte'
+  import GamePage from './routes/GamePage.svelte'
 
   authStore.initFromSession()
 </script>
@@ -30,6 +31,8 @@
         <SettingPage />
       {:else if $currentPath === '/work'}
       <WorkPage />
+      {:else if $currentPath === '/game'}
+        <GamePage />
       {:else if $currentPath.startsWith ('/room/')}
       <RoomPage roomId={$currentPath.split('/')[2]}/>
       {/if}

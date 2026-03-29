@@ -47,8 +47,7 @@
         showCreateModal = false;
     }
 
-    function togglePanel() 
-    {
+    function togglePanel() {
         isExpanded = !isExpanded;
         if (isExpanded && rooms.length === 0) {
             fetchRooms();

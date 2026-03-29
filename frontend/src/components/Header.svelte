@@ -95,11 +95,10 @@
     <div class="header-nav">
         {#if $authStore.isLoggedIn}
         <div class="user-info">
-            <span class="user-name">{roomState.currentUserName}</span>
-            <!-- <h1>What is this {roomState.currentUserName}</h1> -->
-        <!-- <span class="user-balance">💰 {roomState.balance}</span> -->
-    </div>
-{/if}
+            <span class="user-name">{$authStore.user}</span>
+            <span class="user-balance">Balance: {$authStore.balance ?? 0}</span>
+        </div>
+        {/if}
     <!-- When route becomes /, that whole block is not rendered. -->
     {#if $currentPath !== '/' && $currentPath !== '/login' && $currentPath !== '/signup'}
         <div class="avatar-container">
@@ -236,10 +235,10 @@
     .user-info
     {
         display: flex;
-        align-items: center;
-        gap: 14px;
-        /* background: rgba(10, 235, 0, 0.08); */
-        /* background: linear-gradient(to right, rgba(10, 235, 0, 0.18) 0%, rgba(10, 235, 0, 0.08) 60%, transparent 100%); */
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 2px;
     }
     
     .user-name
@@ -248,16 +247,16 @@
         font-weight: 700;
         font-size: 1.08rem;
         letter-spacing: 1px;
-        padding-left: 16px;
+        line-height: 1.1;
     }
-/*     
+
     .user-balance
     {
         color: #0AEB00;
-        font-weight: 700;
-        font-size: 1.08rem;
-        padding: 4px 16px;
-        display: flex;
-        align-items: center;
-    } */
+        font-weight: 500;
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
 </style>

@@ -1,5 +1,20 @@
 import type { WebSocket } from '@fastify/websocket';
 
+/*
+Architecture:
+- room mode is backend authoritative
+- each player has a private box
+- apple coordinates are mirrored across boxes
+- no cross-player collisions
+- client sends input intent only
+- local single-player frontend remains separate
+ */
+// TODO:
+// - absolute directions
+// - isolated per-player boxes
+// - mirrored apple
+// - snake snapshots
+
 // ============================================
 // WebSocket Event Types
 // ============================================
@@ -69,7 +84,7 @@ export interface AuthSuccessPayload {
 // Room Events
 export interface RoomCreatePayload {
   name: string;
-  max_players: number; // 2-4
+  max_players: number; // 1-4
   buy_in_amount?: number;
   time_limit_seconds?: number;
   win_condition?: 'BEST_OF' | 'SCORE' | 'TIME';
@@ -138,25 +153,48 @@ export interface ChatMessagePayload {
 }
 
 // Game Events
+export type Direction = 'up' | 'down' | 'left' | 'right';
+
+export interface SnakePoint {
+  x: number;
+  y: number;
+}
+
+export interface SnakeSnapshot {
+  body: SnakePoint[];
+  direction: Direction;
+  score: number;
+  alive: boolean;
+}
+
+export interface MultiplayerSnakeState {
+  box_width: number;
+  box_height: number;
+  apple: SnakePoint;
+  snakes: Record<number, SnakeSnapshot>;
+  tick: number;
+  game_over: boolean;
+  winner_id: string | null;
+}
+
 export interface GameInputPayload {
-  direction: 'left' | 'right';
+  direction: Direction;
 }
 
 export interface GameStartPayload {
   game_id: number;
-  initial_state: GameState;
+  state: MultiplayerSnakeState;
+  your_slot?: number;
 }
 
 export interface GameStatePayload {
-  ball: { x: number; y: number; vx: number; vy: number };
-  paddles: Record<number, { y: number }>; // slot -> paddle position
-  scores: Record<number, number>; // slot -> score
+  state: MultiplayerSnakeState;
 }
 
 export interface GameEndPayload {
-  winner_id: number;
+  winner_id: string | null;
   scores: Record<number, number>;
-  coins_change: Record<number, number>; // user_id -> coins delta
+  coins_change: Record<string, number>;
 }
 
 // Friend Events (Placeholder)
@@ -191,12 +229,6 @@ export interface RoomData {
   is_permanent: boolean;
   creator_id: string | null;
   current_players: number;
-}
-
-export interface GameState {
-  ball: { x: number; y: number; vx: number; vy: number };
-  paddles: Record<number, { y: number }>;
-  scores: Record<number, number>;
 }
 
 // ============================================
