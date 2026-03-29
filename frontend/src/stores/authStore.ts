@@ -44,8 +44,8 @@ async function login(username: string, password: string)
     if (passError)
     {
         update((currenState) => ({
-            ...currenState, 
-            errorMessage: passError
+            ...currenState,
+            errorMessage: "Wrong username or password"
         }));
         return;
     }

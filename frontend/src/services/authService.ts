@@ -108,7 +108,11 @@ export const authService =
       }
       else if(response.status === 409)
       {
-        return {success:false, message: "Username already taken"};
+        return {
+          success: false,
+          message: data.message || data.error || "Signup failed",
+          statusCode: response.status
+        };
       }
       else
       {
