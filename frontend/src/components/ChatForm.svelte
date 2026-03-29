@@ -1,31 +1,45 @@
 <script lang="ts">
     import Button from './Button.svelte';
+    import { roomState, send } from '../stores/roomStore.svelte';
+    import { tick } from 'svelte';
 
     let isExpanded = $state(false);
-    let messages = $state<Array<{ sender: string; content: string; timestamp: string }>>([]);
     let input = $state("");
-    let username = $state("Me");
 
-    function togglePanel() {
-        isExpanded = !isExpanded;
-    }
+    const activeMessages = $derived(
+        roomState.currentRoomId ? roomState.messages : roomState.globalMessages
+    );
+
+    // Automatically scroll when messages change
+    $effect(() => {
+        activeMessages;
+
+        tick().then(() => {
+            const panel = document.querySelector('.chat-messages');
+            if (panel) panel.scrollTop = panel.scrollHeight;
+        });
+    });
 
     function sendMessage(e: Event) {
         e.preventDefault();
-        if (input.trim() === "") return;
-        messages = [
-            ...messages,
-            {
-                sender: username,
-                content: input,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }
-        ];
+        const content = input.trim();
+        if (!content) return;
+
+        send('chat:send', {
+            content,
+            room_id: roomState.currentRoomId // null if on dashboard
+        });
+
         input = "";
-        setTimeout(() => {
-            const panel = document.querySelector('.chat-messages');
-            if (panel) panel.scrollTop = panel.scrollHeight;
-        }, 0);
+    }
+
+    function isMyMessage(msg) {
+        return msg.sender.id === roomState.currentUserId;
+    }
+    
+
+    function togglePanel() {
+        isExpanded = !isExpanded;
     }
 </script>
 
@@ -43,13 +57,13 @@
     {#if isExpanded}
         <form class="chat-panel" onsubmit={sendMessage} autocomplete="off">
             <div class="chat-messages">
-                {#each messages as msg, i}
-                    <div class="chat-message {msg.sender === username ? 'me' : ''}">
-                        <span class="sender">{msg.sender}</span>
-                        <span class="content">{msg.content}</span>
-                        <span class="timestamp">{msg.timestamp}</span>
-                    </div>
-                {/each}
+                {#each activeMessages as msg}
+        <div class="chat-message {isMyMessage(msg) ? "me": ''}">
+            <span class="sender">{msg.sender.username}</span>
+            <span class="content">{msg.content}</span>
+            <span class="timestamp">{new Date(msg.created_at).toLocaleTimeString([], { timeStyle: 'short' })}</span>
+        </div>
+    {/each}
             </div>
             <div class="chat-input-row">
                 <input
@@ -60,7 +74,7 @@
                     maxlength="200"
                     autocomplete="off"
                 />
-                <Button type="submit" variant="create" class="send-btn">▶</Button>
+                <Button type="submit" variant="create">▶</Button>
             </div>
         </form>
     {/if}
@@ -81,11 +95,7 @@
 
     .chat-drawer.expanded
     {
-<<<<<<< HEAD
         height: max(340px, 88vh);
-=======
-        height: max(240px, 45vh);
->>>>>>> origin/main
     }
 
     .chat-panel
@@ -96,7 +106,6 @@
         margin-left: 8px;
         margin-right: 8px;
         box-sizing: border-box;
-<<<<<<< HEAD
         border: 1px solid rgba(10, 235, 0, 0.6);
         background: rgba(15, 19, 20);
         backdrop-filter: blur(100px);
@@ -104,9 +113,6 @@
         display: flex;
         flex-direction: column;
     }
-
-     /* Custom scrollbar maybe not work for Firefox */
-     
      
      .chat-panel:hover
      {
@@ -199,32 +205,5 @@
         border-color: #0AEB00;
     }
 
-    /* .send-btn {
-        min-width: 60px;
-        height: 40px;
-        padding: 0 10px;
-        font-size: 14px;
-    } */
-=======
-        border: 1px solid rgba(10, 235, 0, 0.1);
-        background: rgba(15, 19, 20, 0.6);
-        backdrop-filter: blur(10px);
-        padding: 24px 28px;
-    }
 
-    .chat-panel:hover
-    {
-        border-color: #0AEB00;
-        background: rgba(10, 235, 0, 0.02);
-    }
-
-    h2
-    {
-        margin: 0 0 14px;
-        color: #0AEB00;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        text-align: left;
-    }
->>>>>>> origin/main
 </style>
