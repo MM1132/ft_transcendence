@@ -11,12 +11,24 @@
     let passwordError = $state('');
     let hasAuthError = $state(false);
     
-    const { onSubmit } = $props();
+    const { onSubmit, loginError = '' } = $props();
 
     function clearAuthError()
     {
+        usernameError = '';
+        passwordError = '';
         hasAuthError = false;
     }
+
+    $effect(() => {
+        clearAuthError();
+
+        if (!loginError)
+            return;
+
+        hasAuthError = true;
+        passwordError = loginError;
+    });
 
     function handleSubmit(event)
     {
@@ -35,14 +47,13 @@
         }
 
         const passwordValidation = authService.validatePassword(password);
-        if(passwordValidation)
+        if (passwordValidation)
         {
-            passwordError = passwordValidation;
             hasAuthError = true;
+            passwordError = 'Wrong username or password';
             return;
         }
-        
-       
+
         onSubmit?.({ username, password });
     }
 </script>
@@ -78,7 +89,7 @@
                 required
                 />
                 {#if hasAuthError}
-                    <p class="error-message">Wrong username or password</p>
+                    <p class="error-message">{passwordError || 'Wrong username or password'}</p>
                 {/if}
             </div>
             <Button type="submit">Login</Button>

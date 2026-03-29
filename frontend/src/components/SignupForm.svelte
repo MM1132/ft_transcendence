@@ -14,18 +14,45 @@
     let emailError = $state('');
 
 
-    const { onSubmit } = $props();
+    const { onSubmit, signupError = '' } = $props();
+
+    function clearErrors()
+    {
+        usernameError = '';
+        passwordError = '';
+        confirmPasswordError = '';
+        emailError = '';
+    }
+
+    $effect(() => {
+        clearErrors();
+
+        if (!signupError)
+            return;
+
+        const normalizedError = signupError.toLowerCase();
+
+        if (normalizedError.includes('username'))
+        {
+            usernameError = signupError;
+            return;
+        }
+
+        if (normalizedError.includes('email'))
+        {
+            emailError = signupError;
+            return;
+        }
+
+        passwordError = signupError;
+    });
 
 
     function handleSubmit(event)
     {
         event.preventDefault();
         
-        // Clear previous errors
-        confirmPasswordError = '';
-        usernameError = '';
-        passwordError = '';
-        emailError = '';
+        clearErrors();
         
         const usernameValidation = authService.validateUsername(username);
         if (usernameValidation)
@@ -79,6 +106,7 @@
                 id = "username"
                 placeholder = "Username"
                 bind:value={username}
+                oninput={clearErrors}
                 class:error={usernameError}
                 required
                 />
@@ -92,6 +120,7 @@
                 type = "email"
                 placeholder = "Email"
                 bind:value={email}
+                oninput={clearErrors}
                 class:error={emailError}
                 required
                 />
@@ -106,6 +135,7 @@
                 id="password"
                 placeholder="Password"
                 bind:value={password}
+                oninput={clearErrors}
                 class:error={passwordError}
                 required
                 />
@@ -120,6 +150,7 @@
                 id="confirmPassword"
                 placeholder="Confirm Password"
                 bind:value={confirmPassword}
+                oninput={clearErrors}
                 class:error={confirmPasswordError}
                 required
                 />

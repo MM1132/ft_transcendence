@@ -27,5 +27,4 @@
   }
 </script>
 
-<SignupForm onSubmit={handleSignup}/>
-
+<SignupForm onSubmit={handleSignup} signupError={signupError}/>
