@@ -5,6 +5,7 @@ import type {
   PlayerLeftPayload,
   PlayerReadyPayload,
   RoomCreatePayload,
+  RoomDeletePayload,
   RoomInvitePayload,
   RoomJoinedPayload,
   RoomJoinPayload,
@@ -391,6 +392,110 @@ export async function handleRoomLeave(
     console.error('❌ handleRoomLeave error:', err);
     connectionManager.send(userId, 'room:error', {
       error: 'Failed to leave room',
+    });
+  }
+}
+
+export async function handleRoomDelete(
+  db: Client,
+  userId: string,
+  data: RoomDeletePayload
+): Promise<void> {
+  const { room_id } = data;
+  const roomName = `room_${room_id}`;
+
+  try {
+    const roomResult = await db.query(
+      `SELECT id, name, creator_id, status, is_permanent, buy_in_amount
+       FROM rooms
+       WHERE id = $1`,
+      [room_id]
+    );
+
+    if (roomResult.rows.length === 0) {
+      connectionManager.send(userId, 'room:error', { error: 'Room not found' });
+      return;
+    }
+
+    const room = roomResult.rows[0];
+
+    if (String(room.creator_id) !== userId) {
+      connectionManager.send(userId, 'room:error', {
+        error: 'Only the room creator can delete this room',
+      });
+      return;
+    }
+
+    if (room.is_permanent) {
+      connectionManager.send(userId, 'room:error', {
+        error: 'Permanent rooms cannot be deleted',
+      });
+      return;
+    }
+
+    if (room.status !== 'WAITING') {
+      connectionManager.send(userId, 'room:error', {
+        error: 'Only waiting rooms can be deleted',
+      });
+      return;
+    }
+
+    const playersResult = await db.query(
+      `SELECT rp.user_id, rp.player_slot
+       FROM room_players rp
+       WHERE rp.room_id = $1
+       ORDER BY rp.player_slot`,
+      [room_id]
+    );
+
+    await db.query('BEGIN');
+
+    if (room.buy_in_amount > 0) {
+      for (const player of playersResult.rows) {
+        await db.query(
+          'UPDATE users SET balance = balance + $1 WHERE id = $2',
+          [room.buy_in_amount, player.user_id]
+        );
+        await db.query(
+          `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
+          [
+            player.user_id,
+            room.buy_in_amount,
+            `Refund for deleted room "${room.name}"`,
+          ]
+        );
+      }
+    }
+
+    await db.query('DELETE FROM rooms WHERE id = $1', [room_id]);
+    await db.query('COMMIT');
+
+    const affectedUserIds = new Set<string>([
+      ...playersResult.rows.map((player) => String(player.user_id)),
+      ...connectionManager.getRoomMembers(roomName),
+    ]);
+
+    for (const affectedUserId of affectedUserIds) {
+      connectionManager.leaveRoom(affectedUserId, roomName);
+      connectionManager.send(affectedUserId, 'room:left', {
+        room_id,
+        reason: 'Room deleted by creator',
+      });
+    }
+
+    await broadcastRoomList(db);
+
+    console.log(`🗑️ Room ${room_id} deleted by creator ${userId}`);
+  } catch (err) {
+    try {
+      await db.query('ROLLBACK');
+    } catch (rollbackErr) {
+      console.error('❌ handleRoomDelete rollback error:', rollbackErr);
+    }
+
+    console.error('❌ handleRoomDelete error:', err);
+    connectionManager.send(userId, 'room:error', {
+      error: 'Failed to delete room',
     });
   }
 }
