@@ -4,7 +4,7 @@
     import { tick } from 'svelte';
 
 
-    let isExpanded = $state(false);
+    // let isExpanded = $state(false);
     let input = $state("");
     let { isExpanded = $bindable(true) } = $props();
 
@@ -87,6 +87,7 @@
         transform: translateX(-50%);
         bottom: 53px;
         width: clamp(420px, 46vw, 760px);
+        /* width: 40vw; */
         height: 56px;
         overflow: hidden;
         transition: height 0.3s ease;
@@ -127,7 +128,6 @@
         padding-right: 4px;
     }
 
-<<<<<<< HEAD
     .chat-messages::-webkit-scrollbar
     {
         width: 12px;
@@ -205,9 +205,6 @@
         border-color: #0AEB00;
     }
 
-
-</style>
-=======
     @media (max-width: 1180px)
     {
         .chat-drawer
@@ -221,4 +218,3 @@
         }
     }
 </style>
->>>>>>> origin/main

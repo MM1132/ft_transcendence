@@ -64,7 +64,7 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  z-index: 900;
+  z-index: -1;
 }
 
 .dashboard-center-card.chat-open {
