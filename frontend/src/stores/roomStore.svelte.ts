@@ -256,6 +256,14 @@ export function connect(token: string) {
             case 'error':
                     console.error("Server error event:", data);
                 break;
+
+            case 'user:online':
+                console.log(`ℹ️ User online: ${data.userId}`);
+                break;
+
+            case 'user:offline':
+                console.log(`ℹ️ User offline: ${data.userId}`);
+                break;
       
             case 'chat:message': {
                 const newMessage = {
