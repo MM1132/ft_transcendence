@@ -143,6 +143,7 @@ export function connect(token: string) {
                 console.log("✅ Authenticated");
                 console.log(roomState.isConnected);
                 roomState.currentUserId = data.userId; // we set the user ID from backend
+                send('chat:history', { room_id: null }); // remove if we dont want history in global chat
                 // roomState.currentUserName = data.username;
                 break;
 

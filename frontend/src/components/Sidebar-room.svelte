@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { tick } from 'svelte';
     import { roomState, send } from '../stores/roomStore.svelte';
     import Button from './Button.svelte';
 
@@ -19,6 +20,25 @@
         roomState.currentRoomPlayers.find((player) => player.id === roomState.currentUserId) ?? null
     );
     const isActiveReady = $derived(Boolean(currentPlayer?.is_ready));
+
+    function autoScroll(node: HTMLDivElement, _messageCount: number) {
+        async function scrollToBottom() {
+            if (!isExpanded) {
+                return;
+            }
+
+            await tick();
+            node.scrollTop = node.scrollHeight;
+        }
+
+        void scrollToBottom();
+
+        return {
+            update(_nextMessageCount: number) {
+                void scrollToBottom();
+            }
+        };
+    }
 
     function sendMessage(e: Event) {
         e.preventDefault();
@@ -137,7 +157,7 @@
         </div>
 
         <div class="chat-section">
-                <div class="chat-messages">
+                <div class="chat-messages" use:autoScroll={roomState.messages.length}>
                     {#each roomState.messages as msg}
                         <div class="chat-message {msg.sender.id === roomState.currentUserId ? 'me' : ''}">
                             <span class="sender">{msg.sender.id === roomState.currentUserId ? "Me" : msg.sender.username} :</span>

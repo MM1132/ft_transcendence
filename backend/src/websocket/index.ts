@@ -2,6 +2,7 @@ import type { WebSocket } from '@fastify/websocket';
 import websocket from '@fastify/websocket';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { Client } from 'pg';
+import { userRespository } from '../features/user/user.repository.ts';
 import { encryptWithSalt } from '../utils/controllerUtils.ts';
 import { connectionManager } from './connectionManager.ts';
 import { handleChatHistory, handleChatSend } from './handlers/chat.handler.ts';
@@ -60,6 +61,7 @@ export async function setupWebSocket(
       console.log('🔌 WS: New connection attempt');
 
       let authenticatedUserId: string | null = null;
+      let authenticatedToken: string | null = null;
 
       // ============================================
       // Message Handler
@@ -88,6 +90,7 @@ export async function setupWebSocket(
             }
 
             authenticatedUserId = user.id;
+            authenticatedToken = authData.token;
             const oldConn = connectionManager.addConnection(
               user.id,
               user.username,
@@ -173,6 +176,12 @@ export async function setupWebSocket(
             return;
           }
 
+          await refreshSocketSession(
+            db,
+            authenticatedUserId,
+            authenticatedToken
+          );
+
           // ============================================
           // Route to handlers
           // ============================================
@@ -231,6 +240,25 @@ export async function setupWebSocket(
   );
 
   console.log('✅ WebSocket server registered at /ws');
+}
+
+async function refreshSocketSession(
+  db: Client,
+  userId: string,
+  token: string | null
+): Promise<void> {
+  if (!token) {
+    return;
+  }
+
+  const encryptedToken = encryptWithSalt(token);
+  await db.query(
+    `UPDATE sessions
+     SET valid_until = NOW() + INTERVAL '10 minutes'
+     WHERE token = $1`,
+    [encryptedToken]
+  );
+  await userRespository.updateUserLastAction(db, userId);
 }
 
 // ============================================
