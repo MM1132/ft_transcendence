@@ -28,6 +28,7 @@
                 return 0;
             }),
     );
+    const displayedRoomError = $derived(roomActionError || roomState.roomError);
 
     function handleJoin(room: { id: string; buy_in_amount?: number }) {
         if (($authStore.balance ?? 0) < (room.buy_in_amount ?? 0)) {
@@ -126,8 +127,8 @@
                     <option value="fee">Entry Fee</option>
                 </select>
             </div>
-            {#if roomActionError}
-                <p class="room-error-message">{roomActionError}</p>
+            {#if displayedRoomError}
+                <p class="room-error-message">{displayedRoomError}</p>
             {/if}
             {#each filteredRooms as room (room.id)}
                 <RoomCard
