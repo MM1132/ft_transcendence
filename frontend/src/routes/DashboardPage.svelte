@@ -10,7 +10,7 @@
 
   let isChatExpanded = $state(true);
   const activePlayersCount = $derived(
-    roomState.rooms.reduce((total, room) => total + (room.current_players ?? 0), 0)
+    roomState.rooms.reduce((total, room) => total + (Number(room.current_players) || 0), 0)
   );
 
   function formatPlayerCount(value) {
