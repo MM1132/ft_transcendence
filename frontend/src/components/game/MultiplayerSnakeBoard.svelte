@@ -103,6 +103,14 @@
     margin: 0;
   }
 
+  .board-header h3 {
+    color: #ffffff;
+  }
+
+  .board-header p {
+    color: #0aeb00;
+  }
+
   .board-grid {
     display: grid;
     gap: 1px;

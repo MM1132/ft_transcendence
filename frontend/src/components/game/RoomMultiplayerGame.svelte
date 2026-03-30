@@ -6,6 +6,7 @@
   const gameState = $derived(roomState.gameState);
   const players = $derived(roomState.currentRoomPlayers ?? []);
   const lastGameResult = $derived(roomState.lastGameResult ?? null);
+  const gameStatusLabel = $derived(roomState.gameStatus ?? 'idle');
 
   const slotEntries = $derived.by(() => {
     if (!gameState) return [];
@@ -67,7 +68,7 @@
 <div class="room-game-shell">
   <div class="room-game-header">
     <h2>Room Match</h2>
-    <p>Status: <strong>{roomState.gameStatus ?? 'idle'}</strong></p>
+    <p>Status: <strong class={`status-${gameStatusLabel}`}>{gameStatusLabel}</strong></p>
   </div>
 
   {#if !roomState.currentRoom}
@@ -87,7 +88,7 @@
           height={gameState.box_height}
           snake={entry.snake}
           apple={gameState.apple}
-          title={entry.player ? `${entry.player.username} (slot ${entry.slot})` : `slot ${entry.slot}`}
+          title={entry.player ? entry.player.username : `Player ${entry.slot}`}
           isCurrentPlayer={entry.player?.id === roomState.currentUserId}
           isEliminated={roomState.gameStatus === 'ended' && !!lastGameResult?.winner_id && entry.player?.id !== lastGameResult.winner_id}
           showGameOver={roomState.gameStatus === 'ended' && !!lastGameResult?.winner_id && entry.player?.id === roomState.currentUserId && entry.player?.id !== lastGameResult.winner_id}
@@ -117,6 +118,31 @@
   .room-game-header h2,
   .room-game-header p {
     margin: 0;
+  }
+
+  .room-game-header h2 {
+    color: #0aeb00;
+  }
+
+  .room-game-header p {
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .room-game-header strong {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .room-game-header .status-idle {
+    color: #cbd5e1;
+  }
+
+  .room-game-header .status-running {
+    color: #0aeb00;
+  }
+
+  .room-game-header .status-ended {
+    color: #f87171;
   }
 
   .room-game-empty {
