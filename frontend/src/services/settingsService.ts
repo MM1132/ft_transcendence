@@ -25,6 +25,10 @@ function api(path: string): string {
   return buildApiPath(path);
 }
 
+export function isDefaultAvatarUrl(url: string): boolean {
+  return url.includes('/default_avatar.png');
+}
+
 export const settingsService = {
   async getUserSettings(): Promise<UserSettings> {
     const response = await fetchWithSessionHandling(SETTINGS_API_URL, { //fetch request an backend

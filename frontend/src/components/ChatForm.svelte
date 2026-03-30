@@ -86,16 +86,19 @@
         left: 50%;
         transform: translateX(-50%);
         bottom: 53px;
+        top: auto;
         width: clamp(420px, 46vw, 760px);
         /* width: 40vw; */
         height: 56px;
         overflow: hidden;
-        transition: height 0.3s ease;
+        transition: height 0.3s ease, top 0.3s ease, bottom 0.3s ease;
     }
 
     .chat-drawer.expanded
     {
-        height: max(340px, 88vh);
+        top: 100px;
+        bottom: 60px;
+        height: auto;
     }
 
     .chat-panel
@@ -214,6 +217,8 @@
 
         .chat-drawer.expanded
         {
+            top: auto;
+            bottom: 53px;
             height: max(240px, 45vh);
         }
     }

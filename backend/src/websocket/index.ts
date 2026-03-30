@@ -16,6 +16,7 @@ import { handleGameInput } from './handlers/game.handler.ts';
 import {
   handlePlayerDisconnect,
   handleRoomCreate,
+  handleRoomDelete,
   handleRoomInvite,
   handleRoomJoin,
   handleRoomKick,
@@ -31,6 +32,7 @@ import type {
   FriendResponsePayload,
   GameInputPayload,
   RoomCreatePayload,
+  RoomDeletePayload,
   RoomInvitePayload,
   RoomJoinPayload,
   RoomKickPayload,
@@ -286,6 +288,9 @@ async function routeMessage(
       break;
     case 'room:join':
       await handleRoomJoin(db, userId, data as RoomJoinPayload);
+      break;
+    case 'room:delete':
+      await handleRoomDelete(db, userId, data as RoomDeletePayload);
       break;
     case 'room:leave':
       await handleRoomLeave(db, userId, data as RoomLeavePayload);

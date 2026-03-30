@@ -40,6 +40,10 @@
         send("room:join", { room_id: Number(room.id) });
     }
 
+    function handleDelete(roomId: string) {
+        send("room:delete", { room_id: Number(roomId) });
+    }
+
     function handleCreate(roomData: {
         name: string;
         entryFee: number;
@@ -67,6 +71,9 @@
 
     function togglePanel() {
         isExpanded = !isExpanded;
+        if (isExpanded && roomState.rooms.length === 0) {
+            send("room:list", {});
+        }
     }
 </script>
 
@@ -123,7 +130,12 @@
                 <p class="room-error-message">{roomActionError}</p>
             {/if}
             {#each filteredRooms as room (room.id)}
-                <RoomCard {room} onJoin={() => handleJoin(room)} />
+                <RoomCard
+                    {room}
+                    canDelete={room.creator_id === roomState.currentUserId && room.status === "WAITING" && !room.is_permanent}
+                    onJoin={() => handleJoin(room.id)}
+                    onDelete={() => handleDelete(room.id)}
+                />
             {:else}
                 <p class="no-rooms">No rooms found...</p>
             {/each}
