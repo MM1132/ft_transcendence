@@ -52,7 +52,7 @@ const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
 // const TICK_RATE = 150; // ms between updates (slower = easier)
 // TODO return to previous too slow now for debug
-const TICK_RATE = 250; // ms between updates (slower = easier)
+const TICK_RATE = 225; // ms between updates (slower = easier)
 
 // ============================================
 // Game Input Handler

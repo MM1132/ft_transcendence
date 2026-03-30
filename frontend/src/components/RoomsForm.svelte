@@ -55,8 +55,8 @@
 
     function togglePanel() {
         isExpanded = !isExpanded;
-        if (isExpanded && rooms.length === 0) {
-            fetchRooms();
+        if (isExpanded && roomState.rooms.length === 0) {
+            send("room:list", {});
         }
     }
 </script>
