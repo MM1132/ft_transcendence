@@ -33,7 +33,7 @@
     <RoomsForm chatExpanded={isChatExpanded} />
     <ChatForm bind:isExpanded={isChatExpanded} />
 
-    <section class="dashboard-center-card" aria-label="Live player count">
+    <section class="dashboard-center-card" class:chat-open={isChatExpanded} aria-label="Live player count">
       <p class="center-eyebrow">Live Now</p>
       <p class="center-count">{formatPlayerCount(activePlayersCount)}</p>
       <p class="center-copy">
@@ -65,6 +65,11 @@
   align-items: center;
   gap: 10px;
   z-index: 900;
+}
+
+.dashboard-center-card.chat-open {
+  top: auto;
+  bottom: calc(80px + max(240px, 45vh));
 }
 
 .center-eyebrow,
