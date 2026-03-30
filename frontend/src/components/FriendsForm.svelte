@@ -202,9 +202,11 @@
                                 />
                             {/each}
 
-                            <li class="friend-divider" aria-hidden="true">
-                                <span>offline</span>
-                            </li>
+                            {#if offlineFriends.length > 0}
+                                <li class="friend-divider" aria-hidden="true">
+                                    <span>offline</span>
+                                </li>
+                            {/if}
 
                             {#each offlineFriends as user}
                                 <FriendListItem
