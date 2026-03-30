@@ -8,7 +8,9 @@
     snake,
     apple,
     title = 'Player',
-    isCurrentPlayer = false
+    isCurrentPlayer = false,
+    isEliminated = false,
+    showGameOver = false
   } = $props<{
     width: number;
     height: number;
@@ -16,7 +18,11 @@
     apple: SnakePoint;
     title?: string;
     isCurrentPlayer?: boolean;
+    isEliminated?: boolean;
+    showGameOver?: boolean;
   }>();
+
+  const isDead = $derived((Boolean(snake) && snake.alive === false) || isEliminated);
 
   const snakeCells = $derived(
     new Set((snake?.body ?? []).map((p) => `${p.x},${p.y}`))
@@ -51,18 +57,28 @@
     </p>
   </div>
 
-  <div
-    class="board-grid"
-    style:grid-template-columns={`repeat(${width}, 1fr)`}
-  >
-    {#each cells as cell (cell.key)}
-      <div
-        class="cell"
-        class:apple={apple.x === cell.x && apple.y === cell.y}
-        class:snake={snakeCells.has(cell.key)}
-        class:head={headKey === cell.key}
-      />
-    {/each}
+  <div class="board-stage" class:is-dead={isDead}>
+    <div
+      class="board-grid"
+      style:grid-template-columns={`repeat(${width}, 1fr)`}
+    >
+      {#each cells as cell (cell.key)}
+        <div
+          class="cell"
+          class:apple={apple.x === cell.x && apple.y === cell.y}
+          class:snake={snakeCells.has(cell.key)}
+          class:head={headKey === cell.key}
+        />
+      {/each}
+    </div>
+
+    {#if isDead && (isCurrentPlayer || showGameOver)}
+      <div class="death-overlay own">
+        <h4>Game Over</h4>
+      </div>
+    {:else if isDead}
+      <div class="death-overlay other"></div>
+    {/if}
   </div>
 </div>
 
@@ -94,6 +110,14 @@
     aspect-ratio: 1 / 1;
   }
 
+  .board-stage {
+    position: relative;
+  }
+
+  .board-stage.is-dead .board-grid {
+    filter: saturate(0.35) brightness(0.45);
+  }
+
   .cell {
     background: #111827;
     aspect-ratio: 1 / 1;
@@ -109,5 +133,38 @@
 
   .cell.apple {
     background: #ef4444;
+  }
+
+  .death-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .death-overlay.own {
+    background: rgba(5, 8, 9, 0.5);
+  }
+
+  .death-overlay.own h4,
+  .overlay-eyebrow {
+    margin: 0;
+  }
+
+  .death-overlay.own h4 {
+    color: #ffffff;
+    font-size: clamp(1.8rem, 5vw, 3.5rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
+  }
+
+  .death-overlay.other {
+    background: rgba(5, 8, 9, 0.32);
   }
 </style>
