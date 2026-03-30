@@ -15,6 +15,35 @@
         return Number.isFinite(roomId) && roomId > 0 ? roomId : null;
     }
 
+    let input = $state("");
+
+    function sendMessage(e: Event) {
+        e.preventDefault();
+        const content = input.trim();
+        if (!content) return;
+
+        send('chat:send', {
+            content,
+            room_id: roomState.currentRoomId
+        });
+
+        input = "";
+    }
+
+    function fetchChatHistory() {
+        if (roomState.isConnected && roomState.currentRoomId) {
+            send('chat:history', {
+                room_id: roomState.currentRoomId
+            });
+        }
+    }
+
+    $effect(() => {
+        if (roomState.isConnected && roomState.currentRoomId) {
+            fetchChatHistory();
+        }
+    });
+
     function handleLeaveRoom()
     {
         const roomId = getValidRoomId();
@@ -61,8 +90,8 @@
     function togglePanel()
     {
         isExpanded = !isExpanded;
+        fetchChatHistory();
     }
-
 </script>
 
 <aside class="rooms-drawer" class:expanded={isExpanded}>
@@ -105,6 +134,29 @@
             {/each}
         </div>
 
+        <div class="chat-section">
+                <div class="chat-messages">
+                    {#each roomState.messages as msg}
+                        <div class="chat-message {msg.sender.id === roomState.currentUserId ? 'me' : ''}">
+                            <span class="sender">{msg.sender.id === roomState.currentUserId ? "Me" : msg.sender.username} :</span>
+                            <span class="content">{msg.content}</span>
+                            <span class="timestamp">{new Date(msg.created_at).toLocaleTimeString([], { timeStyle: 'short' })}</span>
+                        </div>
+                    {/each}
+                </div>
+                <form class="chat-input-row" onsubmit={sendMessage} autocomplete="off">
+                    <input
+                    class="chat-input"
+                    type="text"
+                    placeholder="Type a message..."
+                    bind:value={input}
+                    maxlength="200"
+                    autocomplete="off"
+                    />
+                    <Button type="submit" variant="create">▶</Button>
+                </form>
+            </div>
+                
         <div class="action-footer">
             <Button class={"btn-ready" + (isActiveReady ? " active" : "")} onclick={handlePlayerReady} variant="ready" disabled={!roomState.isConnected || !roomState.currentRoomId}> READY </Button>
             <Button class="btn-leave" variant="cancel" onclick={handleLeaveRoom} disabled={!roomState.isConnected || !roomState.currentRoomId}>LEAVE</Button>
@@ -117,6 +169,22 @@
 
 
 <style>
+
+
+    .chat-section
+    {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(10, 235, 0, 0.1);
+        flex-grow: 1;
+        overflow-y: auto;
+        min-height: 120px;
+        background: rgb(18, 20, 22);
+        padding: 12px;
+        margin-bottom: 40px;
+        font-size: 0.95em;
+    }
+
     .rooms-drawer
     {
         position: fixed;
@@ -263,5 +331,106 @@
         display: flex;
         gap: 16px;
     }
+
+
+    /* CHAT */
+    .chat-section
+    {
+        flex-grow: 1;
+        overflow-y: auto;
+        height: 120px;
+        border: 1px solid rgba(10, 235, 0, 0.1);
+        background: rgb(18, 20, 22);
+        padding: 12px;
+        margin-bottom: 40px;
+        font-size: 0.95em;
+    }
+    
+    .chat-messages
+    {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        margin-bottom: 16px;
+        padding-right: 4px;
+    }
+    
+    .chat-messages::-webkit-scrollbar
+    {
+        width: 12px;
+    }
+    .chat-messages::-webkit-scrollbar-thumb
+    {
+        background: #b13bcc;
+    }
+    .chat-messages::-webkit-scrollbar-track
+    {
+        background: rgba(30, 157, 189, 0.3);
+    }
+    
+    .chat-message
+    {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 6px;
+        color: #fff;
+        font-size: 13px;
+        background: rgba(177, 59, 204, 0.08);
+        padding: 14px 18px;
+    }
+    
+    .chat-message.me
+    {
+        background: rgba(10, 235, 0, 0.05);
+        color: #0AEB00;
+        color:white;
+        font-weight: 600;
+        /* justify-content: flex-end; */
+    }
+
+
+    .chat-message .sender
+    {
+        font-weight: bold;
+        color: #b13bcc;
+        margin-right: 4px;
+    }
+
+    .chat-message.me .sender
+    {
+        color: #0AEB00;
+    }
+
+    .chat-message .timestamp
+    {
+        font-size: 11px;
+        color: #c8eb00;
+        margin-left: auto;
+    }
+
+    .chat-input-row
+    {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .chat-input
+    {
+        flex: 1 1 auto;
+        padding: 12px 10px;
+        border: 1px solid rgba(10, 235, 0, 0.3);
+        background: rgba(0, 0, 0, 0.4);
+        color: #0AEB00;
+        outline: none;
+        font-size: 14px;
+    }
+
+    .chat-input:focus
+    {
+        border-color: #0AEB00;
+    }
+
+
 </style>
 

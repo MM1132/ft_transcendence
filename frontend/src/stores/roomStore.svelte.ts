@@ -46,6 +46,18 @@ export interface Room
     created_at?: string;
 }
 
+
+export interface Message {
+    sender: {
+        id: string;
+        username: string;
+        avatar_url: string | null;
+    };
+    content: string;
+    created_at: string;
+    room_id: string | null;
+}
+
 export interface RoomState {
     rooms: Room[];
     isConnected: boolean;
@@ -56,6 +68,8 @@ export interface RoomState {
     gameState?: MultiplayerSnakeState | null;
     gameStatus?: 'idle' | 'running' | 'ended';
     lastGameResult?: LastGameResult | null;
+    globalMessages: Message[];
+    messages: Message[];
 }
 
 export interface Player {
@@ -77,6 +91,8 @@ export const roomState = $state<RoomState>({
     gameState: null,
     gameStatus: 'idle',
     lastGameResult: null,
+    globalMessages: [],
+    messages: [],
 });
 
 export interface LastGameResult {
@@ -114,7 +130,7 @@ export function connect(token: string) {
         const { event: type, data } = msg;
 
         console.log("socket.onmessage was called!")
-        console.log(`Username: ${data}`);
+        // console.log(`Username: ${data}`);
 
         switch (type) {
             default:
@@ -224,7 +240,40 @@ export function connect(token: string) {
             case 'error':
                     console.error("Server error event:", data);
                 break;
+      
+            case 'chat:message': {
+                const newMessage = {
+                    sender: data.sender, // this is an object
+                    content: data.content,
+                    created_at: data.created_at || new Date().toISOString(),
+                    room_id: data.room_id
+                };
+
+                if (data.room_id === null) {
+                    roomState.globalMessages = [...roomState.globalMessages, newMessage];
+                } else {
+                    roomState.messages = [...roomState.messages, newMessage];
+                }
+                break;
+            }
+
+            case 'chat:history': {
+                const history: Message[] = (data.messages || []).map((m: any) => ({
+                    sender: m.sender,
+                    content: m.content,
+                    created_at: m.created_at,
+                    room_id: m.room_id
+                }));
+
+                if (data.room_id === null) {
+                    roomState.globalMessages = history;
+                } else {
+                    roomState.messages = history;
+                }
+                break;
+            }
         }
+        
     };
 
     ws.onclose = () => {

@@ -846,5 +846,6 @@ async function broadcastRoomList(db: Client) {
     buy_in_amount: room.buy_in_amount,
   }));
 
+  console.log('============== ================');
   connectionManager.broadcastAll('room:list', rooms);
 }
