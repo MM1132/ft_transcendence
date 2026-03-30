@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from "./Button.svelte";
-    let {room, onJoin } = $props();
+    let { room, onJoin, onDelete = () => {} } = $props();
 
 
     const isFull = $derived(room.current_players === room.max_players);
@@ -12,6 +12,14 @@
 
 <!-- <pre>{JSON.stringify(room, null, 2)}</pre> -->
 <div class="room-card" class:full={isFull}>
+    <button
+        type="button"
+        class="delete-room-button"
+        aria-label={`Delete room ${room.name}`}
+        onclick={onDelete}
+    >
+        X
+    </button>
     <div class="room-header">
         <div class="room-name">{room.name}</div>
         <span class="fee">{room.buy_in_amount} 💰</span>
@@ -44,10 +52,38 @@
 
     .room-card
     {
+        position: relative;
         padding: 26px;
         border: 1px solid rgba(10, 235, 0, 0.1);
         background: rgba(15, 19, 20, 0.6);
         margin-bottom: 1rem;
+    }
+
+    .delete-room-button
+    {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 15px;
+        height: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.04);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 2;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+
+    .delete-room-button:hover
+    {
+        border-color: #ff4444;
+        color: #ff4444;
+        background: rgba(255, 68, 68, 0.08);
     }
 
     .room-card:hover
