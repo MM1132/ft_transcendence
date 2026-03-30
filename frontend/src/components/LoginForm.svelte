@@ -109,10 +109,15 @@
     
     .login-container
     {
-        position: absolute;
-        top: 50%;
+        position: fixed;
+        top: 100px;
+        bottom: 60px;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(100vw - 32px);
     }
 
     #login-form
@@ -120,14 +125,16 @@
         width: auto;
         max-width: min(460px, calc(100vw - 32px));
         margin: 0 auto;
-        padding: 6rem;
-        padding-top: 2rem;
+        padding: 4rem;
+        padding-top: 1.5rem;
+        max-height: 100%;
         box-sizing: border-box;
         border: 1px solid rgba(10, 235, 0, 0.1);
         background: rgba(15, 19, 20, 0.6);
         backdrop-filter: blur(10px);
         border-radius: 0px;
         transition: all 0.3s;
+        overflow: auto;
     }
     
     #login-form:hover
@@ -165,7 +172,7 @@
 
     .input-group
     {
-        margin-bottom: 4rem;
+        margin-bottom: 2.5rem;
     }
     
     .input-group p
@@ -195,15 +202,15 @@
         color: #B13BCC;
         letter-spacing: 0.2em;
         text-align: center;
-        margin-bottom: 1rem;
-        padding: 2rem;
+        margin-bottom: 0.5rem;
+        padding: 1rem;
         /* transform: translateX(-90px); */
     }
 
     .signup
     {
         text-align: center;
-        margin-top: 3rem;
+        margin-top: 2rem;
         color: #888;
         font-size: 14px;
         
@@ -251,5 +258,5 @@
             margin-top: 2rem;
         }
     }
-    
+
 </style>
