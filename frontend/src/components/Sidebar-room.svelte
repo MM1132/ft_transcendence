@@ -209,8 +209,6 @@
         font-size: 0.95em;
     }
 
-
-
     .rooms-drawer
     {
         position: fixed;
