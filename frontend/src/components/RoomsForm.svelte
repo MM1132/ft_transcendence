@@ -164,7 +164,7 @@
         box-sizing: border-box;
         border: 1px solid rgba(10, 235, 0, 0.6);
         background: rgba(15, 19, 20);
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(100px);
         padding: 36px;
         overflow-y: auto;
     }
