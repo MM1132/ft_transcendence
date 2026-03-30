@@ -133,7 +133,7 @@
                 <RoomCard
                     {room}
                     canDelete={room.creator_id === roomState.currentUserId && room.status === "WAITING" && !room.is_permanent}
-                    onJoin={() => handleJoin(room.id)}
+                    onJoin={() => handleJoin(room)}
                     onDelete={() => handleDelete(room.id)}
                 />
             {:else}
