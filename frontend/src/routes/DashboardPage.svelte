@@ -69,7 +69,7 @@
 
 .dashboard-center-card.chat-open {
   top: auto;
-  bottom: calc(53px + max(240px, 45vh) + 28px);
+  bottom: calc(80px + max(240px, 45vh));
 }
 
 .center-eyebrow,
