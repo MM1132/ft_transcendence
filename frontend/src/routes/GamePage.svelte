@@ -69,6 +69,7 @@
     align-items: center;
     flex: 1;
     width: 100%;
+    min-height: 300px;
   }
 
   @media (max-width: 640px) {

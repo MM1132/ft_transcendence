@@ -29,6 +29,8 @@
     align-items: center;
     width: 100%;
     flex: 1;
+    padding: 0 20px;
+    box-sizing: border-box;
   }
 
   .game-canvas {
@@ -37,7 +39,25 @@
     border-radius: 12px;
     background: #111827;
     max-width: 100%;
+    max-height: 100%;
+    width: clamp(300px, 90vw, 1080px);
     height: auto;
-    width: min(100%, 1080px);
+    aspect-ratio: 1;
+  }
+
+  @media (max-width: 768px) {
+    .game-canvas-shell {
+      padding: 0 12px;
+    }
+
+    .game-canvas {
+      width: clamp(280px, 85vw, 800px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .game-canvas {
+      width: clamp(250px, 90vw, 600px);
+    }
   }
 </style>
