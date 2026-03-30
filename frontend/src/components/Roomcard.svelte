@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from "./Button.svelte";
-    let { room, onJoin, onDelete = () => {} } = $props();
+    let { room, onJoin, onDelete = () => {}, canDelete = false } = $props();
 
 
     const isFull = $derived(room.current_players === room.max_players);
@@ -12,14 +12,16 @@
 
 <!-- <pre>{JSON.stringify(room, null, 2)}</pre> -->
 <div class="room-card" class:full={isFull}>
-    <button
-        type="button"
-        class="delete-room-button"
-        aria-label={`Delete room ${room.name}`}
-        onclick={onDelete}
-    >
-        X
-    </button>
+    {#if canDelete}
+        <button
+            type="button"
+            class="delete-room-button"
+            aria-label={`Delete room ${room.name}`}
+            onclick={onDelete}
+        >
+            X
+        </button>
+    {/if}
     <div class="room-header">
         <div class="room-name">{room.name}</div>
         <span class="fee">{room.buy_in_amount} 💰</span>

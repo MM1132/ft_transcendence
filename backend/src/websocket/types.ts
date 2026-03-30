@@ -23,6 +23,7 @@ Architecture:
 export type ClientEvent =
   | 'auth'
   | 'room:join'
+  | 'room:delete'
   | 'room:leave'
   | 'room:ready'
   | 'room:create'
@@ -91,6 +92,10 @@ export interface RoomCreatePayload {
 }
 
 export interface RoomJoinPayload {
+  room_id: number;
+}
+
+export interface RoomDeletePayload {
   room_id: number;
 }
 
