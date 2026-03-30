@@ -2,9 +2,10 @@
 	import Button from './Button.svelte';
 
 	
-   let { onClose, onCreate } = $props<{
+   let { onClose, onCreate, generalError } = $props<{
         onClose: () => void;
         onCreate: (room: { name: string; entryFee: number; maxPlayers: number }) => void;
+        generalError?: string;
     }>();
 
 	let name = $state('');
@@ -41,7 +42,6 @@
                 entryFee: Number(entryFee),
                 maxPlayers: Number(maxPlayers)
             });
-            onClose();
         } catch (err) {
             console.error("Failed to create room:", err);
         }
@@ -58,6 +58,9 @@
 <div class="modal-overlay">
 	<div class="modal">
 		<h2>Create Room</h2>
+        {#if generalError}
+            <p class="general-error-message">{generalError}</p>
+        {/if}
         <form onsubmit={handleSubmit}>
             <div class= "input-group">
             <p>ROOM NAME</p>
@@ -180,6 +183,14 @@ p.error-message
    color: #ff4444;
    font-size: 12px;
    margin: 8px 0 0 13px;
+   text-align: left;
+}
+
+p.general-error-message
+{
+   color: #ff7a7a;
+   font-size: 14px;
+   margin: 0 0 20px;
    text-align: left;
 }
 
