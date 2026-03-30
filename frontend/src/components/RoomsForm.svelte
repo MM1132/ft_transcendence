@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { authStore } from "../stores/authStore";
     import { roomState, send } from "../stores/roomStore.svelte";
     import RoomCard from "./Roomcard.svelte";
     import Button from "./Button.svelte";
@@ -8,6 +9,8 @@
 
     let isExpanded = $state(true);
     let showCreateModal = $state(false);
+    let roomActionError = $state("");
+    let createRoomError = $state("");
 
     let searchQuery = $state("");
     let sortType = $state<"players" | "fee">("players");
@@ -26,8 +29,15 @@
             }),
     );
 
-    function handleJoin(roomId: string) {
-        send("room:join", { room_id: Number(roomId) });
+    function handleJoin(room: { id: string; buy_in_amount?: number }) {
+        if (($authStore.balance ?? 0) < (room.buy_in_amount ?? 0)) {
+            roomActionError = "Balance too low to join.";
+            return;
+        }
+
+        roomActionError = "";
+        createRoomError = "";
+        send("room:join", { room_id: Number(room.id) });
     }
 
     function handleDelete(roomId: string) {
@@ -39,7 +49,13 @@
         entryFee: number;
         maxPlayers: number;
     }) {
-        showCreateModal = !showCreateModal;
+        if (($authStore.balance ?? 0) < roomData.entryFee) {
+            createRoomError = "Balance too low to create.";
+            return;
+        }
+
+        createRoomError = "";
+        roomActionError = "";
         const backendRoomData = {
             name: roomData.name,
             max_players: roomData.maxPlayers,
@@ -76,6 +92,7 @@
         <CreateRoomForm
             onClose={() => (showCreateModal = false)}
             onCreate={handleCreate}
+            generalError={createRoomError}
         />
     {/if}
 
@@ -90,7 +107,11 @@
                 <Button
                     variant="create"
                     type="button"
-                    onclick={() => (showCreateModal = true)}>+</Button
+                    onclick={() => {
+                        roomActionError = "";
+                        createRoomError = "";
+                        showCreateModal = true;
+                    }}>+</Button
                 >
             </div>
             <div class="filter-toolbar">
@@ -105,6 +126,9 @@
                     <option value="fee">Entry Fee</option>
                 </select>
             </div>
+            {#if roomActionError}
+                <p class="room-error-message">{roomActionError}</p>
+            {/if}
             {#each filteredRooms as room (room.id)}
                 <RoomCard
                     {room}
@@ -152,7 +176,7 @@
         box-sizing: border-box;
         border: 1px solid rgba(10, 235, 0, 0.6);
         background: rgba(15, 19, 20);
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(100px);
         padding: 36px;
         overflow-y: auto;
     }
@@ -222,6 +246,13 @@
         font-style: italic;
         text-align: center;
         margin-top: 20px;
+    }
+
+    .room-error-message {
+        margin: 0 0 16px;
+        color: #ff7a7a;
+        text-align: left;
+        font-size: 0.9rem;
     }
 
     @media (max-width: 1180px) {
