@@ -6,6 +6,15 @@
     let kickedPlayerId = $state(null);
     let { isExpanded = $bindable(true) } = $props();
 
+    function getValidRoomId(): number | null {
+        if (!roomState.isConnected || !roomState.currentRoomId) {
+            return null;
+        }
+
+        const roomId = Number(roomState.currentRoomId);
+        return Number.isFinite(roomId) && roomId > 0 ? roomId : null;
+    }
+
     let input = $state("");
 
     function sendMessage(e: Event) {
@@ -37,22 +46,35 @@
 
     function handleLeaveRoom()
     {
-        if (roomState.currentRoomId)
+        const roomId = getValidRoomId();
+        if (roomId !== null)
         {
             // we send the ID as a Number to match backend expectations
-            send('room:leave', { room_id: Number(roomState.currentRoomId) });
+            send('room:leave', { room_id: roomId });
         }
     }
 
     function handlePlayerReady()
     {
+        const roomId = getValidRoomId();
+        if (roomId === null)
+        {
+            return;
+        }
+
         isActiveReady = !isActiveReady;
         console.log('Sending room:ready for room', roomState.currentRoomId);
-        send('room:ready', { room_id: Number(roomState.currentRoomId) });
+        send('room:ready', { room_id: roomId });
     }
 
     function handleKickPlayer(id: string)
     {
+        const roomId = getValidRoomId();
+        if (roomId === null)
+        {
+            return;
+        }
+
         if (kickedPlayerId === id)
         {
             kickedPlayerId = null; // Toggle off if clicking the same one
@@ -62,7 +84,7 @@
             kickedPlayerId = id; // Toggle on
         }
         console.log(`Kicking player ${id} from room ${roomState.currentRoomId}`);
-        send('room:kick', { room_id: Number(roomState.currentRoomId), target_user_id: id });
+        send('room:kick', { room_id: roomId, target_user_id: id });
     }
 
     function togglePanel()
@@ -85,16 +107,16 @@
     {#if isExpanded}
     <div class="rooms-panel">
         <div class="rooms-header">
-            <h2>Room: <span class="room-name"> {roomState.currentRoom.name}</span></h2>
+            <h2>Room: <span class="room-name"> {roomState.currentRoom?.name ?? 'N/A'}</span></h2>
         </div>
-        <span class="capacity">CAPACITY: {roomState.currentRoomPlayers.length} / {roomState.currentRoom.max_players}</span>
+        <span class="capacity">CAPACITY: {(roomState.currentRoomPlayers ?? []).length} / {roomState.currentRoom?.max_players ?? 0}</span>
 
         <div class="progress-container">
-            <div class="progress-bar" style="width: {(roomState.currentRoomPlayers.length / roomState.currentRoom.max_players) * 100}%"></div>
+            <div class="progress-bar" style="width: {roomState.currentRoom?.max_players ? ((roomState.currentRoomPlayers ?? []).length / roomState.currentRoom.max_players) * 100 : 0}%"></div>
         </div>
 
         <div class="player-list">
-            {#each roomState.currentRoomPlayers as player}
+            {#each (roomState.currentRoomPlayers ?? []) as player}
                 <div class="player-card" class:active={player.is_ready}>
                     <div class="player-info">
                         <div class="details">
@@ -136,8 +158,8 @@
             </div>
                 
         <div class="action-footer">
-            <Button class={"btn-ready" + (isActiveReady ? " active" : "")} onclick={handlePlayerReady} variant="ready"> READY </Button>
-            <Button class="btn-leave" variant="cancel" onclick={handleLeaveRoom}>LEAVE</Button>
+            <Button class={"btn-ready" + (isActiveReady ? " active" : "")} onclick={handlePlayerReady} variant="ready" disabled={!roomState.isConnected || !roomState.currentRoomId}> READY </Button>
+            <Button class="btn-leave" variant="cancel" onclick={handleLeaveRoom} disabled={!roomState.isConnected || !roomState.currentRoomId}>LEAVE</Button>
         </div>
     </div>
     {/if}

@@ -5,6 +5,7 @@
     import { onMount } from 'svelte';
     import { settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
+    import { isDefaultAvatarUrl } from '../services/settingsService';
 
     let fullName = $state('');
     let bio = $state('');
@@ -117,6 +118,12 @@
     }
 
     async function handleDeleteAvatar() {
+
+        if (!avatarUrl || isDefaultAvatarUrl(avatarUrl)) {
+            alert("This pretty face is your default avatar. You're welcome. \nDelete me? Nice try snake.\
+             \nUpload a new one if you dare.")
+            return;
+    }
         if (!confirm('Are you sure you want to delete your avatar?')) return;
 
         isUploadingAvatar = true;

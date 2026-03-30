@@ -107,16 +107,23 @@ export function connect(token: string) {
     if (socket) return; // Prevent multiple connections
 
     const wsPath = buildWsPath();
-    socket = new WebSocket(wsPath);
+    const ws = new WebSocket(wsPath);
+    socket = ws;
 
+    ws.onopen = () => {
+        // If another socket replaced this one (or logout cleared it), ignore stale open event.
+        // socket is null, ws is ws1 → they differ
+        if (socket !== ws) {
+            ws.close();
+            return;
+        }
 
-    socket.onopen = () => {
         roomState.isConnected = true;
-        send('auth', { token });
+        ws.send(JSON.stringify({ event: 'auth', data: { token } }));
         console.log(`%c[WebSocket] Connected to ${wsPath}", "color: green; font-weight: bold;`);
     };
 
-    socket.onmessage = (event) => {
+    ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         console.log('%c[WS <-]', 'color: cyan; font-weight: bold;', msg);
 
@@ -269,7 +276,7 @@ export function connect(token: string) {
         
     };
 
-    socket.onclose = () => {
+    ws.onclose = () => {
         console.log("WebSocket closed");
             roomState.isConnected = false;
             roomState.rooms = [];
@@ -279,7 +286,9 @@ export function connect(token: string) {
             roomState.currentUserId = null;
             roomState.gameState = null;
             roomState.gameStatus = 'idle';
-            socket = null;
+            if (socket === ws) {
+                socket = null;
+            }
     };
 }
 
