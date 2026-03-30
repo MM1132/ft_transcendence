@@ -26,6 +26,8 @@
     let onlineUsers = $state<UserSummary[]>([]);
     let incomingFriendRequests = $state<IncomingFriendRequest[]>([]);
     let outgoingFriendRequests = $state<OutgoingFriendRequest[]>([]);
+    const onlineFriends = $derived(friends.filter((user) => user.online));
+    const offlineFriends = $derived(friends.filter((user) => !user.online));
 
     function togglePanel()
     {
@@ -189,13 +191,29 @@
                     {/each}
                 {:else}
                     {#if selectedList === 'friends'}
-                        {#each friends as user}
-                            <FriendListItem
-                                userId={user.id}
-                                username={user.username}
-                                onRemove={() => removeFriend(user.id)}
-                            />
-                        {/each}
+                        {#if friends.length === 0}
+                            <li class="info-row">No friends yet</li>
+                        {:else}
+                            {#each onlineFriends as user}
+                                <FriendListItem
+                                    userId={user.id}
+                                    username={user.username}
+                                    onRemove={() => removeFriend(user.id)}
+                                />
+                            {/each}
+
+                            <li class="friend-divider" aria-hidden="true">
+                                <span>offline</span>
+                            </li>
+
+                            {#each offlineFriends as user}
+                                <FriendListItem
+                                    userId={user.id}
+                                    username={user.username}
+                                    onRemove={() => removeFriend(user.id)}
+                                />
+                            {/each}
+                        {/if}
                     {:else}
                         {#each onlineUsers as user}
                             <OnlineUserListItem
@@ -277,6 +295,28 @@
         letter-spacing: 1px;
         cursor: pointer;
         padding: 0;
+    }
+
+    .friend-divider
+    {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 8px 0 6px;
+        color: rgba(255, 255, 255, 0.45);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.68rem;
+    }
+
+    .friend-divider::before,
+    .friend-divider::after
+    {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.14);
     }
 
     .user-list
