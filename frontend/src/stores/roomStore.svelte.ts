@@ -227,6 +227,10 @@ export function connect(token: string) {
             case 'game:end':
                     roomState.gameStatus = 'ended';
                     roomState.lastGameResult = data;
+                    roomState.currentRoomPlayers = roomState.currentRoomPlayers.map((player) => ({
+                        ...player,
+                        is_ready: false
+                    }));
                     console.log('🏁 Game ended', data);
                 break;
 

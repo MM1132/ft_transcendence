@@ -2,11 +2,14 @@
     import { roomState, send } from '../stores/roomStore.svelte';
     import Button from './Button.svelte';
 
-    let isActiveReady = $state(false);
     let kickedPlayerId = $state(null);
     let { isExpanded = $bindable(true) } = $props();
 
     let input = $state("");
+    const currentPlayer = $derived(
+        roomState.currentRoomPlayers.find((player) => player.id === roomState.currentUserId) ?? null
+    );
+    const isActiveReady = $derived(Boolean(currentPlayer?.is_ready));
 
     function sendMessage(e: Event) {
         e.preventDefault();
@@ -46,7 +49,6 @@
 
     function handlePlayerReady()
     {
-        isActiveReady = !isActiveReady;
         console.log('Sending room:ready for room', roomState.currentRoomId);
         send('room:ready', { room_id: Number(roomState.currentRoomId) });
     }
@@ -136,7 +138,9 @@
             </div>
                 
         <div class="action-footer">
-            <Button class={"btn-ready" + (isActiveReady ? " active" : "")} onclick={handlePlayerReady} variant="ready"> READY </Button>
+            <Button class={"btn-ready" + (isActiveReady ? " active" : "")} onclick={handlePlayerReady} variant="ready">
+                {isActiveReady ? "NOT_READY" : "READY"}
+            </Button>
             <Button class="btn-leave" variant="cancel" onclick={handleLeaveRoom}>LEAVE</Button>
         </div>
     </div>
@@ -411,4 +415,3 @@
 
 
 </style>
-
