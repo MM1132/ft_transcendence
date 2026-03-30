@@ -201,7 +201,7 @@
         flex-direction: column;
         border: 1px solid rgba(10, 235, 0, 0.1);
         flex-grow: 1;
-        min-height: 0;
+        overflow-y: auto;
         min-height: 120px;
         background: rgb(18, 20, 22);
         padding: 12px;
@@ -209,14 +209,6 @@
         font-size: 0.95em;
     }
 
-    .chat-messages
-    {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-        margin-bottom: 16px;
-        padding-right: 4px;
-    }
 
 
     .rooms-drawer
@@ -370,12 +362,22 @@
     /* CHAT */
     .chat-section
     {
+        flex-grow: 1;
+        overflow-y: auto;
         height: 120px;
+        border: 1px solid rgba(10, 235, 0, 0.1);
+        background: rgb(18, 20, 22);
+        padding: 12px;
+        margin-bottom: 40px;
+        font-size: 0.95em;
     }
     
     .chat-messages
     {
         flex: 1 1 auto;
+        overflow-y: auto;
+        margin-bottom: 16px;
+        padding-right: 4px;
     }
     
     .chat-messages::-webkit-scrollbar
