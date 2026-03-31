@@ -195,16 +195,18 @@ erDiagram
 - BiomeJS/Nodemon/TypeScript configuration
 
 ## Modules
-- 2: Use a framework for both the frontend and backend.
-- 2: Implement real-time features using WebSockets or similar technology.
-- 2: Allow users to interact with other users. The minimum requirements are:
-- 2: A public API to interact with the database with a secured API key, rate limiting, documentation, and at least 5 endpoints
-- 1: Custom-made design system with reusable components, including a proper color palette, typography, and icons (minimum: 10 reusable components).
-- 1: Support for additional browsers.
-- 2: Standard user management and authentication.
-- 2: Implement a complete web-based game where users can play against each other.
-- 2: Remote players — Enable two players on separate computers to play the same game in real-time.
-- 2: Multiplayer game (more than two players).
+| Points | Description | Developers | Justification |
+| --- | --- | --- | --- |
+| 2 | Use a framework for both the frontend and backend. | Everyone | We used Fastify for backend and Svelte for frontend. The frameworks for chosen for their ease of use and speed. |
+| 2 | Implement real-time features using WebSockets or similar technology. | Everyone except Robert | It was implemented using Fastify's built-in socket support, on the frontend there is the WebSocket class that can be called for the functionality |
+| 2 | Allow users to interact with other users | Robert & Christopher (backend), Nico & Konstantinos (frontend) | It's just backend REST API, and WebSocket API that the frontend uses |
+| 2 | A public API to interact with the database with a secured API key, rate limiting, documentation, and at least 5 endpoints | Robert | Documentation is done with Bruno. We use secure API tockens for communication. Rate limiting is a core Fastify plugin |
+| 1 | Custom-made design system with reusable components, including a proper color palette, typography, and icons (minimum: 10 reusable components). | Konstantinos and Nico | This was achieved with using Figma for design, and Svelte to code the components |
+| 1 | Support for additional browsers. | No one | This functionality exists by default since the use of Svelte for our framework. As long as the browser supports JavaScript, our applicaiton will run smoothly |
+| 2 | Standard user management and authentication. | Robert (backend), Nico & Konstantinos (frontend) | We made it the same as other features, backend API and frontend built on top |
+| 2 | Implement a complete web-based game where users can play against each other. | Christopher (backend), Constantinos (frontend) | It works by using WebSockets for live updates, the entire game logic runs on the backend, frontend only renders it and sends key events |
+| 2 | Remote players - Enable two players on separate computers to play the same game in real-time. | Christopher (backend), Constantinos (frontend) | Same as above |
+| 2 | Multiplayer game (more than two players). | Christopher (backend), Constantinos (frontend) | Same as above |
 - **TOTAL:** <u>18</u> our of the requirement of 14
 
 ## Individual Contributions
