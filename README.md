@@ -210,7 +210,34 @@ erDiagram
 - **TOTAL:** <u>18</u> our of the requirement of 14
 
 ## Individual Contributions
-TODO
+### [**rreimann**](https://github.com/MM1132)
+- Backend setup, structure, architecture choices
+- Developer configuration: Docker, BiomeJS, linting, Database migrations
+- CI/CD to the https://snake.reimann.ee VPS
+- Sessions (login/register), friends, profile settings (image upload)
+- Writing this README.md file
+- Backend for the working minigame
+- Rate limiting
+### [**cmakario**](https://github.com/conmak8)
+- The snake game in both single- and multiplayer
+- Frontend change user avatar image
+### [**kkaratsi**](https://github.com/karatsioris)
+- Frontend design and implementation
+- Website's home page
+- Frontend router setup
+- The dashboard and panels
+- The frontend for rooms
+- Frontend for login/register system (sessions)
+### [**nlewicki**](https://github.com/nlewicki)
+- Frontend for the working minigame
+- Frontend settings page
+- Frontend friends
+- Frontend chatting functionality
+- Frontend responsive design
+### [**chuhlig**](https://github.com/cuhlig42)
+- Backend of rooms (create, join, delete, kick other people)
+- Backend of hat system (both global chat and room-based chat)
+- Backend for the multiplayer game
 
 ## Resources
 > AI was used with care and comfort. No chatbots were harmed in the creation of this project.  
