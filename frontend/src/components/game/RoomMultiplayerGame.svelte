@@ -5,14 +5,8 @@
 
   const gameState = $derived(roomState.gameState);
   const players = $derived(roomState.currentRoomPlayers ?? []);
-
   const lastGameResult = $derived(roomState.lastGameResult ?? null);
-
-  const winnerName = $derived.by(() => {
-    if (!lastGameResult?.winner_id) return null;
-    const winner = players.find((p) => p.id === lastGameResult.winner_id);
-    return winner?.username ?? lastGameResult.winner_id;
-  });
+  const gameStatusLabel = $derived(roomState.gameStatus ?? 'idle');
 
   const slotEntries = $derived.by(() => {
     if (!gameState) return [];
@@ -74,30 +68,8 @@
 <div class="room-game-shell">
   <div class="room-game-header">
     <h2>Room Match</h2>
-    <p>Status: <strong>{roomState.gameStatus ?? 'idle'}</strong></p>
+    <p>Status: <strong class={`status-${gameStatusLabel}`}>{gameStatusLabel}</strong></p>
   </div>
-
-  Then add a result banner above the boards
-
-Inside the markup, after the header:
-
-  {#if roomState.gameStatus === 'ended' && lastGameResult}
-    <div class="result-banner">
-      <h3>Game Over</h3>
-      <p>
-        Winner:
-        <strong>{winnerName ?? 'No winner'}</strong>
-      </p>
-
-      <ul>
-        {#each Object.entries(lastGameResult.scores) as [slot, score]}
-          <li>slot {slot}: {score}</li>
-        {/each}
-      </ul>
-
-      <p>Ready up again to start a new round.</p>
-    </div>
-  {/if}
 
   {#if !roomState.currentRoom}
     <div class="room-game-empty">
@@ -116,8 +88,10 @@ Inside the markup, after the header:
           height={gameState.box_height}
           snake={entry.snake}
           apple={gameState.apple}
-          title={entry.player ? `${entry.player.username} (slot ${entry.slot})` : `slot ${entry.slot}`}
+          title={entry.player ? entry.player.username : `Player ${entry.slot}`}
           isCurrentPlayer={entry.player?.id === roomState.currentUserId}
+          isEliminated={roomState.gameStatus === 'ended' && !!lastGameResult?.winner_id && entry.player?.id !== lastGameResult.winner_id}
+          showGameOver={roomState.gameStatus === 'ended' && !!lastGameResult?.winner_id && entry.player?.id === roomState.currentUserId && entry.player?.id !== lastGameResult.winner_id}
         />
       {/each}
     </div>
@@ -146,6 +120,31 @@ Inside the markup, after the header:
     margin: 0;
   }
 
+  .room-game-header h2 {
+    color: #0aeb00;
+  }
+
+  .room-game-header p {
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .room-game-header strong {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .room-game-header .status-idle {
+    color: #cbd5e1;
+  }
+
+  .room-game-header .status-running {
+    color: #0aeb00;
+  }
+
+  .room-game-header .status-ended {
+    color: #f87171;
+  }
+
   .room-game-empty {
     flex: 1;
     display: flex;
@@ -160,23 +159,5 @@ Inside the markup, after the header:
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
-  }
-
-  .result-banner {
-    border: 1px solid rgba(10, 235, 0, 0.25);
-    padding: 12px 16px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-  }
-
-  .result-banner h3,
-  .result-banner p,
-  .result-banner ul {
-    margin: 0 0 8px 0;
-  }
-
-  .result-banner ul {
-    list-style: none;
-    padding: 0;
   }
 </style>

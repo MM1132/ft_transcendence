@@ -61,6 +61,7 @@ export interface Message {
 export interface RoomState {
     rooms: Room[];
     isConnected: boolean;
+    roomError: string;
     currentRoomId: string | null;
     currentRoom?: Room | null;
     currentRoomPlayers?: Player[];
@@ -84,6 +85,7 @@ export interface Player {
 export const roomState = $state<RoomState>({
     rooms: [],
     isConnected: false,
+    roomError: '',
     currentRoomId: null,
     currentRoom: null,
     currentRoomPlayers: [],
@@ -141,15 +143,18 @@ export function connect(token: string) {
                 console.log("✅ Authenticated");
                 console.log(roomState.isConnected);
                 roomState.currentUserId = data.userId; // we set the user ID from backend
+                send('chat:history', { room_id: null }); // remove if we dont want history in global chat
                 // roomState.currentUserName = data.username;
                 break;
 
             case 'room:list':
+                roomState.roomError = '';
                 roomState.rooms = data;
                 console.log(`Loaded ${data.length} rooms`);
                 break;
 
             case 'room:created':
+                roomState.roomError = '';
                 roomState.rooms = [data.room, ...roomState.rooms];
                 roomState.currentRoomId = data.room.id;
                 roomState.currentRoom = data.room;
@@ -160,13 +165,19 @@ export function connect(token: string) {
                 break;
 
             case 'room:joined':
+                roomState.roomError = '';
                 roomState.currentRoomId = data.room.id;
                 roomState.currentRoom = data.room;
                 roomState.currentRoomPlayers = data.players || [];
                 navigateTo(`/room/${data.room.id}`);
                 break;
 
+            case 'room:error':
+                    roomState.roomError = data.error ?? 'Room action failed';
+                break;
+
             case 'room:left':
+                roomState.roomError = '';
                 roomState.currentRoomId = null;
                 roomState.currentRoom = null;
                 roomState.currentRoomPlayers = [];
@@ -198,6 +209,7 @@ export function connect(token: string) {
                 break;
 
             case 'room:kicked':
+                    roomState.roomError = '';
                     roomState.currentRoomId = null;
                     roomState.currentRoom = null;
                     roomState.currentRoomPlayers = [];
@@ -234,11 +246,23 @@ export function connect(token: string) {
             case 'game:end':
                     roomState.gameStatus = 'ended';
                     roomState.lastGameResult = data;
+                    roomState.currentRoomPlayers = roomState.currentRoomPlayers.map((player) => ({
+                        ...player,
+                        is_ready: false
+                    }));
                     console.log('🏁 Game ended', data);
                 break;
 
             case 'error':
                     console.error("Server error event:", data);
+                break;
+
+            case 'user:online':
+                console.log(`ℹ️ User online: ${data.userId}`);
+                break;
+
+            case 'user:offline':
+                console.log(`ℹ️ User offline: ${data.userId}`);
                 break;
       
             case 'chat:message': {
@@ -295,6 +319,7 @@ export function connect(token: string) {
 export function send(event: string, data: any) {
     console.log("Sending to WS:", { event, data });
     if (socket?.readyState === WebSocket.OPEN) {
+        roomState.roomError = '';
         socket.send(JSON.stringify({ event, data }));
     }
     else {

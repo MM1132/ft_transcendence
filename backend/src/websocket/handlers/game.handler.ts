@@ -293,6 +293,8 @@ function updateGame(game: ActiveSnakeGame): void {
       }
     }
 
+    // Push one final snapshot so clients receive the last alive/dead state.
+    broadcastGameState(game);
     endGame(game);
     return;
   }
@@ -589,7 +591,10 @@ export function handleGameDisconnect(roomId: number, userId: string): void {
       }
     }
 
+    broadcastGameState(game);
     void endGame(game);
+  } else {
+    broadcastGameState(game);
   }
 }
 

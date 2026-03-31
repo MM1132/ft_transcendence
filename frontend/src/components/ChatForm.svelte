@@ -12,6 +12,25 @@
         roomState.currentRoomId ? roomState.messages : roomState.globalMessages
     );
 
+    function autoScroll(node: HTMLDivElement, _messageCount: number) {
+        async function scrollToBottom() {
+            if (!isExpanded) {
+                return;
+            }
+
+            await tick();
+            node.scrollTop = node.scrollHeight;
+        }
+
+        void scrollToBottom();
+
+        return {
+            update(_nextMessageCount: number) {
+                void scrollToBottom();
+            }
+        };
+    }
+
   
     function sendMessage(e: Event) {
         e.preventDefault();
@@ -55,7 +74,7 @@
 
     {#if isExpanded}
         <form class="chat-panel" onsubmit={sendMessage} autocomplete="off">
-            <div class="chat-messages">
+            <div class="chat-messages" use:autoScroll={activeMessages.length}>
                 {#each activeMessages as msg}
         <div class="chat-message {isMyMessage(msg) ? "me": ''}">
             <span class="sender">{isMyMessage(msg) ? "Me" : msg.sender.username} :</span>
