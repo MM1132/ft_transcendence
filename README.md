@@ -60,7 +60,15 @@ config:
 erDiagram
 	direction LR
 
-	
+	USERS {
+		UUID id PK
+		string username
+		string password_hash
+		string email
+		DATETIMETZ created_at
+		DATETIMETZ last_action_at
+		
+	}
 ```
 
 ## Features List
