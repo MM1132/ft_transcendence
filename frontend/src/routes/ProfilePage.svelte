@@ -3,7 +3,7 @@
   import { authStore } from '../stores/authStore';
   import { currentPath, selectedProfileUserId } from '../stores/router';
   import { navigateTo } from '../stores/router';
-  import { settingsService, type UserSettings } from '../services/settingsService';
+  import { getCustomAvatarUrl, settingsService, type UserSettings } from '../services/settingsService';
   import { userService, type UserDetails } from '../services/userService';
   import { SESSION_STORAGE_KEY } from '../utils/constants';
 
@@ -109,7 +109,16 @@
     <section class="profile-hero">
       <div class="profile-card hero-card">
         <div class="avatar-wrap">
-          <img src={profile.avatarUrl} alt="Profile avatar" class="profile-avatar" />
+          {#if getCustomAvatarUrl(profile.avatarUrl)}
+            <img src={profile.avatarUrl} alt="Profile avatar" class="profile-avatar" />
+          {:else}
+            <div class="profile-avatar placeholder-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+          {/if}
         </div>
         <div class="hero-copy">
           <p class="eyebrow">Your Profile</p>
@@ -217,6 +226,19 @@
     object-fit: cover;
     border: 2px solid #0AEB00;
     background: rgba(255, 255, 255, 0.05);
+  }
+
+  .placeholder-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0AEB00;
+    background: rgba(10, 235, 0, 0.06);
+  }
+
+  .placeholder-avatar svg {
+    width: 88px;
+    height: 88px;
   }
 
   .eyebrow,

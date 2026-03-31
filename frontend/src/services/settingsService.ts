@@ -29,6 +29,14 @@ export function isDefaultAvatarUrl(url: string): boolean {
   return url.includes('/default_avatar.png');
 }
 
+export function getCustomAvatarUrl(url: string | null | undefined): string | null {
+  if (!url || isDefaultAvatarUrl(url)) {
+    return null;
+  }
+
+  return url;
+}
+
 export const settingsService = {
   async getUserSettings(): Promise<UserSettings> {
     const response = await fetchWithSessionHandling(SETTINGS_API_URL, { //fetch request an backend

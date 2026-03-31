@@ -3,9 +3,8 @@
     import InputField from './Input.svelte';
     import Button from './Button.svelte';
     import { onMount } from 'svelte';
-    import { settingsService } from '../services/settingsService';
+    import { getCustomAvatarUrl, settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
-    import { isDefaultAvatarUrl } from '../services/settingsService';
 
     let fullName = $state('');
     let bio = $state('');
@@ -35,7 +34,8 @@
             fullName = settings.fullName ?? '';
             bio = settings.bio ?? '';
             birthDate = settings.birthday ?? '';
-            avatarUrl = myAvatarUrl ? withAvatarVersion(myAvatarUrl) : null;
+            const customAvatarUrl = getCustomAvatarUrl(myAvatarUrl);
+            avatarUrl = customAvatarUrl ? withAvatarVersion(customAvatarUrl) : null;
             avatarStore.set(avatarUrl);
         } catch (error) {
             setStatus?.({
@@ -96,7 +96,8 @@
                 avatarUrl = withAvatarVersion(uploadedAvatarUrl);
             } else {
                 const myAvatarUrl = await settingsService.getMyAvatarUrl();
-                avatarUrl = myAvatarUrl ? withAvatarVersion(myAvatarUrl) : null;
+                const customAvatarUrl = getCustomAvatarUrl(myAvatarUrl);
+                avatarUrl = customAvatarUrl ? withAvatarVersion(customAvatarUrl) : null;
             }
             avatarStore.set(avatarUrl);
 
@@ -119,7 +120,7 @@
 
     async function handleDeleteAvatar() {
 
-        if (!avatarUrl || isDefaultAvatarUrl(avatarUrl)) {
+        if (!avatarUrl) {
             alert("This pretty face is your default avatar. You're welcome. \nDelete me? Nice try snake.\
              \nUpload a new one if you dare.")
             return;

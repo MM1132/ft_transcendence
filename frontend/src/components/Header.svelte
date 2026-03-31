@@ -4,7 +4,7 @@
     import { currentPath, navigateTo, selectedProfileUserId } from '../stores/router'; //need this one as to know if i render avatar block
     import Logo from './Logo.svelte'; 
     import { authService } from '../services/authService';
-    import { settingsService } from '../services/settingsService';
+    import { getCustomAvatarUrl, settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
     import logoUrl from '../images/c.svg';
     import { roomState, send } from '../stores/roomStore.svelte';
@@ -89,7 +89,8 @@
         try
         {
             const myAvatarUrl = await settingsService.getMyAvatarUrl();
-            avatarStore.set(myAvatarUrl ? withAvatarVersion(myAvatarUrl) : null);
+            const customAvatarUrl = getCustomAvatarUrl(myAvatarUrl);
+            avatarStore.set(customAvatarUrl ? withAvatarVersion(customAvatarUrl) : null);
         }
         catch (_error)
         {
