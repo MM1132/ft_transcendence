@@ -91,6 +91,7 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.02);
+    min-height: 0;
   }
 
   .board-shell.is-current-player {
@@ -122,7 +123,8 @@
 
   .board-stage {
     position: relative;
-    width: 100%;
+    width: min(100%, calc(100vh - 310px));
+    margin: 0 auto;
   }
 
   .board-stage.is-dead .board-grid {

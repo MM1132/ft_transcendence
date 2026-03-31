@@ -112,7 +112,7 @@
     padding: 24px;
     box-sizing: border-box;
     gap: 16px;
-    overflow: auto;
+    overflow: hidden;
   }
 
   .room-game-header h2,
@@ -159,5 +159,9 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
+    flex: 1;
+    min-height: 0;
+    align-items: start;
+    overflow: auto;
   }
 </style>
