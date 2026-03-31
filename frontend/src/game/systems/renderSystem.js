@@ -24,7 +24,7 @@ function drawGrid(ctx, board) {
   const boardHeight = board.rows * board.cellSize;
 
   ctx.strokeStyle = COLORS.gridLine;
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 0.5;
 
   for (let col = 0; col <= board.cols; col += 1) {
     const x = board.offsetX + col * board.cellSize;
@@ -100,14 +100,15 @@ function drawDebugInfo(ctx, state) {
   }
 }
 
-function drawScore(ctx, state) {
+function drawScore(ctx, state, board) {
   const localPlayerId = 'local-player';
   const score = state.scores[localPlayerId] ?? 0;
 
   ctx.fillStyle = COLORS.debugText;
-  ctx.font = '16px Arial';
-  ctx.textAlign = 'left';
-  ctx.fillText(`Score: ${score}`, 40, 200);
+  ctx.font = '20px Arial';
+  ctx.textAlign = 'center';
+  const boardCenterX = board.offsetX + (board.cols * board.cellSize) / 2;
+  ctx.fillText(`Score: ${score}`, boardCenterX, board.offsetY - 8);
 }
 
 function drawGameOverOverlay(ctx, state) {
@@ -166,7 +167,7 @@ export function renderGame(ctx, state) {
     drawSnake(ctx, state.board, snake);
   });
 
-  drawScore(ctx, state);
+  drawScore(ctx, state, state.board);
   // drawDebugInfo(ctx, state);
 
   drawStartOverlay(ctx, state);

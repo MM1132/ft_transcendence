@@ -1,11 +1,11 @@
 export const CANVAS_WIDTH = 960;
 export const CANVAS_HEIGHT = 540;
 
-export const CELL_SIZE = 24;
+export const CELL_SIZE = 30;
 export const BOARD_COLS = 30;
-export const BOARD_ROWS = 20;
+export const BOARD_ROWS = 16;
 
-export const BOARD_OFFSET_X = 120;
+export const BOARD_OFFSET_X = 30;
 export const BOARD_OFFSET_Y = 30;
 
 export const GAME_TITLE = 'Online Snake';
