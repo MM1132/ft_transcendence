@@ -24,7 +24,7 @@ function drawGrid(ctx, board) {
   const boardHeight = board.rows * board.cellSize;
 
   ctx.strokeStyle = COLORS.gridLine;
-  ctx.lineWidth = 0.5;
+  ctx.lineWidth = 2;
 
   for (let col = 0; col <= board.cols; col += 1) {
     const x = board.offsetX + col * board.cellSize;
