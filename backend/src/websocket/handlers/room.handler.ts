@@ -109,19 +109,7 @@ export async function handleRoomCreate(
 
     const room = roomResult.rows[0];
 
-    // 6. Deduct buy-in from creator balance
-    if (buy_in_amount > 0) {
-      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [
-        buy_in_amount,
-        userId,
-      ]);
-      await db.query(
-        `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
-        [userId, -buy_in_amount, `Buy-in for room "${name.trim()}"`]
-      );
-    }
-
-    // 7. Auto-join the creator to slot 1
+    // 6. Auto-join the creator to slot 1
     await db.query(
       `INSERT INTO room_players (room_id, user_id, player_slot, is_ready, joined_at)
        VALUES ($1, $2, 1, false, NOW())`,
@@ -267,26 +255,14 @@ export async function handleRoomJoin(
     );
     const nextSlot = slotResult.rows[0]?.slot || 1;
 
-    // 7. Deduct buy-in from joiner balance
-    if (room.buy_in_amount > 0) {
-      await db.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [
-        room.buy_in_amount,
-        userId,
-      ]);
-      await db.query(
-        `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
-        [userId, -room.buy_in_amount, `Buy-in for room "${room.name}"`]
-      );
-    }
-
-    // 8. Insert into room_players
+    // 7. Insert into room_players
     await db.query(
       `INSERT INTO room_players (room_id, user_id, player_slot, is_ready, joined_at)
        VALUES ($1, $2, $3, false, NOW())`,
       [room_id, userId, nextSlot]
     );
 
-    // 9. Get all players in room
+    // 8. Get all players in room
     const playersResult = await db.query(
       `SELECT u.id, u.username, u.avatar_filename AS avatar_url, rp.player_slot as slot, rp.is_ready
        FROM room_players rp
@@ -296,10 +272,10 @@ export async function handleRoomJoin(
       [room_id]
     );
 
-    // 10. Join WS room
+    // 9. Join WS room
     connectionManager.joinRoom(userId, roomName);
 
-    // 11. Send confirmation to user
+    // 10. Send confirmation to user
     const joinedPayload: RoomJoinedPayload = {
       room: {
         id: room.id,
@@ -316,7 +292,7 @@ export async function handleRoomJoin(
     };
     connectionManager.send(userId, 'room:joined', joinedPayload);
 
-    // 12. Broadcast to others in room
+    // 11. Broadcast to others in room
     const userResult = await db.query(
       'SELECT id, username, avatar_filename AS avatar_url FROM users WHERE id = $1',
       [userId]
@@ -449,24 +425,6 @@ export async function handleRoomDelete(
     );
 
     await db.query('BEGIN');
-
-    if (room.buy_in_amount > 0) {
-      for (const player of playersResult.rows) {
-        await db.query(
-          'UPDATE users SET balance = balance + $1 WHERE id = $2',
-          [room.buy_in_amount, player.user_id]
-        );
-        await db.query(
-          `INSERT INTO transactions (user_id, amount, reason) VALUES ($1, $2, $3)`,
-          [
-            player.user_id,
-            room.buy_in_amount,
-            `Refund for deleted room "${room.name}"`,
-          ]
-        );
-      }
-    }
-
     await db.query('DELETE FROM rooms WHERE id = $1', [room_id]);
     await db.query('COMMIT');
 
@@ -583,12 +541,51 @@ async function startGame(
   _roomName: string
 ): Promise<void> {
   try {
-    // 1. Update room status
+    await db.query('BEGIN');
+
+    const roomResult = await db.query(
+      'SELECT buy_in_amount FROM rooms WHERE id = $1',
+      [roomId]
+    );
+
+    const room = roomResult.rows[0];
+    if (!room) {
+      return;
+    }
+
+    // 1. Get players
+    const playersResult = await db.query(
+      `SELECT user_id, player_slot FROM room_players WHERE room_id = $1`,
+      [roomId]
+    );
+
+    // 2. Deduct buy-in only when the game actually starts
+    if (room.buy_in_amount > 0) {
+      for (const player of playersResult.rows) {
+        const deductResult = await db.query(
+          `UPDATE users
+           SET balance = balance - $1
+           WHERE id = $2 AND balance >= $1
+           RETURNING id`,
+          [room.buy_in_amount, player.user_id]
+        );
+
+        if (deductResult.rows.length === 0) {
+          await db.query('ROLLBACK');
+          connectionManager.send(player.user_id, 'room:error', {
+            error: 'Not enough coins for buy-in',
+          });
+          return;
+        }
+      }
+    }
+
+    // 3. Update room status
     await db.query(`UPDATE rooms SET status = 'IN_GAME' WHERE id = $1`, [
       roomId,
     ]);
 
-    // 2. Create game session
+    // 4. Create game session
     const gameResult = await db.query(
       `INSERT INTO games (room_id, status, started_at)
        VALUES ($1, 'ACTIVE', NOW())
@@ -597,13 +594,9 @@ async function startGame(
     );
     const gameId = gameResult.rows[0].id;
 
-    // 3. Get players
-    const playersResult = await db.query(
-      `SELECT user_id, player_slot FROM room_players WHERE room_id = $1`,
-      [roomId]
-    );
+    await db.query('COMMIT');
 
-    // 4. Start the Snake game loop
+    // 5. Start the Snake game loop
     const players = playersResult.rows.map(
       (row: { user_id: string; player_slot: number }) => ({
         userId: row.user_id,
@@ -614,6 +607,11 @@ async function startGame(
     console.log('🚀 startGame called', { roomId, gameId, players });
     startGameLoop(db, Number(roomId), Number(gameId), players);
   } catch (err) {
+    try {
+      await db.query('ROLLBACK');
+    } catch (_rollbackErr) {
+      // ignore rollback errors here; the original error is more useful
+    }
     console.error('❌ startGame error:', err);
   }
 }
