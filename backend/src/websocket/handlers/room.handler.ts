@@ -96,7 +96,7 @@ export async function handleRoomCreate(
     const roomResult = await db.query(
       `INSERT INTO rooms (name, creator_id, max_players, buy_in_amount, time_limit_seconds, win_condition, status, is_permanent)
        VALUES ($1, $2, $3, $4, $5, $6, 'WAITING', false)
-       RETURNING id, name, creator_id, max_players, status, is_permanent`,
+       RETURNING id, name, creator_id, max_players, buy_in_amount, status, is_permanent`,
       [
         name.trim(),
         userId,
@@ -282,10 +282,10 @@ export async function handleRoomJoin(
         name: room.name,
         creator_id: room.creator_id ? String(room.creator_id) : null,
         max_players: room.max_players,
+        buy_in_amount: room.buy_in_amount,
         status: room.status,
         is_permanent: room.is_permanent,
         current_players: playerCount,
-        // buy_in_amount: room.buy_in_amount
       },
       players: playersResult.rows,
       your_slot: nextSlot,

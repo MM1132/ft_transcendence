@@ -230,6 +230,7 @@ export interface RoomData {
   id: number;
   name: string;
   max_players: number;
+  buy_in_amount?: number;
   status: 'WAITING' | 'IN_GAME';
   is_permanent: boolean;
   creator_id: string | null;

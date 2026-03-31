@@ -1,5 +1,6 @@
 <script lang="ts">
     import { tick } from 'svelte';
+    import { authStore } from '../stores/authStore';
     import { roomState, send } from '../stores/roomStore.svelte';
     import Button from './Button.svelte';
 
@@ -20,6 +21,8 @@
         roomState.currentRoomPlayers.find((player) => player.id === roomState.currentUserId) ?? null
     );
     const isActiveReady = $derived(Boolean(currentPlayer?.is_ready));
+    const buyInAmount = $derived(Number(roomState.currentRoom?.buy_in_amount ?? 0));
+    const isReadyDisabled = $derived(buyInAmount > 0 && ($authStore.balance ?? 0) < buyInAmount);
 
     function autoScroll(node: HTMLDivElement, _messageCount: number) {
         async function scrollToBottom() {
@@ -128,6 +131,7 @@
     
     {#if isExpanded}
     <div class="rooms-panel">
+        <p class="room-buy-in">Price to play: {buyInAmount} balance</p>
         <div class="rooms-header">
             <h2>Room: <span class="room-name"> {roomState.currentRoom?.name ?? 'N/A'}</span></h2>
         </div>
@@ -180,7 +184,12 @@
             </div>
                 
         <div class="action-footer">
-            <Button class={"btn-ready" + (isActiveReady ? " active" : "")} onclick={handlePlayerReady} variant="ready">
+            <Button
+                class={"btn-ready" + (isActiveReady ? " active" : "")}
+                onclick={handlePlayerReady}
+                variant="ready"
+                disabled={isReadyDisabled}
+            >
                 {isActiveReady ? "NOT_READY" : "READY"}
             </Button>
             <Button class="btn-leave" variant="cancel" onclick={handleLeaveRoom}>LEAVE</Button>
@@ -270,6 +279,15 @@
         padding: 2px 10px;
         font-size: 0.6em;
         font-weight: bold;
+    }
+
+    .room-buy-in
+    {
+        margin: 0 0 10px;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
     }
 
     .capacity
