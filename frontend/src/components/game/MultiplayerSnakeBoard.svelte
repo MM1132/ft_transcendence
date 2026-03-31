@@ -68,7 +68,7 @@
           class:apple={apple.x === cell.x && apple.y === cell.y}
           class:snake={snakeCells.has(cell.key)}
           class:head={headKey === cell.key}
-        />
+        ></div>
       {/each}
     </div>
 
@@ -115,11 +115,14 @@
     display: grid;
     gap: 1px;
     background: rgba(255, 255, 255, 0.04);
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1;
+    width: 100%;
+    grid-auto-rows: 1fr;
   }
 
   .board-stage {
     position: relative;
+    width: 100%;
   }
 
   .board-stage.is-dead .board-grid {
@@ -128,7 +131,8 @@
 
   .cell {
     background: #111827;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1;
+    min-width: 0;
   }
 
   .cell.snake {
