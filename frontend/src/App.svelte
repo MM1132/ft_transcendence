@@ -13,6 +13,7 @@
   import GamePage from './routes/GamePage.svelte'
   import PrivacyPolicyPage from './routes/PrivacyPolicyPage.svelte'
   import TermsPage from './routes/TermsPage.svelte'
+  import ReadmePage from './routes/ReadmePage.svelte'
 
   const publicAuthPaths = ['/', '/login', '/signup']
 
@@ -43,6 +44,8 @@
         <PrivacyPolicyPage />
       {:else if $currentPath === '/terms-of-service'}
         <TermsPage />
+      {:else if $currentPath === '/readme'}
+        <ReadmePage />
       {:else if $currentPath.startsWith ('/room/')}
         <RoomPage roomId={$currentPath.split('/')[2]}/>
       {:else if $currentPath === '/profile' || $currentPath.startsWith('/profile/')}

@@ -44,7 +44,7 @@
         <a href="/login" onclick={(e) => { e.preventDefault(); navigateTo('/login'); }}>
           <Button type="button">GET STARTED</Button>
         </a>
-        <button class="btn-secondary">LEARN MORE</button>
+        <button class="btn-secondary" onclick={() => navigateTo('/readme')}>README</button>
       </div>
 
   
