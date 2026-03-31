@@ -51,7 +51,17 @@ There are 4 parts of our application, each of them playing a critical role in th
 - Reverse proxy: [Nginx](https://nginx.org), works as a security layer, as all the requests towards our application must go through it! Nginx was chosen for being the most popular and videly adopted industry standard. 
 
 ## Database Schema
-TODO
+```mermaid
+---
+title: Transcendence Database Visualization
+config:
+  theme: 'forest'
+---
+erDiagram
+	direction LR
+
+	
+```
 
 ## Features List
 TODO
