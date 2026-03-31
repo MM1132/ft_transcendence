@@ -7,6 +7,16 @@
   const players = $derived(roomState.currentRoomPlayers ?? []);
   const lastGameResult = $derived(roomState.lastGameResult ?? null);
   const gameStatusLabel = $derived(roomState.gameStatus ?? 'idle');
+  const winningPlayer = $derived(
+    lastGameResult?.winner_id
+      ? players.find((player) => player.id === lastGameResult.winner_id) ?? null
+      : null
+  );
+  const winningBalanceGain = $derived(
+    lastGameResult?.winner_id
+      ? (lastGameResult.coins_change[lastGameResult.winner_id] ?? 0)
+      : 0
+  );
 
   const slotEntries = $derived.by(() => {
     if (!gameState) return [];
@@ -70,6 +80,12 @@
     <h2>Room Match</h2>
     <p>Status: <strong class={`status-${gameStatusLabel}`}>{gameStatusLabel}</strong></p>
   </div>
+
+  {#if roomState.gameStatus === 'ended' && winningPlayer && winningBalanceGain > 0}
+    <div class="winner-banner">
+      {winningPlayer.username} won and gained {winningBalanceGain} balance
+    </div>
+  {/if}
 
   {#if !roomState.currentRoom}
     <div class="room-game-empty">
@@ -153,6 +169,15 @@
     justify-content: center;
     opacity: 0.85;
     text-align: center;
+  }
+
+  .winner-banner {
+    padding: 12px 16px;
+    border: 1px solid rgba(10, 235, 0, 0.25);
+    background: rgba(10, 235, 0, 0.08);
+    color: #0aeb00;
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 
   .boards-grid {

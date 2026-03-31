@@ -472,6 +472,16 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
   const { state, db } = game;
 
   try {
+    const roomResult = await db.query(
+      `SELECT buy_in_amount
+       FROM rooms
+       WHERE id = $1`,
+      [game.roomId]
+    );
+
+    const buyInAmount = Number(roomResult.rows[0]?.buy_in_amount ?? 0);
+    const totalPot = buyInAmount * game.players.size;
+
     // Mark game finished
     await db.query(
       `UPDATE games
@@ -504,8 +514,18 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
       scores[parseInt(slot, 10)] = snake.score;
     }
 
-    // MVP: no DB rewards/stats yet
     const coinsChange: Record<string, number> = {};
+
+    if (state.winnerId && totalPot > 0) {
+      await db.query(
+        `UPDATE users
+         SET balance = balance + $1
+         WHERE id = $2`,
+        [totalPot, state.winnerId]
+      );
+
+      coinsChange[state.winnerId] = totalPot;
+    }
 
     // Broadcast game end to everyone in the room
     connectionManager.broadcast(`room_${game.roomId}`, 'game:end', {
