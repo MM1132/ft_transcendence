@@ -87,6 +87,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-height: 0;
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
@@ -122,9 +123,14 @@
 
   .board-stage {
     position: relative;
-    width: min(100%, calc((100vw - 610px) / 2), calc(100vh - 420px));
+    width: min(
+      100%,
+      calc((100vw - 630px - ((var(--board-columns, 1) - 1) * 20px)) / var(--board-columns, 1)),
+      calc((100vh - 460px - var(--banner-offset, 0px) - ((var(--board-rows, 1) - 1) * 20px)) / var(--board-rows, 1))
+    );
     max-width: 100%;
     align-self: center;
+    margin-block: auto;
   }
 
   .board-stage.is-dead .board-grid {

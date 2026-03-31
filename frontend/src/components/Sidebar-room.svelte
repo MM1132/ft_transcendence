@@ -258,6 +258,20 @@
         background: rgba(10, 235, 0, 0.01);
     }
 
+    @media (max-width: 1180px)
+    {
+        .rooms-drawer.expanded
+        {
+            width: 360px;
+        }
+
+        .rooms-panel
+        {
+            margin-right: 50px;
+            padding: 22px;
+        }
+    }
+
     .rooms-header
     {
         display: flex;

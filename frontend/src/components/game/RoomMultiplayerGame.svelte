@@ -17,6 +17,11 @@
       ? (lastGameResult.coins_change[lastGameResult.winner_id] ?? 0)
       : 0
   );
+  const hasWinnerBanner = $derived(
+    roomState.gameStatus === 'ended' && !!winningPlayer && winningBalanceGain > 0
+  );
+  const boardColumns = $derived(slotEntries.length >= 3 ? 2 : Math.max(slotEntries.length, 1));
+  const boardRows = $derived(Math.ceil(Math.max(slotEntries.length, 1) / boardColumns));
 
   const slotEntries = $derived.by(() => {
     if (!gameState) return [];
@@ -81,7 +86,7 @@
     <p>Status: <strong class={`status-${gameStatusLabel}`}>{gameStatusLabel}</strong></p>
   </div>
 
-  {#if roomState.gameStatus === 'ended' && winningPlayer && winningBalanceGain > 0}
+  {#if hasWinnerBanner}
     <div class="winner-banner">
       {winningPlayer.username} won and gained {winningBalanceGain} balance
     </div>
@@ -97,7 +102,10 @@
       <p>Join, ready up, and start the game.</p>
     </div>
   {:else}
-    <div class="boards-grid">
+    <div
+      class="boards-grid"
+      style={`--board-columns: ${boardColumns}; --board-rows: ${boardRows}; --banner-offset: ${hasWinnerBanner ? '88px' : '0px'};`}
+    >
       {#each slotEntries as entry (entry.slot)}
         <MultiplayerSnakeBoard
           width={gameState.box_width}
@@ -184,9 +192,16 @@
     flex: 1;
     min-height: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(var(--board-columns), minmax(0, 1fr));
+    grid-auto-rows: auto;
     gap: 20px;
     align-content: start;
-    overflow: hidden;
+    align-items: start;
+  }
+
+  @media (max-width: 1180px) {
+    .room-game-shell {
+      width: calc(100vw - 390px);
+    }
   }
 </style>
