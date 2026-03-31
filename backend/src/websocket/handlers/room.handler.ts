@@ -745,6 +745,7 @@ export async function handleRoomKick(
       user_id: target_user_id,
       slot,
     });
+    await broadcastRoomList(db);
 
     console.log(
       `🎮 Room ${room_id}: User ${target_user_id} kicked by creator ${userId}`
