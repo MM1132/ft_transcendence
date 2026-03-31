@@ -122,7 +122,9 @@
 
   .board-stage {
     position: relative;
-    width: 100%;
+    width: min(100%, calc((100vw - 610px) / 2), calc(100vh - 420px));
+    max-width: 100%;
+    align-self: center;
   }
 
   .board-stage.is-dead .board-grid {

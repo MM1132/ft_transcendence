@@ -131,7 +131,7 @@
     
     {#if isExpanded}
     <div class="rooms-panel">
-        <p class="room-buy-in">Price to play: {buyInAmount} balance</p>
+        <p class="room-buy-in">Price to play: {buyInAmount}</p>
         <div class="rooms-header">
             <h2>Room: <span class="room-name"> {roomState.currentRoom?.name ?? 'N/A'}</span></h2>
         </div>
