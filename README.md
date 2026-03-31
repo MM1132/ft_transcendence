@@ -177,7 +177,22 @@ erDiagram
 ```
 
 ## Features List
-TODO
+> Tasks were split, mostly between who did backend and who did frontend. 
+- Login/Register with Sessions
+- Chat system with persistent messages
+- Friends/Friend requests
+- Create/delete rooms
+- Kick others from your room
+- Online users list / Friends list
+- Multiplayer snake game with live updates
+- Singleplayer snake game
+- User profile pages
+- User settings that can be changed
+### Technical (features for developers)
+- Custom database migrations system
+- Automatic simple setup with Docker compose
+- Full API specification with Bruno
+- BiomeJS/Nodemon/TypeScript configuration
 
 ## Modules
 TODO
