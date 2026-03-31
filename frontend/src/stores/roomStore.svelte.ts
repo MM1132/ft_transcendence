@@ -159,6 +159,7 @@ export function connect(token: string) {
                 roomState.currentRoomId = data.room.id;
                 roomState.currentRoom = data.room;
                 roomState.currentRoomPlayers = data.players || [];
+                roomState.messages = [];
 
                 console.log("Room created! Redirecting to:", data.room.id);
                 navigateTo(`/room/${data.room.id}`);
@@ -169,6 +170,7 @@ export function connect(token: string) {
                 roomState.currentRoomId = data.room.id;
                 roomState.currentRoom = data.room;
                 roomState.currentRoomPlayers = data.players || [];
+                roomState.messages = [];
                 navigateTo(`/room/${data.room.id}`);
                 break;
 
@@ -181,6 +183,7 @@ export function connect(token: string) {
                 roomState.currentRoomId = null;
                 roomState.currentRoom = null;
                 roomState.currentRoomPlayers = [];
+                roomState.messages = [];
                 roomState.gameState = null;
                 roomState.gameStatus = 'idle';
                 navigateTo('/dashboard');
@@ -213,6 +216,7 @@ export function connect(token: string) {
                     roomState.currentRoomId = null;
                     roomState.currentRoom = null;
                     roomState.currentRoomPlayers = [];
+                    roomState.messages = [];
                     roomState.gameState = null;
                     roomState.gameStatus = 'idle';
                     console.log("%c[SYSTEM] You have been kicked.", "color: orange;");
@@ -334,6 +338,7 @@ function resetRoomState() {
     roomState.currentRoomId = null;
     roomState.currentRoom = null;
     roomState.currentRoomPlayers = [];
+    roomState.messages = [];
     roomState.currentUserId = null;
     roomState.gameState = null;
     roomState.gameStatus = 'idle';
