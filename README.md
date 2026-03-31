@@ -195,7 +195,17 @@ erDiagram
 - BiomeJS/Nodemon/TypeScript configuration
 
 ## Modules
-TODO
+- 2: Use a framework for both the frontend and backend.
+- 2: Implement real-time features using WebSockets or similar technology.
+- 2: Allow users to interact with other users. The minimum requirements are:
+- 2: A public API to interact with the database with a secured API key, rate limiting, documentation, and at least 5 endpoints
+- 1: Custom-made design system with reusable components, including a proper color palette, typography, and icons (minimum: 10 reusable components).
+- 1: Support for additional browsers.
+- 2: Standard user management and authentication.
+- 2: Implement a complete web-based game where users can play against each other.
+- 2: Remote players — Enable two players on separate computers to play the same game in real-time.
+- 2: Multiplayer game (more than two players).
+- **TOTAL:** <u>18</u> our of the requirement of 14
 
 ## Individual Contributions
 TODO
