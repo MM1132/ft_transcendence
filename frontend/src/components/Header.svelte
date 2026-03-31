@@ -1,7 +1,9 @@
 <script>
+    import { get } from 'svelte/store';
     import { authStore } from '../stores/authStore';
     import { currentPath, navigateTo, selectedProfileUserId } from '../stores/router'; //need this one as to know if i render avatar block
     import Logo from './Logo.svelte'; 
+    import { authService } from '../services/authService';
     import { settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
     import logoUrl from '../images/c.svg';
@@ -95,6 +97,26 @@
         }
     }
 
+    async function refreshHeaderBalance()
+    {
+        const session = get(authStore);
+
+        if (!session.isLoggedIn || !session.sessionToken)
+        {
+            return;
+        }
+
+        try
+        {
+            const user = await authService.getMyUser(session.sessionToken);
+            authStore.setBalance(user?.balance ?? null);
+        }
+        catch (_error)
+        {
+            // keep the current header balance if refresh fails
+        }
+    }
+
     // Re-run when auth state changes (login/logout) to switch between user avatar and default icon.
     $effect(() => {
         if (!$authStore.isLoggedIn)
@@ -105,6 +127,19 @@
         }
 
         void loadAvatar();
+    });
+
+    $effect(() => {
+        roomState.currentRoomId;
+        roomState.gameStatus;
+
+        const session = get(authStore);
+        if (!session.isLoggedIn || !session.sessionToken)
+        {
+            return;
+        }
+
+        void refreshHeaderBalance();
     });
 </script>
 
