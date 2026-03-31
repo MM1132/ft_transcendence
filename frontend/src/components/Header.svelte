@@ -123,9 +123,8 @@
             <span class="user-balance">Balance: {$authStore.balance ?? 0}</span>
         </div>
         {/if}
-    {#if shouldShowUserNavigation($currentPath)}
+    {#if $authStore.isLoggedIn && shouldShowUserNavigation($currentPath)}
         <div class="avatar-container">
-            <!-- Always render the avatar button: image for logged-in users, default icon otherwise. -->
             <button class="avatar" onclick={toggleDropdown} type="button" aria-label="Open user menu">
                 {#if $avatarStore}
                     <img class="avatar-image" src={$avatarStore} alt="User avatar" />
@@ -136,7 +135,7 @@
                     </svg>
                 {/if}
             </button>
-            {#if $authStore.isLoggedIn && showDropdown}
+            {#if showDropdown}
                 <div class="dropdown">
                     <button onclick={goToProfile}>Profile</button>
                     <button onclick={goToSettings}>Settings</button>
