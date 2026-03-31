@@ -123,7 +123,7 @@
 
   .board-stage {
     position: relative;
-    width: min(100%, calc(100vh - 310px));
+    width: min(100%, calc(100vh - 360px));
     margin: 0 auto;
   }
 
