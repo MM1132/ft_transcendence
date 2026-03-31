@@ -55,19 +55,124 @@ There are 4 parts of our application, each of them playing a critical role in th
 ---
 title: Transcendence Database Visualization
 config:
-  theme: 'forest'
+  theme: 'base'
+  themeVariables:
+    #primaryColor: '#BB2528'
+    primaryTextColor: '#005828'
+    #primaryBorderColor: '#7C0000'
+    lineColor: '#ffe600'
+    secondaryColor: '#ff0000'
+    tertiaryColor: '#fff'
 ---
 erDiagram
 	direction LR
 
+	USERS ||--o| SESSIONS : has
+	USERS ||--o{ FRIENDS : has
+	USERS ||--o{ FRIENDS : has
+	USERS ||--o{ FRIEND_REQUESTS : has
+	USERS ||--o{ FRIEND_REQUESTS : has
+
+	%% Each user has have zero or more rooms they have created
+	USERS ||--o{ ROOMS : has
+
+	ROOMS ||--|| ROOM_PLAYERS : has
+	ROOM_PLAYERS ||--o{ USERS : has
+	USERS ||--o{ GAME_RESULTS : has
+	GAMES ||--o{ GAME_RESULTS : has
+	USERS ||--o{ MESSAGES : sends
+	ROOMS ||--o{ MESSAGES : has
+	GAMES ||--|| ROOMS : has
+
 	USERS {
 		UUID id PK
-		string username
-		string password_hash
-		string email
-		DATETIMETZ created_at
-		DATETIMETZ last_action_at
-		
+		VARCHAR(30) username
+		VARCHAR(128) password
+		TEXT email
+		TIMESTAMPTZ created_at
+		TIMESTAMPTZ last_action_at
+		INT balance
+		TEXT avatar_filename
+		DATE birthday
+		VARCHAR(100) full_name
+		VARCHAR(500) bio
+		BOOLEAN is_online
+		BOOLEAN online_status_public
+	}
+
+	SESSIONS {
+		VARCHAR(128) token PK
+		UUID user_id FK
+		TIMESTAMPTZ valid_until
+	}
+
+	FRIENDS {
+		UUID user1_id FK
+		UUID user2_id FK
+		TIMESTAMPTZ created_at
+	}
+
+	FRIEND_REQUESTS {
+		UUID if PK
+		UUID user_from_id FK
+		UUID user_to_id FK
+		TIMESTAMPTZ created_at
+	}
+
+	MIGRATIONS {
+		UUID id PK
+		TEXT filename
+		TIMESTAMPTZ applied_at
+	}
+
+	%% And the parts that I don't understand so well
+	GAME_RESULTS {
+		BIGINT id PK
+		BIGINT game_id FK
+		UUID user_id FK
+		INT score
+		INT placement
+		INT coins_won
+		TIMESTAMPTZ created_at
+	}
+
+	GAMES {
+		BIGINT id PK
+		BIGINT room_id FK
+		ENUM status "ACTIVE | PAUSED | FINISHED"
+		JOSNB game_state
+		TIMESTAMPTZ started_at
+		TIMESTAMPTZ ended_at
+	}
+
+	MESSAGES {
+		BIGINT id PK
+		UUID sender_id FK
+		BIGINT room_id FK
+		TEXT content
+		TIMESTAMPTZ created_at
+	}
+
+	ROOM_PLAYERS {
+		BIGINT id PK
+		BIGINT room_id FK
+		BIGINT user_id FK
+		INT player_slot
+		BOOLEAN is_ready
+		TIMESTAMPTX joined_at
+	}
+
+	ROOMS {
+		BIGINT id PK
+		VARCHAR(50) name
+		UUID creator_id FK
+		INT max_players
+		INT buy_in_amount
+		INT time_limit_seconds
+		ENUM win_condition "BEST_OF | SCORE | TIME"
+		ENUM room_status "WAITING | IN_GAME | FINISHED"
+		BOOLEAN is_permanent
+		TIMESTAMPTZ created_at
 	}
 ```
 
