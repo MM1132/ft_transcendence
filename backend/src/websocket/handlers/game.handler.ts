@@ -373,97 +373,7 @@ function broadcastGameState(game: ActiveSnakeGame): void {
   });
 }
 
-// ============================================
-// End Game
-// ============================================
-
-/* async function endGame(game: ActiveSnakeGame): Promise<void> {
-  // Stop loop
-  if (game.intervalId) {
-    clearInterval(game.intervalId);
-  }
-
-  const { state, db } = game;
-
-  try {
-    // Update game in DB
-    await db.query(
-      `UPDATE games SET status = 'FINISHED', ended_at = NOW() WHERE id = $1`,
-      [game.gameId]
-    );
-
-    // Calculate coins
-    const buyIn = 50; // Could come from room settings
-    const coinsChange: Record<string, number> = {};
-
-    for (const [userId, slot] of game.players) {
-      const snake = state.snakes[slot];
-      if (!snake) continue;
-
-      const isWinner = userId === state.winnerId;
-      const score = snake.score;
-
-      // Save result
-      await db.query(
-        `INSERT INTO game_results (game_id, user_id, score, rank, coins_won)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [
-          game.gameId,
-          userId,
-          score,
-          isWinner ? 1 : 2,
-          isWinner ? buyIn : -buyIn,
-        ]
-      );
-
-      // Update user stats
-      if (isWinner) {
-        await db.query(
-          `UPDATE users SET total_wins = total_wins + 1, coins = coins + $2, total_score = total_score + $3
-           WHERE id = $1`,
-          [userId, buyIn, score]
-        );
-        coinsChange[userId] = buyIn;
-      } else {
-        await db.query(
-          `UPDATE users SET total_losses = total_losses + 1, coins = coins - $2, total_score = total_score + $3
-           WHERE id = $1`,
-          [userId, buyIn, score]
-        );
-        coinsChange[userId] = -buyIn;
-      }
-    }
-
-    // Reset room
-    await db.query(`UPDATE rooms SET status = 'WAITING' WHERE id = $1`, [
-      game.roomId,
-    ]);
-    await db.query(
-      `UPDATE room_players SET is_ready = false WHERE room_id = $1`,
-      [game.roomId]
-    );
-
-    // Broadcast game end
-    const scores: Record<number, number> = {};
-    const finalSnakes = Object.entries(state.snakes) as [string, SnakeState][];
-    for (const [slot, snake] of finalSnakes) {
-      scores[parseInt(slot, 10)] = snake.score;
-    }
-
-    connectionManager.broadcast(`room_${game.roomId}`, 'game:end', {
-      winner_id: state.winnerId,
-      scores,
-      coins_change: coinsChange,
-    });
-
-    console.log(`🐍 Game ${game.gameId} ended. Winner: ${state.winnerId}`);
-  } catch (err) {
-    console.error('❌ endGame error:', err);
-  } finally {
-    activeGames.delete(game.roomId);
-  }
-} */
-// simplified version for now (testing)
+// The version that actually works very well, trust me
 async function endGame(game: ActiveSnakeGame): Promise<void> {
   if (game.intervalId) {
     clearInterval(game.intervalId);
@@ -534,7 +444,7 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
       coins_change: coinsChange,
     });
 
-    console.log(`🐍🛑Game ${game.gameId} ended. Winner: ${state.winnerId}`);
+    console.log(`🪢🛑Game ${game.gameId} ended. Winner: ${state.winnerId}`);
   } catch (err) {
     console.error('❌ endGame error:', err);
 

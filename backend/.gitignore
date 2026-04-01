@@ -2,4 +2,3 @@
 /node_modules
 /static/avatars/uploaded
 .env
-/src/database/latest_migration.txt

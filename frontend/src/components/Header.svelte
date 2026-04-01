@@ -6,7 +6,6 @@
     import { authService } from '../services/authService';
     import { settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
-    import logoUrl from '../images/c.svg';
     import { roomState, send } from '../stores/roomStore.svelte';
 
     let showDropdown = $state(false);

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import ToggleSetting from './Toggle.svelte';
     import InputField from './Input.svelte';
     import Button from './Button.svelte';
     import { onMount } from 'svelte';
@@ -211,9 +210,6 @@
         <InputField id="full-name" name="fullName" label="Full Name" placeholder="Enter your full name" bind:value={fullName} minlength={1} maxlength={100} summary />
         <InputField id="bio" name="bio" label="Bio" placeholder="Write something about yourself..." bind:value={bio} minlength={1} maxlength={500} multiline rows={6} summary />
         <InputField id="birth-date" name="birthDate" label="Date" type="date" placeholder="Select your birth date" bind:value={birthDate} summary />
-
-        <!-- <ToggleSetting label="Two Factor Authentication" bind:checked={twoFactorEnabled} />
-        <ToggleSetting label="Notifications" bind:checked={notificationsEnabled} /> -->
 
         <div class="form-actions">
             <Button type="button" variant="reset" onclick={handleReset}>Reset</Button>
