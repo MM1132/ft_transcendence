@@ -131,7 +131,7 @@
     
     {#if isExpanded}
     <div class="rooms-panel">
-        <p class="room-buy-in">Price to play: {buyInAmount} balance</p>
+        <p class="room-buy-in">Price to play: {buyInAmount}</p>
         <div class="rooms-header">
             <h2>Room: <span class="room-name"> {roomState.currentRoom?.name ?? 'N/A'}</span></h2>
         </div>
@@ -146,7 +146,7 @@
                 <div class="player-card" class:active={player.is_ready}>
                     <div class="player-info">
                         <div class="details">
-                            <span class="username">{player.username}</span>
+                            <span class="username" title={player.username}>{player.username}</span>
                         </div>
                     </div>
                     <div class="status-tag" class:is-ready={player.is_ready}>
@@ -258,6 +258,20 @@
         background: rgba(10, 235, 0, 0.01);
     }
 
+    @media (max-width: 1180px)
+    {
+        .rooms-drawer.expanded
+        {
+            width: 360px;
+        }
+
+        .rooms-panel
+        {
+            margin-right: 50px;
+            padding: 22px;
+        }
+    }
+
     .rooms-header
     {
         display: flex;
@@ -345,6 +359,13 @@
         display: flex;
         align-items: center;
         gap: 12px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .details
+    {
+        min-width: 0;
     }
 
     .username
@@ -352,6 +373,10 @@
         display: block;
         font-weight: bold;
         font-size: 0.9rem;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     
     .status-tag

@@ -2,12 +2,10 @@ import type { Client } from 'pg';
 import { connectionManager } from '../connectionManager.ts';
 import type { FriendRequestPayload, FriendResponsePayload } from '../types.ts';
 
-// ============================================
 // Friend Handlers
 // Schema (main repo):
 //   friend_requests: id, user_from_id, user_to_id, created_at
 //   friends:         user1_id, user2_id, created_at  (PK: user1_id, user2_id)
-// ============================================
 
 export async function handleFriendRequest(
   db: Client,
@@ -202,9 +200,7 @@ export async function handleFriendDecline(
   }
 }
 
-// ============================================
 // Online Status Notifications to Friends
-// ============================================
 
 export async function notifyFriendsOnline(
   db: Client,

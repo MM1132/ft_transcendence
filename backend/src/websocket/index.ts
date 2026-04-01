@@ -42,9 +42,7 @@ import type {
   WSMessage,
 } from './types.ts';
 
-// ============================================
 // WebSocket Setup
-// ============================================
 
 export async function setupWebSocket(
   server: FastifyInstance,
@@ -58,22 +56,18 @@ export async function setupWebSocket(
     '/ws',
     { websocket: true },
     (socket: WebSocket, _req: FastifyRequest) => {
-      console.log('🔌 WS: New connection attempt');
+      console.log('WS: New connection attempt');
 
       let authenticatedUserId: string | null = null;
       let authenticatedToken: string | null = null;
 
-      // ============================================
       // Message Handler
-      // ============================================
       socket.on('message', async (rawMessage: Buffer) => {
         try {
           const message: WSMessage = JSON.parse(rawMessage.toString());
           const { event, data } = message;
 
-          // ============================================
           // Auth (must be first message)
-          // ============================================
           if (event === 'auth') {
             const authData = data as AuthPayload;
             const user = await authenticateToken(db, authData.token);
@@ -106,8 +100,6 @@ export async function setupWebSocket(
               );
             }
 
-            /*If: backend restarted or room websocket was lost or DB still has old room row
-              then on next auth: clean that ghost row now.” */
             const staleRoomResult = await db.query(
               'SELECT room_id FROM room_players WHERE user_id = $1',
               [user.id]
@@ -117,7 +109,7 @@ export async function setupWebSocket(
               const staleRoomId = Number(staleRoomResult.rows[0].room_id);
 
               console.log(
-                `🧹 Cleaning stale room membership for user ${user.id} in room ${staleRoomId}`
+                `Cleaning stale room membership for user ${user.id} in room ${staleRoomId}`
               );
 
               await handlePlayerDisconnect(db, user.id, staleRoomId);
@@ -163,9 +155,7 @@ export async function setupWebSocket(
             return;
           }
 
-          // ============================================
           // All other events require auth
-          // ============================================
           if (!authenticatedUserId) {
             socket.send(
               JSON.stringify({
@@ -182,9 +172,7 @@ export async function setupWebSocket(
             authenticatedToken
           );
 
-          // ============================================
           // Route to handlers
-          // ============================================
           await routeMessage(
             db,
             authenticatedUserId,
@@ -202,9 +190,7 @@ export async function setupWebSocket(
         }
       });
 
-      // ============================================
       // Disconnect Handler
-      // ============================================
       socket.on('close', async () => {
         if (authenticatedUserId) {
           const connInfo =
@@ -228,7 +214,7 @@ export async function setupWebSocket(
           }
 
           console.log(
-            `🔌 WS: User ${connInfo?.username || authenticatedUserId} disconnected`
+            `WS: User ${connInfo?.username || authenticatedUserId} disconnected`
           );
         }
       });
@@ -261,9 +247,7 @@ async function refreshSocketSession(
   await userRespository.updateUserLastAction(db, userId);
 }
 
-// ============================================
 // Token Authentication
-// ============================================
 
 async function authenticateToken(
   db: Client,
@@ -299,9 +283,7 @@ async function authenticateToken(
   }
 }
 
-// ============================================
 // Message Router
-// ============================================
 
 async function routeMessage(
   db: Client,
