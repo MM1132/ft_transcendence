@@ -2,7 +2,6 @@
     import { tick } from 'svelte';
     import { authStore } from '../stores/authStore';
     import { roomState, send } from '../stores/roomStore.svelte';
-    import { truncateUsername } from '../utils/text';
     import Button from './Button.svelte';
 
     let kickedPlayerId = $state(null);
@@ -147,7 +146,7 @@
                 <div class="player-card" class:active={player.is_ready}>
                     <div class="player-info">
                         <div class="details">
-                            <span class="username" title={player.username}>{truncateUsername(player.username)}</span>
+                            <span class="username" title={player.username}>{player.username}</span>
                         </div>
                     </div>
                     <div class="status-tag" class:is-ready={player.is_ready}>

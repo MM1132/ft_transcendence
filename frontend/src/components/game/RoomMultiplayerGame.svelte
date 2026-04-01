@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { roomState, send, type Direction } from '../../stores/roomStore.svelte';
-  import { truncateUsername } from '../../utils/text';
   import MultiplayerSnakeBoard from './MultiplayerSnakeBoard.svelte';
 
   const gameState = $derived(roomState.gameState);
@@ -113,7 +112,7 @@
           height={gameState.box_height}
           snake={entry.snake}
           apple={gameState.apple}
-          title={entry.player ? truncateUsername(entry.player.username) : `Player ${entry.slot}`}
+          title={entry.player ? entry.player.username : `Player ${entry.slot}`}
           fullTitle={entry.player ? entry.player.username : `Player ${entry.slot}`}
           isCurrentPlayer={entry.player?.id === roomState.currentUserId}
           isEliminated={roomState.gameStatus === 'ended' && !!lastGameResult?.winner_id && entry.player?.id !== lastGameResult.winner_id}
