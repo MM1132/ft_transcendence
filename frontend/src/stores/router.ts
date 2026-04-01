@@ -28,17 +28,6 @@ export function navigateTo(path: string): void {
     currentPath.set(path)
 }
 
-// Handle browser Close/Refresh navigation This triggers the standard browser "Changes you made may not be saved" popup.
-window.addEventListener('beforeunload', (event) => {
-    const path = window.location.pathname;
-    if (isPathProtected(path)) {
-        event.preventDefault();
-
-        // maybe we need it for other browsers to show the prompt
-        // event.returnValue = '';
-    }
-});
-
 // Sync app state with URL when user navigates via browser back/forward buttons
 window.addEventListener('popstate', () => {
     const newPath = window.location.pathname;
