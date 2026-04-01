@@ -8,6 +8,7 @@
     snake,
     apple,
     title = 'Player',
+    fullTitle = title,
     isCurrentPlayer = false,
     isEliminated = false,
     showGameOver = false
@@ -17,6 +18,7 @@
     snake: SnakeSnapshot | null;
     apple: SnakePoint;
     title?: string;
+    fullTitle?: string;
     isCurrentPlayer?: boolean;
     isEliminated?: boolean;
     showGameOver?: boolean;
@@ -47,7 +49,7 @@
 
 <div class:is-current-player={isCurrentPlayer} class="board-shell">
   <div class="board-header">
-    <h3>{title}</h3>
+    <h3 title={fullTitle}>{title}</h3>
     <p>
       {#if snake}
         score: {snake.score} · {snake.alive ? 'alive' : 'dead'}
@@ -87,6 +89,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-height: 0;
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
@@ -105,6 +108,9 @@
 
   .board-header h3 {
     color: #ffffff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .board-header p {
@@ -122,7 +128,14 @@
 
   .board-stage {
     position: relative;
-    width: 100%;
+    width: min(
+      100%,
+      calc((100vw - 630px - ((var(--board-columns, 1) - 1) * 20px)) / var(--board-columns, 1)),
+      calc((100vh - 460px - var(--banner-offset, 0px) - ((var(--board-rows, 1) - 1) * 20px)) / var(--board-rows, 1))
+    );
+    max-width: 100%;
+    align-self: center;
+    margin-block: auto;
   }
 
   .board-stage.is-dead .board-grid {
