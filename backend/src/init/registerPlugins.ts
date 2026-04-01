@@ -18,7 +18,7 @@ export const registerPlugins = (fastify: FastifyInstance) => {
 
   fastify.register(cors, {
     origin: [fastify.frontendOrigin],
-    allowedHeaders: ['x-session-token', 'x-dev', 'content-type'],
+    allowedHeaders: ['x-session-token', 'content-type'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   });
 
