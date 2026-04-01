@@ -8,12 +8,25 @@
 
   let { roomId } = $props<{ roomId: string }>();
   let hasRequestedJoin = $state(false);
+  let isSidebarExpanded = $state(true);
+  let isCompactViewport = $state(false);
 
   onMount(() => {
     const session = get(authStore);
     if (session.sessionToken && !roomState.isConnected) {
       connect(session.sessionToken);
     }
+
+    function updateViewportState() {
+      isCompactViewport = window.innerWidth <= 1180;
+    }
+
+    updateViewportState();
+    window.addEventListener('resize', updateViewportState);
+
+    return () => {
+      window.removeEventListener('resize', updateViewportState);
+    };
   });
 
   $effect(() => {
@@ -29,12 +42,24 @@
       hasRequestedJoin = true;
     }
   });
+
+  $effect(() => {
+    if (!isCompactViewport) {
+      return;
+    }
+
+    if (roomState.gameStatus === 'running' && isSidebarExpanded) {
+      isSidebarExpanded = false;
+    } else if (roomState.gameStatus !== 'running' && !isSidebarExpanded) {
+      isSidebarExpanded = true;
+    }
+  });
 </script>
 
 <main>
   <div class="dashboard-layout">
-    <Sidebar />
-    <RoomMultiplayerGame />
+    <Sidebar bind:isExpanded={isSidebarExpanded} />
+    <RoomMultiplayerGame sidebarExpanded={isSidebarExpanded} />
   </div>
 </main>
 

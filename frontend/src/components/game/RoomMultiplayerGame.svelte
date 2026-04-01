@@ -3,6 +3,8 @@
   import { roomState, send, type Direction } from '../../stores/roomStore.svelte';
   import MultiplayerSnakeBoard from './MultiplayerSnakeBoard.svelte';
 
+  let { sidebarExpanded = true } = $props<{ sidebarExpanded?: boolean }>();
+
   const gameState = $derived(roomState.gameState);
   const players = $derived(roomState.currentRoomPlayers ?? []);
   const lastGameResult = $derived(roomState.lastGameResult ?? null);
@@ -80,7 +82,7 @@
   });
 </script>
 
-<div class="room-game-shell">
+<div class="room-game-shell" class:sidebar-collapsed={!sidebarExpanded}>
   <div class="room-game-header">
     <h2>Room Match</h2>
     <p>Status: <strong class={`status-${gameStatusLabel}`}>{gameStatusLabel}</strong></p>
@@ -203,6 +205,10 @@
   @media (max-width: 1180px) {
     .room-game-shell {
       width: calc(100vw - 390px);
+    }
+
+    .room-game-shell.sidebar-collapsed {
+      width: calc(100vw - 70px);
     }
   }
 </style>
