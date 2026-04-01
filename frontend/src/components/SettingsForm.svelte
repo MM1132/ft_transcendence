@@ -2,6 +2,7 @@
     import ToggleSetting from './Toggle.svelte';
     import InputField from './Input.svelte';
     import Button from './Button.svelte';
+    import UserAvatar from './icons/UserAvatar.svelte';
     import { onMount } from 'svelte';
     import { settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
@@ -173,10 +174,7 @@
                 {#if avatarUrl}
                     <img src={avatarUrl} alt="User Avatar" />
                 {:else}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#0AEB00" stroke-width="2" class="default-avatar">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+                    <UserAvatar size={50} color="rgba(10, 235, 0, 0.5)" strokeWidth={2} />
                 {/if}
             </div>
 
@@ -303,13 +301,6 @@
     }
 
     .avatar-placeholder
-    {
-        width: 50px;
-        height: 50px;
-        color: rgba(10, 235, 0, 0.5);
-    }
-
-    .default-avatar
     {
         width: 50px;
         height: 50px;
