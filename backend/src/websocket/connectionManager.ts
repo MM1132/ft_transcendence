@@ -1,9 +1,7 @@
 import type { WebSocket } from '@fastify/websocket';
 import type { AuthenticatedSocket, ServerEvent, WSMessage } from './types.ts';
 
-// ============================================
 // Connection Manager
-// ============================================
 // Tracks active WebSocket connections and room memberships
 // This is the ONLY in-memory state (besides active game states)
 
@@ -15,9 +13,7 @@ class ConnectionManager {
   // Naming: "room_1", "room_2", "global_chat"
   private rooms: Map<string, Set<string>> = new Map();
 
-  // ============================================
   // Connection Management
-  // ============================================
 
   addConnection(
     userId: string,
@@ -37,9 +33,6 @@ class ConnectionManager {
       for (const [_roomName, members] of this.rooms) {
         members.delete(userId);
       }
-      console.log(
-        `🔌 WS: User ${username} (${userId}) replaced existing connection`
-      );
     }
 
     this.connections.set(userId, {
@@ -53,7 +46,7 @@ class ConnectionManager {
     this.joinRoom(userId, 'global_chat');
 
     console.log(
-      `🔌 WS: User ${username} (${userId}) connected. Total: ${this.connections.size}`
+      `WS: User ${username} (${userId}) connected. Total: ${this.connections.size}`
     );
 
     return oldRoomId ? { currentRoomId: oldRoomId } : null;
@@ -69,13 +62,13 @@ class ConnectionManager {
     for (const [roomName, members] of this.rooms) {
       if (members.has(userId)) {
         members.delete(userId);
-        console.log(`🚪 WS: User ${conn.username} left ${roomName}`);
+        console.log(`WS: User ${conn.username} left ${roomName}`);
       }
     }
 
     this.connections.delete(userId);
     console.log(
-      `🔌 WS: User ${conn.username} (${userId}) disconnected. Total: ${this.connections.size}`
+      `WS: User ${conn.username} (${userId}) disconnected. Total: ${this.connections.size}`
     );
 
     return { username: conn.username, currentRoomId: conn.currentRoomId };
@@ -93,9 +86,7 @@ class ConnectionManager {
     return Array.from(this.connections.keys());
   }
 
-  // ============================================
   // Room Management (In-Memory for WS Routing)
-  // ============================================
 
   joinRoom(userId: string, roomName: string): void {
     if (!this.rooms.has(roomName)) {
@@ -112,7 +103,7 @@ class ConnectionManager {
     }
 
     const conn = this.connections.get(userId);
-    console.log(`🚪 WS: User ${conn?.username || userId} joined ${roomName}`);
+    console.log(`WS: User ${conn?.username || userId} joined ${roomName}`);
   }
 
   leaveRoom(userId: string, roomName: string): void {
@@ -127,7 +118,7 @@ class ConnectionManager {
     }
 
     const conn = this.connections.get(userId);
-    console.log(`🚪 WS: User ${conn?.username || userId} left ${roomName}`);
+    console.log(`WS: User ${conn?.username || userId} left ${roomName}`);
   }
 
   getRoomMembers(roomName: string): string[] {
@@ -138,9 +129,7 @@ class ConnectionManager {
     return this.rooms.get(roomName)?.has(userId) || false;
   }
 
-  // ============================================
   // Message Sending
-  // ============================================
 
   send<T>(userId: string, event: ServerEvent, data: T): void {
     const conn = this.connections.get(userId);

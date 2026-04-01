@@ -2,9 +2,7 @@ import type { Client } from 'pg';
 import { connectionManager } from '../connectionManager.ts';
 import type { ChatMessagePayload, ChatSendPayload } from '../types.ts';
 
-// ============================================
 // Chat Handlers
-// ============================================
 
 export async function handleChatSend(
   db: Client,
@@ -67,15 +65,13 @@ export async function handleChatSend(
     if (room_id === null) {
       // Global chat
       connectionManager.broadcast('global_chat', 'chat:message', chatPayload);
-      console.log(
-        `💬 Global: ${sender.username}: ${content.substring(0, 50)}...`
-      );
+      console.log(`Global: ${sender.username}: ${content.substring(0, 50)}...`);
     } else {
       // Room chat
       const roomName = `room_${room_id}`;
       connectionManager.broadcast(roomName, 'chat:message', chatPayload);
       console.log(
-        `💬 Room ${room_id}: ${sender.username}: ${content.substring(0, 50)}...`
+        `Room ${room_id}: ${sender.username}: ${content.substring(0, 50)}...`
       );
     }
   } catch (err) {
@@ -86,9 +82,7 @@ export async function handleChatSend(
   }
 }
 
-// ============================================
 // Chat History
-// ============================================
 
 export async function handleChatHistory(
   db: Client,
@@ -137,7 +131,7 @@ export async function handleChatHistory(
 
     connectionManager.send(userId, 'chat:history', { room_id, messages });
     console.log(
-      `📋 Chat history: sent ${messages.length} messages to user ${userId} (room: ${room_id ?? 'global'})`
+      `Chat history: sent ${messages.length} messages to user ${userId} (room: ${room_id ?? 'global'})`
     );
   } catch (err) {
     console.error('❌ handleChatHistory error:', err);
