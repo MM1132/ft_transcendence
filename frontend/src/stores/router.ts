@@ -7,11 +7,6 @@ const protectedRoutes = ['/dashboard', '/setting', '/work', '/profile', '/room']
 let isProtected = protectedRoutes.includes(window.location.pathname)
 let protectedPath = isProtected ? window.location.pathname : ''
 
-
-// Helper to check if a path starts with any of our protected prefixes
-const isPathProtected = (path: string) =>
-    protectedRoutes.some(route => path.startsWith(route));
-
 export function navigateTo(path: string): void {
     // Only push if the path is actually different to avoid history bloating
     if (window.location.pathname !== path)
