@@ -70,7 +70,19 @@ export async function handleGameInput(
   // Prevent 180-degree reversal
   if (isOppositeDirection(requestedDirection, snake.direction)) return;
 
+  console.log('🎮 game input', {
+    userId,
+    requestedDirection,
+    currentDirection: snake.direction,
+    nextDirectionBefore: snake.nextDirection,
+  });
+
   snake.nextDirection = requestedDirection;
+
+  console.log('✅ nextDirection updated', {
+    userId,
+    nextDirectionAfter: snake.nextDirection,
+  });
 }
 
 function isOppositeDirection(next: Direction, current: Direction): boolean {
