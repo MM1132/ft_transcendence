@@ -8,6 +8,7 @@
     snake,
     apple,
     title = 'Player',
+    fullTitle = title,
     isCurrentPlayer = false,
     isEliminated = false,
     showGameOver = false
@@ -17,6 +18,7 @@
     snake: SnakeSnapshot | null;
     apple: SnakePoint;
     title?: string;
+    fullTitle?: string;
     isCurrentPlayer?: boolean;
     isEliminated?: boolean;
     showGameOver?: boolean;
@@ -47,7 +49,7 @@
 
 <div class:is-current-player={isCurrentPlayer} class="board-shell">
   <div class="board-header">
-    <h3>{title}</h3>
+    <h3 title={fullTitle}>{title}</h3>
     <p>
       {#if snake}
         score: {snake.score} · {snake.alive ? 'alive' : 'dead'}
@@ -106,6 +108,9 @@
 
   .board-header h3 {
     color: #ffffff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .board-header p {
