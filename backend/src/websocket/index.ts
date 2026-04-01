@@ -100,8 +100,6 @@ export async function setupWebSocket(
               );
             }
 
-            /*If: backend restarted or room websocket was lost or DB still has old room row
-              then on next auth: clean that ghost row now.” */
             const staleRoomResult = await db.query(
               'SELECT room_id FROM room_players WHERE user_id = $1',
               [user.id]

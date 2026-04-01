@@ -33,7 +33,6 @@ class ConnectionManager {
       for (const [_roomName, members] of this.rooms) {
         members.delete(userId);
       }
-      console.log();
     }
 
     this.connections.set(userId, {

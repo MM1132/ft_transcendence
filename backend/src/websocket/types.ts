@@ -1,20 +1,5 @@
 import type { WebSocket } from '@fastify/websocket';
 
-/*
-Architecture:
-- room mode is backend authoritative
-- each player has a private box
-- apple coordinates are mirrored across boxes
-- no cross-player collisions
-- client sends input intent only
-- local single-player frontend remains separate
- */
-// TODO:
-// - absolute directions
-// - isolated per-player boxes
-// - mirrored apple
-// - snake snapshots
-
 // WebSocket Event Types
 
 // Client -> Server Events
@@ -198,7 +183,7 @@ export interface GameEndPayload {
   coins_change: Record<string, number>;
 }
 
-// Friend Events (Placeholder)
+// Friend Events
 export interface FriendRequestPayload {
   target_user_id: string;
 }

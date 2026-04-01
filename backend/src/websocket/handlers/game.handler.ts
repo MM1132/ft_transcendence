@@ -4,13 +4,6 @@ import type { Direction, GameInputPayload } from '../types.ts';
 
 // Snake Game Types
 
-// TODO:
-// - current input model uses relative left/right turns.
-//   MVP target uses absolute directions: up/down/left/right.
-// - current logic checks collisions between players in one shared arena.
-//   MVP target uses isolated per-player boxes, so cross-player collision
-//   logic should be removed in a later milestone.
-
 interface Point {
   x: number;
   y: number;
@@ -48,9 +41,7 @@ const activeGames: Map<number, ActiveSnakeGame> = new Map();
 // Grid settings
 const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
-// const TICK_RATE = 150; // ms between updates (slower = easier)
-// TODO return to previous too slow now for debug
-const TICK_RATE = 225; // ms between updates (slower = easier)
+const TICK_RATE = 225;
 
 // Game Input Handler
 
@@ -79,19 +70,7 @@ export async function handleGameInput(
   // Prevent 180-degree reversal
   if (isOppositeDirection(requestedDirection, snake.direction)) return;
 
-  console.log('game input', {
-    userId,
-    requestedDirection,
-    currentDirection: snake.direction,
-    nextDirectionBefore: snake.nextDirection,
-  });
-
   snake.nextDirection = requestedDirection;
-
-  console.log('✅ nextDirection updated', {
-    userId,
-    nextDirectionAfter: snake.nextDirection,
-  });
 }
 
 function isOppositeDirection(next: Direction, current: Direction): boolean {
@@ -111,7 +90,6 @@ export function startGameLoop(
   gameId: number,
   players: { userId: string; slot: number }[]
 ): void {
-  console.log('startGameLoop players =', players);
   // Initialize game state
   const state: SnakeGameState = {
     gridWidth: GRID_WIDTH,
