@@ -2,16 +2,7 @@ import type { Client } from 'pg';
 import { connectionManager } from '../connectionManager.ts';
 import type { Direction, GameInputPayload } from '../types.ts';
 
-// ============================================
 // Snake Game Types
-// ============================================
-
-// TODO:
-// - current input model uses relative left/right turns.
-//   MVP target uses absolute directions: up/down/left/right.
-// - current logic checks collisions between players in one shared arena.
-//   MVP target uses isolated per-player boxes, so cross-player collision
-//   logic should be removed in a later milestone.
 
 interface Point {
   x: number;
@@ -50,13 +41,9 @@ const activeGames: Map<number, ActiveSnakeGame> = new Map();
 // Grid settings
 const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
-// const TICK_RATE = 150; // ms between updates (slower = easier)
-// TODO return to previous too slow now for debug
-const TICK_RATE = 225; // ms between updates (slower = easier)
+const TICK_RATE = 225;
 
-// ============================================
 // Game Input Handler
-// ============================================
 
 export async function handleGameInput(
   _db: Client,
@@ -107,9 +94,7 @@ function isOppositeDirection(next: Direction, current: Direction): boolean {
   );
 }
 
-// ============================================
 // Start Game
-// ============================================
 
 export function startGameLoop(
   db: Client,
@@ -117,7 +102,6 @@ export function startGameLoop(
   gameId: number,
   players: { userId: string; slot: number }[]
 ): void {
-  console.log('🐍🐍🐍 startGameLoop players =', players);
   // Initialize game state
   const state: SnakeGameState = {
     gridWidth: GRID_WIDTH,
@@ -174,12 +158,12 @@ export function startGameLoop(
 
   activeGames.set(roomId, game);
 
-  console.log(`🐍 Snake game started: Room ${roomId}, Game ${gameId}`);
+  console.log(`Snake game started: Room ${roomId}, Game ${gameId}`);
 
   // Send game:start event with initial state to all players
   // the "contract" shape
   const roomName = `room_${roomId}`;
-  console.log('📤 broadcasting game:start', {
+  console.log('broadcasting game:start', {
     roomId: game.roomId,
     gameId: game.gameId,
     winnerId: state.winnerId,
@@ -213,9 +197,7 @@ export function startGameLoop(
   }, TICK_RATE);
 }
 
-// ============================================
 // Game Update Loop
-// ============================================
 
 function updateGame(game: ActiveSnakeGame): void {
   if (game.state.gameOver) return;
@@ -245,14 +227,14 @@ function updateGame(game: ActiveSnakeGame): void {
       newHead.y >= state.gridHeight
     ) {
       snake.alive = false;
-      console.log(`🐍 Snake ${slot} hit wall`);
+      console.log(`Snake ${slot} hit wall`);
       continue;
     }
 
     // Check self collision
     if (snake.body.some((p: Point) => p.x === newHead.x && p.y === newHead.y)) {
       snake.alive = false;
-      console.log(`🐍 Snake ${slot} hit itself`);
+      console.log(`Snake ${slot} hit itself`);
       continue;
     }
 
@@ -264,7 +246,7 @@ function updateGame(game: ActiveSnakeGame): void {
     // Check apple collision
     if (newHead.x === state.apple.x && newHead.y === state.apple.y) {
       snake.score += 1;
-      console.log(`🍎 Snake ${slot} ate apple! Score: ${snake.score}`);
+      console.log(`Snake ${slot} ate apple! Score: ${snake.score}`);
       state.apple = spawnApple(state);
       // Don't remove tail - snake grows
     } else {
@@ -344,9 +326,7 @@ function spawnApple(state: SnakeGameState): Point {
   return cell ?? { x: -1, y: -1 };
 }
 
-// ============================================
 // Broadcast State
-// ============================================
 
 function broadcastGameState(game: ActiveSnakeGame): void {
   const roomName = `room_${game.roomId}`;
@@ -373,97 +353,7 @@ function broadcastGameState(game: ActiveSnakeGame): void {
   });
 }
 
-// ============================================
-// End Game
-// ============================================
-
-/* async function endGame(game: ActiveSnakeGame): Promise<void> {
-  // Stop loop
-  if (game.intervalId) {
-    clearInterval(game.intervalId);
-  }
-
-  const { state, db } = game;
-
-  try {
-    // Update game in DB
-    await db.query(
-      `UPDATE games SET status = 'FINISHED', ended_at = NOW() WHERE id = $1`,
-      [game.gameId]
-    );
-
-    // Calculate coins
-    const buyIn = 50; // Could come from room settings
-    const coinsChange: Record<string, number> = {};
-
-    for (const [userId, slot] of game.players) {
-      const snake = state.snakes[slot];
-      if (!snake) continue;
-
-      const isWinner = userId === state.winnerId;
-      const score = snake.score;
-
-      // Save result
-      await db.query(
-        `INSERT INTO game_results (game_id, user_id, score, rank, coins_won)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [
-          game.gameId,
-          userId,
-          score,
-          isWinner ? 1 : 2,
-          isWinner ? buyIn : -buyIn,
-        ]
-      );
-
-      // Update user stats
-      if (isWinner) {
-        await db.query(
-          `UPDATE users SET total_wins = total_wins + 1, coins = coins + $2, total_score = total_score + $3
-           WHERE id = $1`,
-          [userId, buyIn, score]
-        );
-        coinsChange[userId] = buyIn;
-      } else {
-        await db.query(
-          `UPDATE users SET total_losses = total_losses + 1, coins = coins - $2, total_score = total_score + $3
-           WHERE id = $1`,
-          [userId, buyIn, score]
-        );
-        coinsChange[userId] = -buyIn;
-      }
-    }
-
-    // Reset room
-    await db.query(`UPDATE rooms SET status = 'WAITING' WHERE id = $1`, [
-      game.roomId,
-    ]);
-    await db.query(
-      `UPDATE room_players SET is_ready = false WHERE room_id = $1`,
-      [game.roomId]
-    );
-
-    // Broadcast game end
-    const scores: Record<number, number> = {};
-    const finalSnakes = Object.entries(state.snakes) as [string, SnakeState][];
-    for (const [slot, snake] of finalSnakes) {
-      scores[parseInt(slot, 10)] = snake.score;
-    }
-
-    connectionManager.broadcast(`room_${game.roomId}`, 'game:end', {
-      winner_id: state.winnerId,
-      scores,
-      coins_change: coinsChange,
-    });
-
-    console.log(`🐍 Game ${game.gameId} ended. Winner: ${state.winnerId}`);
-  } catch (err) {
-    console.error('❌ endGame error:', err);
-  } finally {
-    activeGames.delete(game.roomId);
-  }
-} */
-// simplified version for now (testing)
+// The version that actually works very well, trust me
 async function endGame(game: ActiveSnakeGame): Promise<void> {
   if (game.intervalId) {
     clearInterval(game.intervalId);
@@ -534,7 +424,7 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
       coins_change: coinsChange,
     });
 
-    console.log(`🐍🛑Game ${game.gameId} ended. Winner: ${state.winnerId}`);
+    console.log(`Game ${game.gameId} ended. Winner: ${state.winnerId}`);
   } catch (err) {
     console.error('❌ endGame error:', err);
 
@@ -550,7 +440,7 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
         scores[parseInt(slot, 10)] = snake.score;
       }
 
-      console.log('📤 broadcasting game:end', {
+      console.log('broadcasting game:end', {
         roomId: game.roomId,
         winnerId: state.winnerId,
       });
@@ -561,7 +451,7 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
       });
 
       console.log(
-        `⚠️ game:end broadcasted despite DB error. Winner: ${state.winnerId}`
+        `game:end broadcasted despite DB error. Winner: ${state.winnerId}`
       );
     } catch (broadcastErr) {
       console.error(
@@ -574,9 +464,7 @@ async function endGame(game: ActiveSnakeGame): Promise<void> {
   }
 }
 
-// ============================================
 // Disconnect Handler
-// ============================================
 
 export function handleGameDisconnect(roomId: number, userId: string): void {
   const game = activeGames.get(roomId);
@@ -588,7 +476,7 @@ export function handleGameDisconnect(roomId: number, userId: string): void {
   const snake = game.state.snakes[slot];
   if (snake && snake.alive) {
     snake.alive = false;
-    console.log(`🐍 Snake ${slot} died (player disconnected)`);
+    console.log(`Snake ${slot} died (player disconnected)`);
   }
 
   const aliveSnakes = Object.entries(game.state.snakes).filter(

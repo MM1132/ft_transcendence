@@ -15,9 +15,7 @@ import type {
 } from '../types.ts';
 import { handleGameDisconnect, startGameLoop } from './game.handler.ts';
 
-// ============================================
 // Room Create
-// ============================================
 
 export async function handleRoomCreate(
   db: Client,
@@ -144,7 +142,7 @@ export async function handleRoomCreate(
       your_slot: 1,
     });
 
-    console.log(`🎮 Room ${room.id} "${room.name}" created by user ${userId}`);
+    console.log(`Room ${room.id} "${room.name}" created by user ${userId}`);
     await broadcastRoomList(db);
   } catch (err) {
     console.error('❌ handleRoomCreate error:', err);
@@ -154,9 +152,7 @@ export async function handleRoomCreate(
   }
 }
 
-// ============================================
 // Room Join
-// ============================================
 
 export async function handleRoomJoin(
   db: Client,
@@ -309,7 +305,7 @@ export async function handleRoomJoin(
       userId
     );
 
-    console.log(`🎮 Room ${room_id}: User ${userId} joined slot ${nextSlot}`);
+    console.log(`Room ${room_id}: User ${userId} joined slot ${nextSlot}`);
     await broadcastRoomList(db);
   } catch (err) {
     console.error('❌ handleRoomJoin error:', err);
@@ -363,7 +359,7 @@ export async function handleRoomLeave(
     connectionManager.broadcast(roomName, 'room:player_left', leftPayload);
     await broadcastRoomList(db);
 
-    console.log(`🎮 Room ${room_id}: User ${userId} left slot ${slot}`);
+    console.log(`Room ${room_id}: User ${userId} left slot ${slot}`);
   } catch (err) {
     console.error('❌ handleRoomLeave error:', err);
     connectionManager.send(userId, 'room:error', {
@@ -443,7 +439,7 @@ export async function handleRoomDelete(
 
     await broadcastRoomList(db);
 
-    console.log(`🗑️ Room ${room_id} deleted by creator ${userId}`);
+    console.log(`Room ${room_id} deleted by creator ${userId}`);
   } catch (err) {
     try {
       await db.query('ROLLBACK');
@@ -496,7 +492,7 @@ export async function handleRoomReady(
     };
     connectionManager.broadcast(roomName, 'room:player_ready', readyPayload);
 
-    console.log(`🎮 Room ${room_id}: User ${userId} is_ready=${isReady}`);
+    console.log(`Room ${room_id}: User ${userId} is_ready=${isReady}`);
 
     // 4. Check if all players ready -> start game
     const readyCheck = await db.query(
@@ -531,9 +527,7 @@ export async function handleRoomReady(
   }
 }
 
-// ============================================
 // Game Start Helper
-// ============================================
 
 async function startGame(
   db: Client,
@@ -604,7 +598,7 @@ async function startGame(
       })
     );
 
-    console.log('🚀 startGame called', { roomId, gameId, players });
+    console.log('startGame called', { roomId, gameId, players });
     startGameLoop(db, Number(roomId), Number(gameId), players);
   } catch (err) {
     try {
@@ -616,9 +610,7 @@ async function startGame(
   }
 }
 
-// ============================================
 // Cleanup on Disconnect
-// ============================================
 
 export async function handlePlayerDisconnect(
   db: Client,
@@ -668,7 +660,7 @@ export async function handlePlayerDisconnect(
     await broadcastRoomList(db);
 
     console.log(
-      `🎮 Room ${currentRoomId}: User ${userId} disconnected from slot ${slot}`
+      `Room ${currentRoomId}: User ${userId} disconnected from slot ${slot}`
     );
 
     // TODO: Handle if game was in progress
@@ -677,9 +669,7 @@ export async function handlePlayerDisconnect(
   }
 }
 
-// ============================================
 // Room Kick (creator only)
-// ============================================
 
 export async function handleRoomKick(
   db: Client,
@@ -745,9 +735,10 @@ export async function handleRoomKick(
       user_id: target_user_id,
       slot,
     });
+    await broadcastRoomList(db);
 
     console.log(
-      `🎮 Room ${room_id}: User ${target_user_id} kicked by creator ${userId}`
+      `Room ${room_id}: User ${target_user_id} kicked by creator ${userId}`
     );
   } catch (err) {
     console.error('❌ handleRoomKick error:', err);
@@ -757,9 +748,7 @@ export async function handleRoomKick(
   }
 }
 
-// ============================================
 // Room Invite (send invite to online friend)
-// ============================================
 
 export async function handleRoomInvite(
   db: Client,
@@ -814,7 +803,7 @@ export async function handleRoomInvite(
       });
     }
 
-    console.log(`📨 Room ${room_id}: User ${userId} invited ${target_user_id}`);
+    console.log(`Room ${room_id}: User ${userId} invited ${target_user_id}`);
   } catch (err) {
     console.error('❌ handleRoomInvite error:', err);
     connectionManager.send(userId, 'room:error', {
@@ -844,6 +833,5 @@ async function broadcastRoomList(db: Client) {
     buy_in_amount: room.buy_in_amount,
   }));
 
-  console.log('============== ================');
   connectionManager.broadcastAll('room:list', rooms);
 }
