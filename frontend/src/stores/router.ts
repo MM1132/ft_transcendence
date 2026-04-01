@@ -20,7 +20,5 @@ export function navigateTo(path: string): void {
 // Sync app state with URL when user navigates via browser back/forward buttons
 window.addEventListener('popstate', () => {
     const newPath = window.location.pathname;
-
-    // If the user goes 'Back' from /room to /login, the UI updates instantly.
     currentPath.set(newPath);
 });
