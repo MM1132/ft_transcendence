@@ -130,8 +130,9 @@
 
         try {
             await settingsService.deleteAvatar();
-            avatarUrl = '';  // Set to empty string instead of null
-            avatarStore.set(null);
+            const myAvatarUrl = await settingsService.getMyAvatarUrl();
+            avatarUrl = myAvatarUrl ? withAvatarVersion(myAvatarUrl) : null;
+            avatarStore.set(avatarUrl);
             setStatus?.({
                 isSaving: false,
                 feedback: 'Avatar deleted successfully',
