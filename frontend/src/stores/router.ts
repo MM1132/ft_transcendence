@@ -3,10 +3,6 @@ import { writable } from 'svelte/store'
 export const currentPath = writable<string>(window.location.pathname)
 export const selectedProfileUserId = writable<string | null>(null)
 
-const protectedRoutes = ['/dashboard', '/setting', '/work', '/profile', '/room']
-let isProtected = protectedRoutes.includes(window.location.pathname)
-let protectedPath = isProtected ? window.location.pathname : ''
-
 export function navigateTo(path: string): void {
     // Only push if the path is actually different to avoid history bloating
     if (window.location.pathname !== path)
@@ -16,8 +12,6 @@ export function navigateTo(path: string): void {
     }
     else
     {
-        isProtected = false
-        protectedPath = ''
         window.history.pushState(null, '', path)
     }
     currentPath.set(path)
