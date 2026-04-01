@@ -15,9 +15,7 @@ Architecture:
 // - mirrored apple
 // - snake snapshots
 
-// ============================================
 // WebSocket Event Types
-// ============================================
 
 // Client -> Server Events
 export type ClientEvent =
@@ -63,9 +61,7 @@ export type ServerEvent =
   | 'room:kicked'
   | 'room:invite_received';
 
-// ============================================
 // Message Payloads
-// ============================================
 
 export interface WSMessage<T = unknown> {
   event: ClientEvent | ServerEvent;
@@ -211,9 +207,7 @@ export interface FriendResponsePayload {
   request_id: number;
 }
 
-// ============================================
 // Data Types
-// ============================================
 
 export interface UserBasicData {
   id: string;
@@ -237,9 +231,7 @@ export interface RoomData {
   current_players: number;
 }
 
-// ============================================
 // Connection Types
-// ============================================
 
 export interface AuthenticatedSocket {
   socket: WebSocket;
