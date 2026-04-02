@@ -71,6 +71,7 @@
                 name="username"
                 id="username"
                 placeholder="Username"
+                autocomplete="username"
                 bind:value={username}
                 oninput={clearAuthError}
                 class:error={hasAuthError}
@@ -83,6 +84,7 @@
                 type="password"
                 id="password"
                 placeholder="Password"
+                autocomplete="current-password"
                 bind:value={password}
                 oninput={clearAuthError}
                 class:error={hasAuthError}
