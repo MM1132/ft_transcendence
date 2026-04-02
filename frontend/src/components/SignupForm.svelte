@@ -105,6 +105,7 @@
                 name = "username"
                 id = "username"
                 placeholder = "Username"
+                autocomplete="username"
                 bind:value={username}
                 oninput={clearErrors}
                 class:error={usernameError}
@@ -119,6 +120,7 @@
                 <input
                 type = "email"
                 placeholder = "Email"
+                autocomplete="username"
                 bind:value={email}
                 oninput={clearErrors}
                 class:error={emailError}
@@ -134,6 +136,7 @@
                 type="password"
                 id="password"
                 placeholder="Password"
+                autocomplete="new-password"
                 bind:value={password}
                 oninput={clearErrors}
                 class:error={passwordError}
@@ -143,12 +146,13 @@
                 <p class="error-message">{passwordError}</p>
                 {/if}
             </div>
-             <div class="input-group">
+            <div class="input-group">
                 <p>CONFIRM PASSWORD</p>
                 <input
                 type="password"
                 id="confirmPassword"
                 placeholder="Confirm Password"
+                autocomplete="new-password"
                 bind:value={confirmPassword}
                 oninput={clearErrors}
                 class:error={confirmPasswordError}
