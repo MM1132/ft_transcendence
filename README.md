@@ -207,6 +207,7 @@ erDiagram
 | 2 | Implement a complete web-based game where users can play against each other. | Christopher (backend), Constantinos (frontend) | It works by using WebSockets for live updates, the entire game logic runs on the backend, frontend only renders it and sends key events |
 | 2 | Remote players - Enable two players on separate computers to play the same game in real-time. | Christopher (backend), Constantinos (frontend) | Same as above |
 | 2 | Multiplayer game (more than two players). | Christopher (backend), Constantinos (frontend) | Same as above |
+| 1 | Gamification and reward system | Konstantinos, Constantinos | To make the game more engaging for players |
 - **TOTAL:** <u>18</u> our of the requirement of 14
 
 ## Individual Contributions
