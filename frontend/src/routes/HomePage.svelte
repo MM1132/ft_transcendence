@@ -40,24 +40,22 @@
         Experience real-time multiplayer gaming redefined. 
         Compete with players worldwide in the ultimate arena.
       </p>
-      <div class="hero-buttons">
-        <a href="/login" onclick={(e) => { e.preventDefault(); navigateTo('/login'); }}>
-          <Button type="button">GET STARTED</Button>
-        </a>
-        <button class="btn-secondary">LEARN MORE</button>
-      </div>
 
-  
+      <div class="hero-buttons">
+        <Button type="button" onclick={(e) => { e.preventDefault(); navigateTo('/login'); }}>GET STARTED</Button>
+        <Button
+          type="button"
+          variant="learn-more"
+          onclick={() => window.open('https://github.com/MM1132/ft_transcendence', '_blank', 'noopener,noreferrer')}
+        >
+          LEARN MORE
+        </Button>
+      </div>
   </div>
 </div>
 
-
-
-
-
 <style>
-
-.hero-section {
+  .hero-section {
     position: relative;
     height: calc(100vh - 120px);
     display: flex;
@@ -67,7 +65,6 @@
     margin-top: 60px;
     overflow: hidden;
   }
-  
   
   .hero-subtitle {
     font-size: 2rem;
@@ -112,31 +109,14 @@
     gap: 20px;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
+    flex-direction: row;
   }
-  
-  .hero-buttons a {
-    text-decoration: none;
-    flex: 0 0 200px;
+
+  .hero-buttons :global(button) {
+    flex-basis: 240px;
   }
-  
-  .btn-secondary {
-    padding: 1.2rem 2rem;
-    background: transparent;
-    color: #B13BCC;
-    border: 2px solid #B13BCC;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-    font-family: Montserrat;
-  }
-  
-  .btn-secondary:hover {
-    background: rgba(177, 59, 204, 0.1);
-    box-shadow: 0 0 20px rgba(177, 59, 204, 0.3);
-  }
+
   .hero-text
   {
     z-index: 2;
@@ -147,9 +127,6 @@
   
   .hero-visual {
     position: absolute;
-    /* display: flex; */
-    /* justify-content: center; */
-    /* align-items: center; */
     z-index: 1;
   }
   

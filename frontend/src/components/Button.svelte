@@ -1,22 +1,22 @@
 <script lang="ts">
-    interface Props
-    {
-        type?: 'button' | 'submit' | 'reset';
+    interface Props {
+        type?: "button" | "submit" | "reset";
         disabled?: boolean;
         form?: string;
         variant?:
-            | 'default'
-            | 'save'
-            | 'reset'
-            | 'expand-trigger-left'
-            | 'expand-trigger-right'
-            | 'expand-trigger-bottom'
-            | 'join'
-            | 'create'
-            | 'cancel'
-            | 'ready'
-            | 'noready'
-            | 'kick';
+            | "default"
+            | "save"
+            | "reset"
+            | "expand-trigger-left"
+            | "expand-trigger-right"
+            | "expand-trigger-bottom"
+            | "join"
+            | "create"
+            | "cancel"
+            | "ready"
+            | "noready"
+            | "kick"
+            | "learn-more";
         onclick?: (event: MouseEvent) => void;
         ariaExpanded?: boolean;
         ariaLabel?: string;
@@ -25,14 +25,14 @@
     }
 
     const {
-        type = 'button',
+        type = "button",
         disabled = false,
         form,
-        variant = 'default',
+        variant = "default",
         onclick,
         ariaExpanded,
         ariaLabel,
-        class: className = '',
+        class: className = "",
         children,
         ...rest
     }: Props = $props();
@@ -46,58 +46,51 @@
     aria-expanded={ariaExpanded}
     aria-label={ariaLabel}
     class={className}
-    class:save={variant === 'save'}
-    class:reset={variant === 'reset'}
-    class:expand-trigger-left={variant === 'expand-trigger-left'}
-    class:expand-trigger-right={variant === 'expand-trigger-right'}
-    class:expand-trigger-bottom={variant === 'expand-trigger-bottom'}
-    class:join={variant === 'join'}
-    class:create={variant === 'create'}
-    class:cancel={variant === 'cancel'}
-    class:ready={variant === 'ready'}
-    class:noready={variant === 'noready'}
-    class:kick={variant === 'kick'}
+    class:save={variant === "save"}
+    class:reset={variant === "reset"}
+    class:expand-trigger-left={variant === "expand-trigger-left"}
+    class:expand-trigger-right={variant === "expand-trigger-right"}
+    class:expand-trigger-bottom={variant === "expand-trigger-bottom"}
+    class:join={variant === "join"}
+    class:create={variant === "create"}
+    class:cancel={variant === "cancel"}
+    class:ready={variant === "ready"}
+    class:noready={variant === "noready"}
+    class:kick={variant === "kick"}
+    class:learn-more={variant === "learn-more"}
 >
     {@render children()}
 </button>
-   
 
 <style>
-    button
-    {
-        width: 90%;
+    button {
+        /* width: 90%; */
         padding: 1.7rem;
-        background: #0AEB00;
-        /* background: #0ec904; */
+        background: #0aeb00;
         color: #fff;
         border: none;
-        /* border-left: 2px solid #ffffff; */
         border-radius: 0px;
         font-weight: bold;
         cursor: pointer;
         transition: background 0.2s;
     }
 
-    button:hover:not(:disabled)
-    {
-        background: #B13BCC;
+    button:hover:not(:disabled) {
+        background: #b13bcc;
     }
 
-    button:disabled
-    {
+    button:disabled {
         /* background: #ffffff38; */
         opacity: 0.6;
         cursor: not-allowed;
     }
 
-    button.save
-    {
+    button.save {
         font-size: 1.1rem;
-        font-family: 'Orbitron', sans-serif;
+        font-family: "Orbitron", sans-serif;
     }
 
-    button.reset
-    {
+    button.reset {
         width: auto;
         min-width: 120px;
         padding: 10px 16px;
@@ -106,14 +99,12 @@
         color: #ff6b6b;
     }
 
-    button.reset:hover:not(:disabled)
-    {
+    button.reset:hover:not(:disabled) {
         background: rgba(255, 68, 68, 0.28);
         color: #ffd5d5;
     }
 
-    button.expand-trigger-left
-    {
+    button.expand-trigger-left {
         position: absolute;
         left: 8px;
         width: 40px;
@@ -124,8 +115,7 @@
         transform: rotate(180deg);
     }
 
-    button.expand-trigger-right
-    {
+    button.expand-trigger-right {
         position: absolute;
         right: 8px;
         width: 40px;
@@ -135,8 +125,7 @@
         writing-mode: vertical-rl;
     }
 
-    button.expand-trigger-bottom
-    {
+    button.expand-trigger-bottom {
         position: absolute;
         left: 8px;
         right: 8px;
@@ -147,8 +136,7 @@
         letter-spacing: 1px;
     }
 
-    button.join
-    {
+    button.join {
         width: 50px;
         height: 40px;
         float: right;
@@ -159,8 +147,7 @@
         justify-content: center;
     }
 
-    button.create
-    {
+    button.create {
         width: 40px;
         height: 40px;
         /* float: right; */
@@ -169,51 +156,43 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid #B13BCC;
+        border: 1px solid #b13bcc;
         background: none;
     }
 
-    button.cancel
-    {
+    button.cancel {
         background: transparent;
         color: #ff4444;
         border: 1px solid #ff4444;
     }
 
-    button.cancel:hover
-    {
+    button.cancel:hover {
         background: #ff4444;
         color: #fff;
     }
 
-    button.noready
-    {
+    button.noready {
         width: auto;
         min-width: 120px;
         background: rgba(177, 59, 204, 0.15);
         color: #ffffff;
         border: 1px solid rgb(177, 59, 204);
-
     }
 
-    button.ready
-    {
+    button.ready {
         width: auto;
         min-width: 120px;
-        background: #B13BCC;
-        color:  #ffffff;
+        background: #b13bcc;
+        color: #ffffff;
         border: 1px solid rgba(177, 59, 204, 0);
-
     }
 
-    button.ready.active
-    {
-        background: #0AEB00;
-        color:  #ffffff;
+    button.ready.active {
+        background: #0aeb00;
+        color: #ffffff;
     }
 
-    button.kick
-    {
+    button.kick {
         width: auto;
         min-width: 60px;
         padding: 8px 8px;
@@ -222,13 +201,28 @@
         color: #ff6b6b;
     }
 
-    button.kick:hover, 
-    button.kick.active
-    { 
+    button.kick:hover,
+    button.kick.active {
         background: #ff4444;
         color: #fff;
     }
-    
 
+    button.learn-more {
+        color: red;
+        background: transparent;
+        color: #b13bcc;
+        box-sizing: border-box;
+        border: 2px solid #b13bcc;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        /* font-size: 0.9rem;
+        font-family: Montserrat; */
+        letter-spacing: 1px;
+    }
+
+    button.learn-more:hover:not(:disabled) {
+        background: rgba(177, 59, 204, 0.1);
+        box-shadow: 0 0 20px rgba(177, 59, 204, 0.3);
+    }
 </style>
-
