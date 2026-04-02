@@ -92,7 +92,7 @@
                     <p class="error-message">{passwordError || 'Wrong username or password'}</p>
                 {/if}
             </div>
-            <Button type="submit">Login</Button>
+            <Button type="submit" class="signup-button">Login</Button>
         </form>
         <p class="signup">
             Don't have an account? 
@@ -107,6 +107,10 @@
 
 <style>
     
+    :global(button.signup-button) {
+        width: 90%;
+    }
+
     .login-container
     {
         position: fixed;

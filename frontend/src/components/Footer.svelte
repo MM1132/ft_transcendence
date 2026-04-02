@@ -1,5 +1,7 @@
 <script>
   import { currentPath, navigateTo } from '../stores/router'
+    import Button from './Button.svelte';
+    import GithubIcon from './GithubIcon.svelte';
 
   function openLegalPage(event, path) {
     event.preventDefault()
@@ -26,6 +28,14 @@
       >
         Terms of Service
       </a>
+      <span class="divider" aria-hidden="true">|</span>
+      <Button
+          type="button"
+          variant="icon"
+          onclick={() => window.open('https://github.com/MM1132/ft_transcendence', '_blank', 'noopener,noreferrer')}
+      >
+        <GithubIcon />
+      </Button>
     </nav>
   </div>
 </footer>
