@@ -16,7 +16,8 @@
             | "ready"
             | "noready"
             | "kick"
-            | "learn-more";
+            | "learn-more"
+            | "icon";
         onclick?: (event: MouseEvent) => void;
         ariaExpanded?: boolean;
         ariaLabel?: string;
@@ -58,6 +59,7 @@
     class:noready={variant === "noready"}
     class:kick={variant === "kick"}
     class:learn-more={variant === "learn-more"}
+    class:icon={variant === "icon"}
 >
     {@render children()}
 </button>
@@ -224,5 +226,22 @@
     button.learn-more:hover:not(:disabled) {
         background: rgba(177, 59, 204, 0.1);
         box-shadow: 0 0 20px rgba(177, 59, 204, 0.3);
+    }
+
+    button.icon {
+        background: transparent;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        /* display: flex; */
+        /* text-align: center; */
+    }
+
+    button.icon:hover:not(:disabled) {
+        background: transparent;
+    }
+
+    button.icon:hover:not(:disabled) :global(svg) {
+        color: #0AEB00;
     }
 </style>
