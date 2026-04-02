@@ -76,7 +76,6 @@
     transition: opacity 3s;
     animation: pulseOpacity 9s linear infinite;
     z-index: 3;
-    
   }
   
   .hero-title {
@@ -156,6 +155,12 @@
     0% { opacity: 0; }  /* Hidden */
     50% { opacity: 1; } /* Visible */
     100% { opacity: 0; }     /* Hidden */
+  }
+
+  @media (max-width: 1180px) {
+    .hero-subtitle {
+      margin-top: 60px; 
+    }
   }
 
   @media (max-width: 900px) {
