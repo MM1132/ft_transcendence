@@ -1,6 +1,7 @@
 <script lang="ts">
     import InputField from './Input.svelte';
     import Button from './Button.svelte';
+    import UserAvatar from './icons/UserAvatar.svelte';
     import { onMount } from 'svelte';
     import { settingsService } from '../services/settingsService';
     import { avatarStore } from '../stores/avatarStore';
@@ -119,8 +120,7 @@
     async function handleDeleteAvatar() {
 
         if (!avatarUrl || isDefaultAvatarUrl(avatarUrl)) {
-            alert("This pretty face is your default avatar. You're welcome. \nDelete me? Nice try snake.\
-             \nUpload a new one if you dare.")
+            alert("Delete me? Nice try snake.\nUpload a new one if you dare.")
             return;
     }
         if (!confirm('Are you sure you want to delete your avatar?')) return;
@@ -130,8 +130,9 @@
 
         try {
             await settingsService.deleteAvatar();
-            avatarUrl = null;
-            avatarStore.set(null);
+            const myAvatarUrl = await settingsService.getMyAvatarUrl();
+            avatarUrl = myAvatarUrl ? withAvatarVersion(myAvatarUrl) : null;
+            avatarStore.set(avatarUrl);
             setStatus?.({
                 isSaving: false,
                 feedback: 'Avatar deleted successfully',
@@ -154,6 +155,12 @@
         birthDate = '';
         twoFactorEnabled = false;
         notificationsEnabled = false;
+        
+        // Reset avatar to default
+        if (avatarUrl && !isDefaultAvatarUrl(avatarUrl)) {
+            handleDeleteAvatar();
+        }
+        
         setStatus?.({ isSaving: false, feedback: 'Click Save to apply.', feedbackType: 'error' });
     }
 </script>
@@ -167,12 +174,7 @@
                 {#if avatarUrl}
                     <img src={avatarUrl} alt="User Avatar" />
                 {:else}
-                    <div class="avatar-placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
+                    <UserAvatar size={50} color="rgba(10, 235, 0, 0.5)" strokeWidth={2} />
                 {/if}
             </div>
 
@@ -194,7 +196,7 @@
                     {isUploadingAvatar ? '...' : 'Change Avatar'}
                 </button>
 
-                {#if avatarUrl}
+                {#if avatarUrl && !isDefaultAvatarUrl(avatarUrl)}
                     <button
                         type="button"
                         class="btn-delete-avatar"
