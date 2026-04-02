@@ -158,7 +158,7 @@
                 <p class="error-message">{confirmPasswordError}</p>
                 {/if}
             </div>
-            <Button type="submit">Sign up</Button>
+            <Button type="submit" class="signup-button">Sign up</Button>
         </form>
         <p class="login">
             Do you have an account? 
@@ -172,6 +172,10 @@
 
 
 <style>
+    
+    :global(button.signup-button) {
+        width: 90%;
+    }
     
     .signup-container
     {
