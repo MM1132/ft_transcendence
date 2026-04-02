@@ -32,7 +32,7 @@ Happy developing! :)
 | --- | --- | --- |
 | [**rreimann**](https://github.com/MM1132) | PO (Project Owner) | Setting up the project. Backend REST API, continous deployment. Monitoring the development processes and guiding the team. |
 | [**nlewicki**](https://github.com/nlewicki) | PM (Project Manager) | Developing lots of frontend, finding and fixing bugs. Responsive web design. Testing the application vigorously. |
-| [**kkaratsi**](https://github.com/karatsioris) | UI/UX Lead | Creating the website styling guidelines, leading the frontend team with exemplary coding practices. Making sure that frontend developers do their job right. |
+| [**kkaratsi**](https://github.com/karatsioris) | UI/UX Lead/ Tech Lead | Creating the website styling guidelines, leading the frontend team with exemplary coding practices. Making sure that frontend developers do their job right. |
 | [**cmakario**](https://github.com/conmak8) | Frontend Dev | The frontend for the most important part of the project - game itself in both multiplayer and singleplayer. |
 | [**chuhlig**](https://github.com/cuhlig42) | Backend Dev | Developing backend for the game, rooms, and the real-time chatting capabilities. |
 
