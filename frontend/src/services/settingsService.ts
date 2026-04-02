@@ -133,6 +133,6 @@ export function buildAuthHeaders(): HeadersInit
   } catch (_error) {
     // something went wrong, do nothinge value and continue unauthenticated.
   }
-  // no automatic x-dev fallback in normal frontend requests, our fallback —> just send no token
+
   return {};
 }
